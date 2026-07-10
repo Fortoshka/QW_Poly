@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polygon Uploader - Credentials</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+  <header>
+    <div class="logo-container">
+      <svg class="logo-svg" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <clipPath id="shield-clip">
+            <path
+              d="M 150,50 h 212 a 100,100 0 0 1 100,100 v 212 a 100,100 0 0 1 -100,100 h -162 a 150,150 0 0 1 -150,-150 v -162 a 100,100 0 0 1 100,-100 z" />
+          </clipPath>
+          <linearGradient id="arch-grad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ffffff" />
+            <stop offset="100%" stop-color="#e0e0e0" />
+          </linearGradient>
+          <filter id="arch-shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="12" stdDeviation="8" flood-color="#000000" flood-opacity="0.18" />
+          </filter>
+        </defs>
+        <path class="shield-bg"
+          d="M 150,50 h 212 a 100,100 0 0 1 100,100 v 212 a 100,100 0 0 1 -100,100 h -162 a 150,150 0 0 1 -150,-150 v -162 a 100,100 0 0 1 100,-100 z" />
+        <g clip-path="url(#shield-clip)">
+          <path class="arch-fg" filter="url(#arch-shadow)" fill="url(#arch-grad)"
+            d="M 138,512 V 180 A 40,40 0 0 1 178,140 L 348,210 A 40,40 0 0 1 374,250 V 512 H 304 V 278 L 208,238 V 512 H 138 Z" />
+        </g>
+      </svg>
+      <span class="logo-text">QW <span id="logo-suffix" class="logo-suffix">Poly</span></span>
+    </div>
+
+    <div class="header-actions">
+      <button id="lang-toggle" class="lang-toggle-btn" aria-label="Switch language"
+        title="Сменить язык / Switch language">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+        <span id="lang-label">EN</span>
+      </button>
+
+      <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark theme" title="Toggle theme">
+        <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle id="sun-circle" cx="12" cy="12" r="5" />
+          <line x1="12" y1="1" x2="12" y2="3" />
+          <line x1="12" y1="21" x2="12" y2="23" />
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+          <line x1="1" y1="12" x2="3" y2="12" />
+          <line x1="21" y1="12" x2="23" y2="12" />
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <div id="auth-view" class="auth-card">
+      <div class="auth-header">
+        <h1 id="auth-title">Connect Polygon Account</h1>
+        <p id="auth-subtitle">Authenticate using your API keys. Credentials are stored securely in your browser's local
+          storage and never sent to external servers.</p>
+      </div>
+
+      <form id="credentials-form" novalidate>
+        <div class="input-group">
+          <input type="text" id="api-key" placeholder=" " required autocomplete="username">
+          <label for="api-key" id="label-api-key">API Key (key)</label>
+        </div>
+
+        <div class="input-group">
+          <input type="password" id="api-secret" placeholder=" " required autocomplete="current-password">
+          <label for="api-secret" id="label-api-secret">API Secret (secret)</label>
+          <button type="button" class="password-toggle" id="secret-toggle" aria-label="Toggle password visibility">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+        </div>
+
+        <div class="input-group">
+          <input type="text" id="poly-username" placeholder=" ">
+          <label for="poly-username" id="label-poly-username">Polygon Username (Optional)</label>
+        </div>
+
+        <div class="input-group">
+          <input type="password" id="poly-password" placeholder=" ">
+          <label for="poly-password" id="label-poly-password">Polygon Password (Optional)</label>
+          <button type="button" class="password-toggle" id="pass-toggle" aria-label="Toggle password visibility">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+        </div>
+
+        <button type="submit" class="btn-primary" id="submit-btn">
+          <span class="spinner" id="btn-spinner"></span>
+          <span class="btn-text" id="btn-text">Verify & Connect</span>
+        </button>
+      </form>
+
+      <div id="status-alert" class="alert">
+        <svg id="alert-icon-error" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <svg id="alert-icon-success" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span id="alert-message"></span>
+      </div>
+
+      <div class="info-text">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span id="safety-text">Your data is stored strictly inside your local browser storage.</span>
+      </div>
+    </div>
+
+    <div id="dashboard-view" class="dashboard-container" style="display: none;">
+      <div class="dashboard-header">
+        <div>
+          <h2 id="dash-title">Problems List</h2>
+          <p id="dash-subtitle" class="dash-subtitle">Manage your Polygon problems.</p>
+        </div>
+        <button id="create-prob-btn" class="btn-primary btn-new-problem">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span id="dash-new-problem-btn">New Problem</span>
+        </button>
+      </div>
+
+      <div class="table-card">
+        <div class="table-container">
+          <table id="problems-table">
+            <thead>
+              <tr>
+                <th id="th-id">ID</th>
+                <th id="th-name">Name</th>
+                <th id="th-owner">Owner</th>
+                <th id="th-revision">Revision</th>
+                <th id="th-access">Access</th>
+                <th id="th-modified">Modified</th>
+                <th id="th-actions" style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="problems-table-body">
+            </tbody>
+          </table>
+
+          <div id="table-loader" class="table-loader" style="display: none;">
+            <div class="spinner green-spinner"></div>
+            <span id="loading-problems-text">Loading problems...</span>
+          </div>
+          <div id="table-empty" class="table-empty" style="display: none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+            <p id="no-problems-text">No problems found on this account.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="create-problem-view" class="create-problem-container" style="display: none;">
+      <div class="create-problem-header">
+        <div>
+          <h2 id="step-title">Step 1: Statement and Main Information</h2>
+          <p id="step-subtitle" class="dash-subtitle">Fill in the statement details and main settings of the problem.
+          </p>
+        </div>
+      </div>
+
+      <div class="editor-split-layout">
+        <div class="editor-pane">
+          <form id="problem-statement-form" novalidate>
+            <div class="form-row-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom: 20px;">
+              <div class="input-group">
+                <select id="prob-statement-lang" required style="padding-top: 10px;">
+                  <option value="english">English</option>
+                  <option value="russian" selected>Russian</option>
+                </select>
+                <label for="prob-statement-lang" id="label-statement-lang" class="select-label">Statement
+                  Language</label>
+              </div>
+              <div class="input-group">
+                <input type="number" id="prob-time-limit" value="1000" placeholder=" " required min="100" max="10000">
+                <label for="prob-time-limit" id="label-time-limit">Time Limit (ms)</label>
+              </div>
+              <div class="input-group">
+                <input type="number" id="prob-memory-limit" value="256" placeholder=" " required min="4" max="2048">
+                <label for="prob-memory-limit" id="label-memory-limit">Memory Limit (MB)</label>
+              </div>
+            </div>
+
+            <div class="form-row-grid">
+              <div class="input-group">
+                <input type="text" id="prob-name" placeholder=" " required>
+                <label for="prob-name" id="label-prob-name">Problem Name</label>
+              </div>
+              <div class="input-group">
+                <input type="text" id="prob-system-name" placeholder=" " pattern="[a-z0-9\-]*">
+                <label for="prob-system-name" id="label-prob-system-name">System Name (optional)</label>
+              </div>
+            </div>
+
+            <div class="tex-info-box">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span>
+                <span id="tex-info-prefix">See our</span>
+                <a href="https://polygon.codeforces.com/docs/statements-tex-manual?ccid=8a667637d3b022900ec05d699a07cdd4"
+                  target="_blank" class="accent-link">brief manual</a>
+                <span id="tex-info-suffix">to learn about supported TeX commands.</span>
+              </span>
+            </div>
+
+            <div class="input-group">
+              <textarea id="prob-legend" placeholder=" " rows="6" required></textarea>
+              <label for="prob-legend" id="label-prob-legend">Legend</label>
+            </div>
+            <div class="input-group">
+              <textarea id="prob-input-format" placeholder=" " rows="4" required></textarea>
+              <label for="prob-input-format" id="label-prob-input-format">Input Format</label>
+            </div>
+
+            <div class="input-group">
+              <textarea id="prob-output-format" placeholder=" " rows="4" required></textarea>
+              <label for="prob-output-format" id="label-prob-output-format">Output Format</label>
+            </div>
+            <div class="input-group">
+              <textarea id="prob-notes" placeholder=" " rows="4"></textarea>
+              <label for="prob-notes" id="label-prob-notes">Notes</label>
+            </div>
+
+            <div class="input-group">
+              <textarea id="prob-tutorial" placeholder=" " rows="4"></textarea>
+              <label for="prob-tutorial" id="label-prob-tutorial">Tutorial</label>
+            </div>
+          </form>
+        </div>
+
+        <div class="preview-pane">
+          <div class="preview-header-bar">
+            <span id="preview-label">Live Preview</span>
+          </div>
+          <div class="statement-card">
+            <h1 id="preview-title" class="statement-title"></h1>
+
+            <div class="statement-limits">
+              <div>
+                <span class="limit-label" id="label-preview-time-limit">Time limit per test:</span>
+                <span id="preview-time-limit">1000 ms</span>
+              </div>
+              <div>
+                <span class="limit-label" id="label-preview-memory-limit">Memory limit per test:</span>
+                <span id="preview-memory-limit">256 MB</span>
+              </div>
+            </div>
+
+            <div class="statement-section">
+              <div id="preview-legend" class="statement-text"></div>
+            </div>
+            <div class="statement-section">
+              <h3 class="section-title" id="preview-section-input">Input</h3>
+              <div id="preview-input-format" class="statement-text"></div>
+            </div>
+
+            <div class="statement-section">
+              <h3 class="section-title" id="preview-section-output">Output</h3>
+              <div id="preview-output-format" class="statement-text"></div>
+            </div>
+            <div id="preview-notes-section" class="statement-section" style="display: none;">
+              <h3 class="section-title" id="preview-section-notes">Note</h3>
+              <div id="preview-notes" class="statement-text"></div>
+            </div>
+            <div id="preview-tutorial-section" class="statement-section" style="display: none;">
+              <h3 class="section-title" id="preview-section-tutorial">Tutorial</h3>
+              <div id="preview-tutorial" class="statement-text"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="editor-footer">
+        <button id="cancel-create-btn" class="btn-secondary btn-flat-cancel">
+          <span id="btn-back-to-dash">Back to Dashboard</span>
+        </button>
+        <button id="next-step-btn" class="btn-primary btn-next-step">
+          <span id="btn-next-step-text">Next Step</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="upload-solution-view" class="create-problem-container"
+      style="display: none; opacity: 0; transform: translateY(15px);">
+      <div class="create-problem-header">
+        <div>
+          <h2 id="step2-title">Step 2: Upload Correct Solution</h2>
+          <p id="step2-subtitle" class="dash-subtitle">Upload the correct solution code and select the programming
+            language.</p>
+        </div>
+      </div>
+
+      <div class="editor-split-layout">
+        <div class="editor-pane">
+          <div class="input-group">
+            <select id="sol-lang" required>
+              <option value="" disabled selected id="opt-select-lang">Select Language</option>
+              <option value="cpp.g++20">C++20 (gcc 13-diagnostics)</option>
+              <option value="cpp.g++17">C++17 (gcc 11-diagnostics)</option>
+              <option value="python.3">Python 3 (3.11.2)</option>
+              <option value="pypy.3">PyPy 3 (7.3.11)</option>
+              <option value="java17">Java 17 (OpenJDK)</option>
+              <option value="java11">Java 11 (OpenJDK)</option>
+              <option value="rust">Rust (1.70.0)</option>
+              <option value="go">Go (1.20.4)</option>
+              <option value="kotlin">Kotlin (1.8.20)</option>
+              <option value="csharp.dotnet">C# .NET (8.0)</option>
+            </select>
+            <label for="sol-lang" id="label-sol-lang" class="select-label">Programming Language</label>
+          </div>
+
+          <div class="drop-zone" id="sol-drop-zone">
+            <svg class="drop-zone-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <div class="drop-zone-text" id="sol-drop-text">Drag & drop your solution file here or click to browse</div>
+            <input type="file" id="sol-file-input" class="drop-zone-input"
+              accept=".cpp,.h,.hpp,.py,.java,.rs,.go,.kt,.cs,.txt">
+          </div>
+
+          <div class="input-group" style="margin-top: 20px;">
+            <textarea id="sol-code" class="code-editor" placeholder=" " rows="14" required></textarea>
+            <label for="sol-code" id="label-sol-code">Solution Code</label>
+          </div>
+        </div>
+
+        <div class="preview-pane">
+          <div class="ai-prompt-section">
+            <div class="ai-header">
+              <h3 id="ai-card-title">AI Solution Generator</h3>
+              <p id="ai-card-subtitle" class="dash-subtitle">Generate a prompt for LLMs using the task statement.</p>
+            </div>
+
+            <div class="ai-controls">
+              <button id="generate-prompt-btn" class="btn-primary btn-generate-prompt">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                <span id="btn-generate-prompt-text">Сгенерировать промпт</span>
+              </button>
+
+              <div class="accordion-item">
+                <button id="accordion-toggle-btn" class="accordion-header" aria-expanded="false"
+                  aria-label="Toggle instructions">
+                  <svg id="accordion-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div id="accordion-content" class="accordion-content"
+              style="max-height: 0px; overflow: hidden; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+              <div class="accordion-inner">
+                <h4 id="help-title">How to use:</h4>
+                <ol id="help-steps">
+                  <li>Fill in the task statements in Step 1 (Legend, Inputs, Outputs).</li>
+                  <li>Choose the programming language in the dropdown on the left.</li>
+                  <li>Click "Generate Prompt" to create a structured prompt for AI.</li>
+                  <li>Copy the prompt, paste it into ChatGPT, Claude or Gemini.</li>
+                  <li>Paste the generated code into the code field on the left.</li>
+                </ol>
+              </div>
+            </div>
+
+            <div id="prompt-output-container" class="prompt-output-container" style="display: none;">
+              <div class="prompt-output-header">
+                <span id="prompt-output-title">Generated Prompt</span>
+                <button id="copy-prompt-btn" class="btn-text-action">
+                  <span id="btn-copy-prompt-text">Copy</span>
+                </button>
+              </div>
+              <textarea id="prompt-output-text" readonly rows="8"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="editor-footer">
+        <button id="back-to-step1-btn" class="btn-secondary btn-flat-cancel">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="transform: rotate(180deg); margin-right: 8px;">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+          <span id="btn-back-to-step1">Back to Step 1</span>
+        </button>
+        <button id="next-step-2-btn" class="btn-primary btn-next-step">
+          <span id="btn-next-step-2-text">Next Step</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="checker-tests-view" class="create-problem-container"
+      style="display: none; opacity: 0; transform: translateY(15px);">
+      <div class="create-problem-header">
+        <div>
+          <h2 id="step3-title">Step 3: Checker and Tests</h2>
+          <p id="step3-subtitle" class="dash-subtitle">Select checker program, upload test files, and select statements
+            tests.</p>
+        </div>
+      </div>
+
+      <div class="editor-split-layout">
+        <div class="editor-pane">
+          <div class="input-group">
+            <select id="checker-select" required>
+              <option value="" disabled selected id="opt-select-checker">Select Checker</option>
+              <option value="std::ncmp.cpp">std::ncmp.cpp (Sequence of integers)</option>
+              <option value="std::wcmp.cpp">std::wcmp.cpp (Sequence of words)</option>
+              <option value="std::rcmp6.cpp">std::rcmp6.cpp (Floats, error &le; 10^-6)</option>
+              <option value="std::rcmp9.cpp">std::rcmp9.cpp (Floats, error &le; 10^-9)</option>
+              <option value="std::yesno.cpp">std::yesno.cpp (Yes/No, case-insensitive)</option>
+              <option value="std::lcmp.cpp">std::lcmp.cpp (Line-by-line comparison)</option>
+              <option value="custom">Custom checker source file...</option>
+            </select>
+            <label for="checker-select" id="label-checker-select" class="select-label">Checker Program</label>
+          </div>
+
+          <div class="drop-zone" id="tests-drop-zone">
+            <svg class="drop-zone-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <div class="drop-zone-text" id="tests-drop-text">Drag & drop test files here or click to browse</div>
+            <input type="file" id="tests-file-input" class="drop-zone-input" accept=".txt,.in,.out" multiple>
+          </div>
+
+          <div id="tests-list-container" class="table-card" style="margin-top: 20px; display: none;">
+            <div class="table-header-bar"
+              style="padding: 12px 20px; border-bottom: 1px solid var(--border-color); font-weight: 500; font-size: 14px;">
+              <span id="tests-list-header">Uploaded Tests</span>
+            </div>
+            <div class="table-container">
+              <table id="tests-table">
+                <thead>
+                  <tr>
+                    <th id="th-test-name">Test File</th>
+                    <th id="th-test-size">Size</th>
+                    <th id="th-test-statements" style="text-align: center; width: 160px;">Use in Statements</th>
+                    <th id="th-test-actions" style="text-align: right; width: 100px;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="tests-table-body">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="preview-pane">
+          <div class="ai-prompt-section">
+            <div class="ai-header">
+              <h3 id="ai-tests-title">AI Test Generator</h3>
+              <p id="ai-tests-subtitle" class="dash-subtitle">Generate a prompt for LLMs to write a test generator code.
+              </p>
+            </div>
+
+            <div class="ai-controls">
+              <button id="generate-tests-prompt-btn" class="btn-primary btn-generate-prompt">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                <span id="btn-generate-tests-prompt-text">Сгенерировать промпт</span>
+              </button>
+
+              <div class="accordion-item">
+                <button id="accordion-tests-toggle-btn" class="accordion-header" aria-expanded="false"
+                  aria-label="Toggle instructions">
+                  <svg id="accordion-tests-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div id="accordion-tests-content" class="accordion-content"
+              style="max-height: 0px; overflow: hidden; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+              <div class="accordion-inner">
+                <h4 id="help-tests-title">How to use:</h4>
+                <ol id="help-tests-steps">
+                  <li>Fill in the problem statement details in Step 1.</li>
+                  <li>Click 'Generate Prompt' to copy generator script instructions.</li>
+                  <li>Paste the prompt into Claude, Gemini or ChatGPT to write generator code.</li>
+                  <li>This generator can be uploaded to Polygon to generate large tests dynamically.</li>
+                </ol>
+              </div>
+            </div>
+
+            <div id="tests-prompt-output-container" class="prompt-output-container" style="display: none;">
+              <div class="prompt-output-header">
+                <span id="prompt-tests-output-title">Generated Generator Prompt</span>
+                <button id="copy-tests-prompt-btn" class="btn-text-action">
+                  <span id="btn-copy-tests-prompt-text">Copy</span>
+                </button>
+              </div>
+              <textarea id="tests-prompt-output-text" readonly rows="8"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="editor-footer">
+        <button id="back-to-step2-btn" class="btn-secondary btn-flat-cancel">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="transform: rotate(180deg); margin-right: 8px;">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+          <span id="btn-back-to-step2">Back to Step 2</span>
+        </button>
+        <button id="finish-problem-btn" class="btn-primary btn-next-step">
+          <span id="btn-finish-problem-text">Submit Problem</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="confirmation-view" class="create-problem-container"
+      style="display: none; opacity: 0; transform: translateY(15px);">
+      <div class="create-problem-header">
+        <div>
+          <h2 id="step4-title">Step 4: Final Confirmation</h2>
+          <p id="step4-subtitle" class="dash-subtitle">Review all entered problem parameters before submitting to
+            Polygon.</p>
+        </div>
+      </div>
+
+      <div class="editor-split-layout confirmation-layout">
+        <div class="editor-pane confirmation-pane">
+          <div class="summary-card">
+            <h3 id="summary-section-info-title" class="summary-sec-title">Main Settings</h3>
+            <div class="summary-field">
+              <span id="summary-label-name" class="summary-label">Problem Name:</span>
+              <span id="summary-val-name" class="summary-value font-medium"></span>
+            </div>
+            <div class="summary-row-grid">
+              <div class="summary-field">
+                <span id="summary-label-time" class="summary-label">Time Limit:</span>
+                <span id="summary-val-time" class="summary-value"></span>
+              </div>
+              <div class="summary-field">
+                <span id="summary-label-memory" class="summary-label">Memory Limit:</span>
+                <span id="summary-val-memory" class="summary-value"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="summary-card" style="margin-top: 20px;">
+            <h3 id="summary-section-statement-title" class="summary-sec-title">Statements</h3>
+            <div class="summary-field">
+              <span id="summary-label-legend" class="summary-label">Legend:</span>
+              <div id="summary-val-legend" class="summary-text-block scrollable-y"></div>
+            </div>
+            <div class="summary-field">
+              <span id="summary-label-input" class="summary-label">Input Format:</span>
+              <div id="summary-val-input" class="summary-text-block scrollable-y"></div>
+            </div>
+            <div class="summary-field">
+              <span id="summary-label-output" class="summary-label">Output Format:</span>
+              <div id="summary-val-output" class="summary-text-block scrollable-y"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="editor-pane confirmation-pane">
+          <div class="summary-card">
+            <h3 id="summary-section-solution-title" class="summary-sec-title">Correct Solution</h3>
+            <div class="summary-field">
+              <span id="summary-label-sol-lang" class="summary-label">Language:</span>
+              <span id="summary-val-sol-lang" class="summary-value font-medium"></span>
+            </div>
+            <div class="summary-field">
+              <span id="summary-label-sol-code" class="summary-label">Solution Code:</span>
+              <pre id="summary-val-sol-code" class="summary-code-preview scrollable-xy"></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="preview-pane confirmation-pane">
+          <div class="summary-card">
+            <h3 id="summary-section-tests-title" class="summary-sec-title">Checker & Tests</h3>
+            <div class="summary-field">
+              <span id="summary-label-checker" class="summary-label">Checker Program:</span>
+              <span id="summary-val-checker" class="summary-value font-medium"></span>
+            </div>
+            <div class="summary-field">
+              <span id="summary-label-tests-count" class="summary-label">Uploaded Tests:</span>
+              <span id="summary-val-tests-count" class="summary-value font-medium"></span>
+            </div>
+            <div class="table-container summary-tests-table scrollable-y" style="max-height: 200px; margin-top: 10px;">
+              <table id="summary-tests-table-el">
+                <thead>
+                  <tr>
+                    <th id="th-sum-test-name">Test File</th>
+                    <th id="th-sum-test-size">Size</th>
+                    <th id="th-sum-test-statements" style="text-align: center;">Statements</th>
+                  </tr>
+                </thead>
+                <tbody id="summary-tests-table-body">
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div id="upload-progress-container" class="upload-progress-card" style="display: none; margin-top: 20px;">
+            <div class="progress-header">
+              <span id="progress-header-title">Uploading to Polygon...</span>
+              <div class="spinner green-spinner small-spinner" id="progress-spinner"></div>
+            </div>
+            <div class="progress-bar-bg">
+              <div id="upload-progress-bar" class="progress-bar-fg" style="width: 0%;"></div>
+            </div>
+            <div id="upload-log-list" class="upload-log-list scrollable-y">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="editor-footer">
+        <button id="back-to-step3-btn" class="btn-secondary btn-flat-cancel">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="transform: rotate(180deg); margin-right: 8px;">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+          <span id="btn-back-to-step3">Back to Step 3</span>
+        </button>
+        <button id="confirm-upload-btn" class="btn-primary btn-next-step">
+          <span id="btn-confirm-upload-text">Confirm & Upload</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2026 QW_Poly. all rights reserved via MIT lisence.
+  </footer>
+  <div id="custom-modal-overlay" class="modal-overlay" style="display: none;">
+    <div class="modal-card dialog-card">
+      <div class="dialog-header">
+        <h3 id="custom-modal-title">Notification</h3>
+      </div>
+      <div class="modal-body dialog-body">
+        <p id="custom-modal-message">Message text goes here.</p>
+      </div>
+      <div class="dialog-footer">
+        <button id="custom-modal-cancel-btn" class="btn-secondary">Cancel</button>
+        <button id="custom-modal-ok-btn" class="btn-primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/app.js"></script>
+</body>
+
+</html>
