@@ -1,0 +1,47 @@
+{
+  "name": "degenerator",
+  "version": "6.0.0",
+  "type": "module",
+  "description": "Compiles sync functions into async generator functions",
+  "exports": {
+    "import": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TooTallNate/proxy-agents.git",
+    "directory": "packages/degenerator"
+  },
+  "engines": {
+    "node": ">= 14"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "ast-types": "^0.13.4",
+    "escodegen": "^2.1.0",
+    "esprima": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/escodegen": "^0.0.7",
+    "@types/esprima": "^4.0.3",
+    "@types/node": "^22.13.0",
+    "quickjs-wasi": "^0.0.1",
+    "typescript": "^5.1.6",
+    "tsconfig": "0.0.0"
+  },
+  "peerDependencies": {
+    "quickjs-wasi": "^0.0.1"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest",
+    "lint": "eslint . --ext .ts",
+    "pack": "node ../../scripts/pack.mjs"
+  }
+}

@@ -5,41 +5,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Polygon Uploader - Credentials</title>
-  <script type="module" crossorigin src="/assets/index-zseqoz5j.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-BDDj_Beo.css">
+  <script type="module" crossorigin src="/assets/index-BQFMNGVa.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DSo3QI6I.css">
 </head>
 
 <body>
 
-  <!-- Header -->
   <header>
     <div class="logo-container">
-      <svg class="logo-svg" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <clipPath id="shield-clip">
-            <path
-              d="M 150,50 h 212 a 100,100 0 0 1 100,100 v 212 a 100,100 0 0 1 -100,100 h -162 a 150,150 0 0 1 -150,-150 v -162 a 100,100 0 0 1 100,-100 z" />
-          </clipPath>
-          <linearGradient id="arch-grad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#ffffff" />
-            <stop offset="100%" stop-color="#e0e0e0" />
-          </linearGradient>
-          <filter id="arch-shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="12" stdDeviation="8" flood-color="#000000" flood-opacity="0.18" />
-          </filter>
-        </defs>
-        <path class="shield-bg"
-          d="M 150,50 h 212 a 100,100 0 0 1 100,100 v 212 a 100,100 0 0 1 -100,100 h -162 a 150,150 0 0 1 -150,-150 v -162 a 100,100 0 0 1 100,-100 z" />
-        <g clip-path="url(#shield-clip)">
-          <path class="arch-fg" filter="url(#arch-shadow)" fill="url(#arch-grad)"
-            d="M 138,512 V 180 A 40,40 0 0 1 178,140 L 348,210 A 40,40 0 0 1 374,250 V 512 H 304 V 278 L 208,238 V 512 H 138 Z" />
-        </g>
+      <svg class="logo-svg" viewBox="40 38 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path class="shield-bg" d="m 43.587235,49.990515 c 0.337015,-8.088353 7.779423,-9.352158 9.099397,-9.324074 1.319975,0.02809 70.773088,-0.05617 74.452168,0 3.67908,0.05617 8.56579,3.20164 8.87472,8.284945 0.30893,5.083305 0.0281,73.806234 0.0281,77.457224 0,3.65099 -4.26885,8.31303 -8.31303,8.42537 -4.04417,0.11234 -18.13787,0.0988 -29.060112,0.0272 C 64.26374,133.65794 45.471298,106.92608 43.729926,82.30553 42.505025,64.987154 43.587235,49.990515 43.587235,49.990515 Z" />
+        <path class="arch-fg" d="m 98.760746,134.85292 0.13337,-43.360859 -15.871072,-7.935535 -0.100028,48.780204 c 0,0 -6.618092,-1.76811 -13.770489,-6.36843 -6.084504,-3.91346 -10.469572,-8.86913 -10.469572,-8.86913 0,0 -0.06668,-46.212828 0.06668,-54.48179 0.13337,-8.268962 9.977321,-12.459477 14.937479,-10.869683 5.201444,1.667129 32.082776,16.411909 41.411486,20.405663 7.32733,3.136932 7.9022,10.702971 7.9022,10.702971 v 52.049949 z" />
       </svg>
       <span class="logo-text">QW <span id="logo-suffix" class="logo-suffix">Poly</span></span>
     </div>
 
     <div class="header-actions">
-      <!-- Language Selector -->
       <button id="lang-toggle" class="lang-toggle-btn" aria-label="Switch language"
         title="Сменить язык / Switch language">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -51,9 +32,7 @@
         <span id="lang-label">EN</span>
       </button>
 
-      <!-- Theme Toggle -->
       <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark theme" title="Toggle theme">
-        <!-- Sun/Moon Morphing SVG -->
         <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle id="sun-circle" cx="12" cy="12" r="5" />
@@ -70,9 +49,7 @@
     </div>
   </header>
 
-  <!-- Main Card -->
   <main>
-    <!-- Authorization View -->
     <div id="auth-view" class="auth-card">
       <div class="auth-header">
         <h1 id="auth-title">Connect Polygon Account</h1>
@@ -81,13 +58,11 @@
       </div>
 
       <form id="credentials-form" novalidate>
-        <!-- API Key Input -->
         <div class="input-group">
           <input type="text" id="api-key" placeholder=" " required autocomplete="username">
           <label for="api-key" id="label-api-key">API Key (key)</label>
         </div>
 
-        <!-- API Secret Input -->
         <div class="input-group">
           <input type="password" id="api-secret" placeholder=" " required autocomplete="current-password">
           <label for="api-secret" id="label-api-secret">API Secret (secret)</label>
@@ -100,13 +75,11 @@
           </button>
         </div>
 
-        <!-- Username Input (Optional for problem download via HTTP) -->
         <div class="input-group">
           <input type="text" id="poly-username" placeholder=" ">
           <label for="poly-username" id="label-poly-username">Polygon Username (Optional)</label>
         </div>
 
-        <!-- Password Input (Optional for problem download via HTTP) -->
         <div class="input-group">
           <input type="password" id="poly-password" placeholder=" ">
           <label for="poly-password" id="label-poly-password">Polygon Password (Optional)</label>
@@ -119,14 +92,12 @@
           </button>
         </div>
 
-        <!-- Submit Button -->
         <button type="submit" class="btn-primary" id="submit-btn">
           <span class="spinner" id="btn-spinner"></span>
           <span class="btn-text" id="btn-text">Verify & Connect</span>
         </button>
       </form>
 
-      <!-- Alert Panel -->
       <div id="status-alert" class="alert">
         <svg id="alert-icon-error" style="display: none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
           fill="none" stroke="currentColor" stroke-width="2">
@@ -142,7 +113,6 @@
         <span id="alert-message"></span>
       </div>
 
-      <!-- Information safety -->
       <div class="info-text">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
@@ -152,7 +122,6 @@
       </div>
     </div>
 
-    <!-- Dashboard/Main Page View -->
     <div id="dashboard-view" class="dashboard-container" style="display: none;">
       <div class="dashboard-header">
         <div>
@@ -169,7 +138,6 @@
         </button>
       </div>
 
-      <!-- Table Card -->
       <div class="table-card">
         <div class="table-container">
           <table id="problems-table">
@@ -185,17 +153,13 @@
               </tr>
             </thead>
             <tbody id="problems-table-body">
-              <!-- Populated dynamically -->
             </tbody>
           </table>
 
-          <!-- Table Loader -->
           <div id="table-loader" class="table-loader" style="display: none;">
             <div class="spinner green-spinner"></div>
             <span id="loading-problems-text">Loading problems...</span>
           </div>
-
-          <!-- Table Empty State -->
           <div id="table-empty" class="table-empty" style="display: none;">
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -208,9 +172,7 @@
       </div>
     </div>
 
-    <!-- Create Problem View (Step 1) -->
     <div id="create-problem-view" class="create-problem-container" style="display: none;">
-      <!-- Title header -->
       <div class="create-problem-header">
         <div>
           <h2 id="step-title">Step 1: Statement and Main Information</h2>
@@ -219,19 +181,17 @@
         </div>
       </div>
 
-      <!-- Split Screen Layout -->
       <div class="editor-split-layout">
-        <!-- Left Pane: Editor Form -->
         <div class="editor-pane">
           <form id="problem-statement-form" novalidate>
-            <!-- Statement Language & Limits Info Row -->
             <div class="form-row-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom: 20px;">
               <div class="input-group">
                 <select id="prob-statement-lang" required style="padding-top: 10px;">
                   <option value="english">English</option>
                   <option value="russian" selected>Russian</option>
                 </select>
-                <label for="prob-statement-lang" id="label-statement-lang" class="select-label">Statement Language</label>
+                <label for="prob-statement-lang" id="label-statement-lang" class="select-label">Statement
+                  Language</label>
               </div>
               <div class="input-group">
                 <input type="number" id="prob-time-limit" value="1000" placeholder=" " required min="100" max="10000">
@@ -243,7 +203,6 @@
               </div>
             </div>
 
-            <!-- Problem Name & System Name Row -->
             <div class="form-row-grid">
               <div class="input-group">
                 <input type="text" id="prob-name" placeholder=" " required>
@@ -255,7 +214,6 @@
               </div>
             </div>
 
-            <!-- TeX Documentation link alert -->
             <div class="tex-info-box">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="2">
@@ -271,31 +229,24 @@
               </span>
             </div>
 
-            <!-- Legend Textarea -->
             <div class="input-group">
               <textarea id="prob-legend" placeholder=" " rows="6" required></textarea>
               <label for="prob-legend" id="label-prob-legend">Legend</label>
             </div>
-
-            <!-- Input Format Textarea -->
             <div class="input-group">
               <textarea id="prob-input-format" placeholder=" " rows="4" required></textarea>
               <label for="prob-input-format" id="label-prob-input-format">Input Format</label>
             </div>
 
-            <!-- Output Format Textarea -->
             <div class="input-group">
               <textarea id="prob-output-format" placeholder=" " rows="4" required></textarea>
               <label for="prob-output-format" id="label-prob-output-format">Output Format</label>
             </div>
-
-            <!-- Notes Textarea -->
             <div class="input-group">
               <textarea id="prob-notes" placeholder=" " rows="4"></textarea>
               <label for="prob-notes" id="label-prob-notes">Notes</label>
             </div>
 
-            <!-- Tutorial Textarea -->
             <div class="input-group">
               <textarea id="prob-tutorial" placeholder=" " rows="4"></textarea>
               <label for="prob-tutorial" id="label-prob-tutorial">Tutorial</label>
@@ -303,16 +254,13 @@
           </form>
         </div>
 
-        <!-- Right Pane: Live Statement Preview -->
         <div class="preview-pane">
           <div class="preview-header-bar">
             <span id="preview-label">Live Preview</span>
           </div>
           <div class="statement-card">
-            <!-- Rendered Title -->
             <h1 id="preview-title" class="statement-title"></h1>
 
-            <!-- Rendered Limits Info -->
             <div class="statement-limits">
               <div>
                 <span class="limit-label" id="label-preview-time-limit">Time limit per test:</span>
@@ -324,30 +272,22 @@
               </div>
             </div>
 
-            <!-- Rendered Legend -->
             <div class="statement-section">
               <div id="preview-legend" class="statement-text"></div>
             </div>
-
-            <!-- Rendered Input Format -->
             <div class="statement-section">
               <h3 class="section-title" id="preview-section-input">Input</h3>
               <div id="preview-input-format" class="statement-text"></div>
             </div>
 
-            <!-- Rendered Output Format -->
             <div class="statement-section">
               <h3 class="section-title" id="preview-section-output">Output</h3>
               <div id="preview-output-format" class="statement-text"></div>
             </div>
-
-            <!-- Rendered Notes -->
             <div id="preview-notes-section" class="statement-section" style="display: none;">
               <h3 class="section-title" id="preview-section-notes">Note</h3>
               <div id="preview-notes" class="statement-text"></div>
             </div>
-
-            <!-- Rendered Tutorial -->
             <div id="preview-tutorial-section" class="statement-section" style="display: none;">
               <h3 class="section-title" id="preview-section-tutorial">Tutorial</h3>
               <div id="preview-tutorial" class="statement-text"></div>
@@ -356,7 +296,6 @@
         </div>
       </div>
 
-      <!-- Footer Action Buttons -->
       <div class="editor-footer">
         <button id="cancel-create-btn" class="btn-secondary btn-flat-cancel">
           <span id="btn-back-to-dash">Back to Dashboard</span>
@@ -372,10 +311,8 @@
       </div>
     </div>
 
-    <!-- Upload Solution View (Step 2) -->
     <div id="upload-solution-view" class="create-problem-container"
       style="display: none; opacity: 0; transform: translateY(15px);">
-      <!-- Title header -->
       <div class="create-problem-header">
         <div>
           <h2 id="step2-title">Step 2: Upload Correct Solution</h2>
@@ -384,11 +321,8 @@
         </div>
       </div>
 
-      <!-- Split Layout for Step 2 -->
       <div class="editor-split-layout">
-        <!-- Left Pane: Code & Language Upload -->
         <div class="editor-pane">
-          <!-- Language Selector -->
           <div class="input-group">
             <select id="sol-lang" required>
               <option value="" disabled selected id="opt-select-lang">Select Language</option>
@@ -406,7 +340,6 @@
             <label for="sol-lang" id="label-sol-lang" class="select-label">Programming Language</label>
           </div>
 
-          <!-- Drag & Drop Upload Zone -->
           <div class="drop-zone" id="sol-drop-zone">
             <svg class="drop-zone-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -419,16 +352,13 @@
               accept=".cpp,.h,.hpp,.py,.java,.rs,.go,.kt,.cs,.txt">
           </div>
 
-          <!-- Solution Code Textarea -->
           <div class="input-group" style="margin-top: 20px;">
             <textarea id="sol-code" class="code-editor" placeholder=" " rows="14" required></textarea>
             <label for="sol-code" id="label-sol-code">Solution Code</label>
           </div>
         </div>
 
-        <!-- Right Pane: AI Prompt & Help -->
         <div class="preview-pane">
-          <!-- AI Action Bar -->
           <div class="ai-prompt-section">
             <div class="ai-header">
               <h3 id="ai-card-title">AI Solution Generator</h3>
@@ -444,7 +374,6 @@
                 <span id="btn-generate-prompt-text">Сгенерировать промпт</span>
               </button>
 
-              <!-- Collapsible Help Dropdown -->
               <div class="accordion-item">
                 <button id="accordion-toggle-btn" class="accordion-header" aria-expanded="false"
                   aria-label="Toggle instructions">
@@ -456,7 +385,6 @@
               </div>
             </div>
 
-            <!-- Expandable Documentation Content -->
             <div id="accordion-content" class="accordion-content"
               style="max-height: 0px; overflow: hidden; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
               <div class="accordion-inner">
@@ -471,7 +399,6 @@
               </div>
             </div>
 
-            <!-- Prompt Output area -->
             <div id="prompt-output-container" class="prompt-output-container" style="display: none;">
               <div class="prompt-output-header">
                 <span id="prompt-output-title">Generated Prompt</span>
@@ -485,7 +412,6 @@
         </div>
       </div>
 
-      <!-- Footer Buttons -->
       <div class="editor-footer">
         <button id="back-to-step1-btn" class="btn-secondary btn-flat-cancel">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -507,10 +433,8 @@
       </div>
     </div>
 
-    <!-- Checker and Tests View (Step 3) -->
     <div id="checker-tests-view" class="create-problem-container"
       style="display: none; opacity: 0; transform: translateY(15px);">
-      <!-- Title header -->
       <div class="create-problem-header">
         <div>
           <h2 id="step3-title">Step 3: Checker and Tests</h2>
@@ -519,11 +443,8 @@
         </div>
       </div>
 
-      <!-- Split Layout for Step 3 -->
       <div class="editor-split-layout">
-        <!-- Left Pane: Checker & Tests Drop -->
         <div class="editor-pane">
-          <!-- Checker Select -->
           <div class="input-group">
             <select id="checker-select" required>
               <option value="" disabled selected id="opt-select-checker">Select Checker</option>
@@ -538,7 +459,6 @@
             <label for="checker-select" id="label-checker-select" class="select-label">Checker Program</label>
           </div>
 
-          <!-- Drag & Drop Tests Zone -->
           <div class="drop-zone" id="tests-drop-zone">
             <svg class="drop-zone-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -550,7 +470,6 @@
             <input type="file" id="tests-file-input" class="drop-zone-input" accept=".txt,.in,.out" multiple>
           </div>
 
-          <!-- Uploaded Tests List (Hidden by default, shown when files are added) -->
           <div id="tests-list-container" class="table-card" style="margin-top: 20px; display: none;">
             <div class="table-header-bar"
               style="padding: 12px 20px; border-bottom: 1px solid var(--border-color); font-weight: 500; font-size: 14px;">
@@ -567,16 +486,13 @@
                   </tr>
                 </thead>
                 <tbody id="tests-table-body">
-                  <!-- Dynamic test rows -->
                 </tbody>
               </table>
             </div>
           </div>
         </div>
 
-        <!-- Right Pane: AI Tests Generator Prompt -->
         <div class="preview-pane">
-          <!-- AI Action Bar -->
           <div class="ai-prompt-section">
             <div class="ai-header">
               <h3 id="ai-tests-title">AI Test Generator</h3>
@@ -593,7 +509,6 @@
                 <span id="btn-generate-tests-prompt-text">Сгенерировать промпт</span>
               </button>
 
-              <!-- Collapsible Help Dropdown for tests generator -->
               <div class="accordion-item">
                 <button id="accordion-tests-toggle-btn" class="accordion-header" aria-expanded="false"
                   aria-label="Toggle instructions">
@@ -605,7 +520,6 @@
               </div>
             </div>
 
-            <!-- Expandable Documentation Content for tests generator -->
             <div id="accordion-tests-content" class="accordion-content"
               style="max-height: 0px; overflow: hidden; transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
               <div class="accordion-inner">
@@ -619,7 +533,6 @@
               </div>
             </div>
 
-            <!-- Prompt Output area for tests generator -->
             <div id="tests-prompt-output-container" class="prompt-output-container" style="display: none;">
               <div class="prompt-output-header">
                 <span id="prompt-tests-output-title">Generated Generator Prompt</span>
@@ -633,7 +546,6 @@
         </div>
       </div>
 
-      <!-- Footer Buttons -->
       <div class="editor-footer">
         <button id="back-to-step2-btn" class="btn-secondary btn-flat-cancel">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -654,19 +566,17 @@
       </div>
     </div>
 
-    <!-- Final Confirmation View (Step 4) -->
-    <div id="confirmation-view" class="create-problem-container" style="display: none; opacity: 0; transform: translateY(15px);">
-      <!-- Title header -->
+    <div id="confirmation-view" class="create-problem-container"
+      style="display: none; opacity: 0; transform: translateY(15px);">
       <div class="create-problem-header">
         <div>
           <h2 id="step4-title">Step 4: Final Confirmation</h2>
-          <p id="step4-subtitle" class="dash-subtitle">Review all entered problem parameters before submitting to Polygon.</p>
+          <p id="step4-subtitle" class="dash-subtitle">Review all entered problem parameters before submitting to
+            Polygon.</p>
         </div>
       </div>
 
-      <!-- Split Layout/Grid for Step 4 Summary -->
       <div class="editor-split-layout confirmation-layout">
-        <!-- Left Panel: Problem Statements & Info -->
         <div class="editor-pane confirmation-pane">
           <div class="summary-card">
             <h3 id="summary-section-info-title" class="summary-sec-title">Main Settings</h3>
@@ -703,7 +613,6 @@
           </div>
         </div>
 
-        <!-- Middle Panel: Solution Code -->
         <div class="editor-pane confirmation-pane">
           <div class="summary-card">
             <h3 id="summary-section-solution-title" class="summary-sec-title">Correct Solution</h3>
@@ -718,7 +627,6 @@
           </div>
         </div>
 
-        <!-- Right Panel: Checker, Tests & Upload Progress -->
         <div class="preview-pane confirmation-pane">
           <div class="summary-card">
             <h3 id="summary-section-tests-title" class="summary-sec-title">Checker & Tests</h3>
@@ -740,13 +648,11 @@
                   </tr>
                 </thead>
                 <tbody id="summary-tests-table-body">
-                  <!-- Rendered dynamically -->
                 </tbody>
               </table>
             </div>
           </div>
 
-          <!-- Real-time Upload Progress Logging -->
           <div id="upload-progress-container" class="upload-progress-card" style="display: none; margin-top: 20px;">
             <div class="progress-header">
               <span id="progress-header-title">Uploading to Polygon...</span>
@@ -756,24 +662,34 @@
               <div id="upload-progress-bar" class="progress-bar-fg" style="width: 0%;"></div>
             </div>
             <div id="upload-log-list" class="upload-log-list scrollable-y">
-              <!-- Logs appended here -->
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Footer Buttons -->
       <div class="editor-footer">
         <button id="back-to-step3-btn" class="btn-secondary btn-flat-cancel">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform: rotate(180deg); margin-right: 8px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            style="transform: rotate(180deg); margin-right: 8px;">
             <line x1="5" y1="12" x2="19" y2="12"></line>
             <polyline points="12 5 19 12 12 19"></polyline>
           </svg>
           <span id="btn-back-to-step3">Back to Step 3</span>
         </button>
+        <button id="export-tricky-btn" class="btn-secondary btn-export-tricky" style="margin-left: auto; margin-right: 12px; display: inline-flex; align-items: center; gap: 6px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span id="btn-export-tricky-text">Export for QW_Tricky</span>
+        </button>
         <button id="confirm-upload-btn" class="btn-primary btn-next-step">
           <span id="btn-confirm-upload-text">Confirm & Upload</span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="22" y1="2" x2="11" y2="13"></line>
             <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
           </svg>
@@ -782,12 +698,9 @@
     </div>
   </main>
 
-  <!-- Footer -->
   <footer>
     &copy; 2026 QW_Poly. all rights reserved via MIT lisence.
   </footer>
-
-  <!-- Custom Modal Dialog (Prompt/Confirm/Alert) -->
   <div id="custom-modal-overlay" class="modal-overlay" style="display: none;">
     <div class="modal-card dialog-card">
       <div class="dialog-header">
@@ -799,6 +712,63 @@
       <div class="dialog-footer">
         <button id="custom-modal-cancel-btn" class="btn-secondary">Cancel</button>
         <button id="custom-modal-ok-btn" class="btn-primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QW_Tricky Export Modal -->
+  <div id="qwt-export-modal" class="modal-overlay" style="display: none;">
+    <div class="dialog-card" style="width: 520px; max-width: 95%;">
+      <div class="dialog-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 id="qwt-modal-title">Export Task for QW_Tricky</h3>
+        <button type="button" id="qwt-modal-close" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 24px; line-height: 1; padding: 0 4px;">&times;</button>
+      </div>
+      <div class="dialog-body" style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+        <p id="qwt-modal-subtitle" style="font-size: 13px; color: var(--text-secondary); margin: 0;">Configure the task parameters before generating for QW_Tricky.</p>
+        
+        <div class="input-group" style="margin: 0;">
+          <input type="text" id="qwt-task-id" required placeholder=" ">
+          <label for="qwt-task-id" id="lbl-qwt-task-id">Task Folder Name (ID)</label>
+        </div>
+
+        <div class="input-group" style="margin: 0;">
+          <input type="text" id="qwt-task-title" required placeholder=" ">
+          <label for="qwt-task-title" id="lbl-qwt-task-title">Task Display Title</label>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="input-group" style="margin: 0;">
+            <input type="number" id="qwt-time-limit" value="2000" min="100" max="10000" placeholder=" ">
+            <label for="qwt-time-limit" id="lbl-qwt-time-limit">Time Limit (ms)</label>
+          </div>
+          <div class="input-group" style="margin: 0;">
+            <input type="number" id="qwt-memory-limit" value="256" min="4" max="2048" placeholder=" ">
+            <label for="qwt-memory-limit" id="lbl-qwt-memory-limit">Memory Limit (MB)</label>
+          </div>
+        </div>
+
+        <div style="background: var(--bg-primary); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
+          <div style="display: flex; align-items: center; gap: 6px; font-weight: 600; color: var(--text-primary);">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <span id="lbl-qwt-summary-heading">Task Contents Summary</span>
+          </div>
+          <div id="qwt-summary-text" style="color: var(--text-secondary); line-height: 1.4;">
+            Examples: 0 test(s) | Main Tests: 0 test(s)
+          </div>
+          <div id="lbl-qwt-notice-text" style="color: var(--text-secondary); font-size: 12px; font-style: italic; margin-top: 4px;">
+            Main test files in tests/ will contain inputs only (cheat protection protocol).
+          </div>
+        </div>
+      </div>
+      <div class="dialog-footer" style="margin-top: 20px; flex-wrap: wrap; gap: 8px;">
+        <button type="button" id="qwt-save-folder-btn" class="btn-primary" style="display: inline-flex; align-items: center; gap: 6px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+          <span id="lbl-qwt-save-folder">Save to Folder on PC</span>
+        </button>
+        <button type="button" id="qwt-download-zip-btn" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 6px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span id="lbl-qwt-download-zip">Download ZIP Archive</span>
+        </button>
       </div>
     </div>
   </div>

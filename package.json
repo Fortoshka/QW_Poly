@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "release-it": "^20.2.1",
     "vite": "^5.0.0"
   }
 }

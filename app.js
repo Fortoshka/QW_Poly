@@ -1,3 +1,98 @@
+// PKZIP Store Archive Generator (Zero Dependencies)
+class SimpleZip {
+  constructor() {
+    this.files = [];
+  }
+
+  addFile(filename, content) {
+    const encoder = new TextEncoder();
+    const data = typeof content === 'string' ? encoder.encode(content) : (content instanceof Uint8Array ? content : new Uint8Array(content));
+    this.files.push({ name: filename, data });
+  }
+
+  crc32(data) {
+    let crc = 0xFFFFFFFF;
+    for (let i = 0; i < data.length; i++) {
+      let byte = data[i];
+      crc ^= byte;
+      for (let j = 0; j < 8; j++) {
+        crc = (crc >>> 1) ^ ((crc & 1) ? 0xEDB88320 : 0);
+      }
+    }
+    return (crc ^ 0xFFFFFFFF) >>> 0;
+  }
+
+  generateBlob() {
+    const localHeaders = [];
+    const cdHeaders = [];
+    let offset = 0;
+
+    for (const file of this.files) {
+      const nameBytes = new TextEncoder().encode(file.name);
+      const crc = this.crc32(file.data);
+      const size = file.data.length;
+
+      const lh = new Uint8Array(30 + nameBytes.length);
+      const view = new DataView(lh.buffer);
+      view.setUint32(0, 0x04034b50, true);
+      view.setUint16(4, 20, true);
+      view.setUint16(6, 0, true);
+      view.setUint16(8, 0, true);
+      view.setUint16(10, 0, true);
+      view.setUint16(12, 0, true);
+      view.setUint32(14, crc, true);
+      view.setUint32(18, size, true);
+      view.setUint32(22, size, true);
+      view.setUint16(26, nameBytes.length, true);
+      view.setUint16(28, 0, true);
+      lh.set(nameBytes, 30);
+
+      const cd = new Uint8Array(46 + nameBytes.length);
+      const cdView = new DataView(cd.buffer);
+      cdView.setUint32(0, 0x02014b50, true);
+      cdView.setUint16(4, 20, true);
+      cdView.setUint16(6, 20, true);
+      cdView.setUint16(8, 0, true);
+      cdView.setUint16(10, 0, true);
+      cdView.setUint16(12, 0, true);
+      cdView.setUint16(14, 0, true);
+      cdView.setUint32(16, crc, true);
+      cdView.setUint32(20, size, true);
+      cdView.setUint32(24, size, true);
+      cdView.setUint16(28, nameBytes.length, true);
+      cdView.setUint16(30, 0, true);
+      cdView.setUint16(32, 0, true);
+      cdView.setUint16(34, 0, true);
+      cdView.setUint16(36, 0, true);
+      cdView.setUint32(38, 0, true);
+      cdView.setUint32(42, offset, true);
+      cd.set(nameBytes, 46);
+
+      localHeaders.push(lh, file.data);
+      cdHeaders.push(cd);
+      offset += lh.length + file.data.length;
+    }
+
+    const cdOffset = offset;
+    let cdSize = 0;
+    for (const cd of cdHeaders) cdSize += cd.length;
+
+    const eocd = new Uint8Array(22);
+    const eocdView = new DataView(eocd.buffer);
+    eocdView.setUint32(0, 0x06054b50, true);
+    eocdView.setUint16(4, 0, true);
+    eocdView.setUint16(6, 0, true);
+    eocdView.setUint16(8, this.files.length, true);
+    eocdView.setUint16(10, this.files.length, true);
+    eocdView.setUint32(12, cdSize, true);
+    eocdView.setUint32(16, cdOffset, true);
+    eocdView.setUint16(20, 0, true);
+
+    const parts = [...localHeaders, ...cdHeaders, eocd];
+    return new Blob(parts, { type: 'application/zip' });
+  }
+}
+
 // Translation Dictionary
 const translations = {
   en: {
@@ -183,7 +278,18 @@ The generator should output random test cases conforming to the input format and
     logCommitted: "Changes committed successfully.",
     logUploadFinished: "All tasks completed successfully! Problem is ready on Polygon.",
     logError: (msg) => `Error: ${msg}`,
-    uploadConfirmAlert: "Are you sure you want to upload this problem to Polygon?"
+    uploadConfirmAlert: "Are you sure you want to upload this problem to Polygon?",
+    btnExportTricky: "Export for QW_Tricky",
+    qwtModalTitle: "Export Task for QW_Tricky",
+    qwtModalSubtitle: "Configure the task parameters before generating for QW_Tricky.",
+    lblQwtTaskId: "Task Folder Name (ID)",
+    lblQwtTaskTitle: "Task Display Title",
+    lblQwtTimeLimit: "Time Limit (ms)",
+    lblQwtMemoryLimit: "Memory Limit (MB)",
+    lblQwtSummaryHeading: "Task Contents Summary",
+    lblQwtNoticeText: "Main test files in tests/ will contain inputs only (cheat protection protocol).",
+    lblQwtSaveFolder: "Save to Folder on PC",
+    lblQwtDownloadZip: "Download ZIP Archive"
   },
   ru: {
     title: "QW Poly - Доступ",
@@ -368,7 +474,18 @@ ${output}
     logCommitted: "Изменения успешно зафиксированы.",
     logUploadFinished: "Процесс завершен! Задача готова на платформе Polygon.",
     logError: (msg) => `Ошибка: ${msg}`,
-    uploadConfirmAlert: "Вы уверены, что хотите загрузить эту задачу в Polygon?"
+    uploadConfirmAlert: "Вы уверены, что хотите загрузить эту задачу в Polygon?",
+    btnExportTricky: "Экспорт для QW_Tricky",
+    qwtModalTitle: "Экспорт задачи для QW_Tricky",
+    qwtModalSubtitle: "Настройте параметры задачи перед генерацией пакета для QW_Tricky.",
+    lblQwtTaskId: "Имя папки задачи (ID)",
+    lblQwtTaskTitle: "Отображаемое название задачи",
+    lblQwtTimeLimit: "Лимит времени (мс)",
+    lblQwtMemoryLimit: "Лимит памяти (МБ)",
+    lblQwtSummaryHeading: "Содержимое задачи",
+    lblQwtNoticeText: "Файлы основных тестов в папке tests/ будут содержать только входные данные (протокол защиты от списывания).",
+    lblQwtSaveFolder: "Сохранить в папку на ПК",
+    lblQwtDownloadZip: "Скачать ZIP-архив"
   }
 };
 
@@ -563,6 +680,29 @@ const uploadProgressBar = document.getElementById('upload-progress-bar');
 const uploadLogList = document.getElementById('upload-log-list');
 const backToStep3Btn = document.getElementById('back-to-step3-btn');
 const confirmUploadBtn = document.getElementById('confirm-upload-btn');
+const exportTrickyBtn = document.getElementById('export-tricky-btn');
+const btnExportTrickyText = document.getElementById('btn-export-tricky-text');
+
+// QW_Tricky Export Modal Elements
+const qwtExportModal = document.getElementById('qwt-export-modal');
+const qwtModalTitle = document.getElementById('qwt-modal-title');
+const qwtModalSubtitle = document.getElementById('qwt-modal-subtitle');
+const qwtModalClose = document.getElementById('qwt-modal-close');
+const qwtTaskIdInput = document.getElementById('qwt-task-id');
+const qwtTaskTitleInput = document.getElementById('qwt-task-title');
+const qwtTimeLimitInput = document.getElementById('qwt-time-limit');
+const qwtMemoryLimitInput = document.getElementById('qwt-memory-limit');
+const lblQwtTaskId = document.getElementById('lbl-qwt-task-id');
+const lblQwtTaskTitle = document.getElementById('lbl-qwt-task-title');
+const lblQwtTimeLimit = document.getElementById('lbl-qwt-time-limit');
+const lblQwtMemoryLimit = document.getElementById('lbl-qwt-memory-limit');
+const lblQwtSummaryHeading = document.getElementById('lbl-qwt-summary-heading');
+const qwtSummaryText = document.getElementById('qwt-summary-text');
+const lblQwtNoticeText = document.getElementById('lbl-qwt-notice-text');
+const qwtSaveFolderBtn = document.getElementById('qwt-save-folder-btn');
+const qwtDownloadZipBtn = document.getElementById('qwt-download-zip-btn');
+const lblQwtSaveFolder = document.getElementById('lbl-qwt-save-folder');
+const lblQwtDownloadZip = document.getElementById('lbl-qwt-download-zip');
 
 // Utility function to generate a 6-character random string for Polygon apiSig
 function generateRand() {
@@ -897,6 +1037,19 @@ function applyLanguage(lang) {
   if (thSumTestStatements) thSumTestStatements.textContent = t.thSumTestStatements;
   if (btnBackToStep3Text) btnBackToStep3Text.textContent = t.btnBackToStep3;
   if (btnConfirmUploadText) btnConfirmUploadText.textContent = t.btnConfirmUploadText;
+  if (btnExportTrickyText) btnExportTrickyText.textContent = t.btnExportTricky;
+
+  // QW_Tricky Export Modal translations
+  if (qwtModalTitle) qwtModalTitle.textContent = t.qwtModalTitle;
+  if (qwtModalSubtitle) qwtModalSubtitle.textContent = t.qwtModalSubtitle;
+  if (lblQwtTaskId) lblQwtTaskId.textContent = t.lblQwtTaskId;
+  if (lblQwtTaskTitle) lblQwtTaskTitle.textContent = t.lblQwtTaskTitle;
+  if (lblQwtTimeLimit) lblQwtTimeLimit.textContent = t.lblQwtTimeLimit;
+  if (lblQwtMemoryLimit) lblQwtMemoryLimit.textContent = t.lblQwtMemoryLimit;
+  if (lblQwtSummaryHeading) lblQwtSummaryHeading.textContent = t.lblQwtSummaryHeading;
+  if (lblQwtNoticeText) lblQwtNoticeText.textContent = t.lblQwtNoticeText;
+  if (lblQwtSaveFolder) lblQwtSaveFolder.textContent = t.lblQwtSaveFolder;
+  if (lblQwtDownloadZip) lblQwtDownloadZip.textContent = t.lblQwtDownloadZip;
 
   // Re-generate tests prompt if currently visible
   if (testsPromptOutputContainer && testsPromptOutputContainer.style.display !== 'none') {
@@ -1085,6 +1238,9 @@ function renderProblems(problems) {
       </td>
       <td class="col-modified ${isModifiedClass}">${isModifiedText}</td>
       <td class="col-actions" style="text-align: right;">
+        <button class="btn-text-action btn-export-tricky-prob" data-id="${prob.id}" style="margin-right: 8px;" title="${t.btnExportTricky}">
+          QW_Tricky
+        </button>
         <button class="btn-text-action btn-open-prob" data-id="${prob.id}">
           ${t.btnOpen}
         </button>
@@ -1094,12 +1250,22 @@ function renderProblems(problems) {
     problemsTableBody.appendChild(tr);
   });
 
-  // Attach event listener for Open button
+  // Attach event listener for Open & Export buttons
   document.querySelectorAll('.btn-open-prob').forEach(btn => {
     applyRippleEffect(btn);
     btn.addEventListener('click', (e) => {
       const probId = e.currentTarget.getAttribute('data-id');
       openExistingProblem(probId, e.currentTarget);
+    });
+  });
+
+  document.querySelectorAll('.btn-export-tricky-prob').forEach(btn => {
+    applyRippleEffect(btn);
+    btn.addEventListener('click', async (e) => {
+      const probId = e.currentTarget.getAttribute('data-id');
+      await openExistingProblem(probId, e.currentTarget);
+      const payload = gatherWizardTaskData();
+      openQwtExportModal(payload.taskData, payload.mainTests);
     });
   });
 }
@@ -2085,8 +2251,9 @@ if (logoContainer) {
   });
 }
 
-// Global active editing problem ID
+// Global active editing problem ID & statement cache
 let editingProblemId = null;
+let lastFetchedStatement = null;
 
 // Download plain text files from Polygon (e.g. solutions, tests inputs)
 async function downloadPlainFile(methodName, params, apiKey, apiSecret) {
@@ -2194,7 +2361,10 @@ async function openExistingProblem(probId, btn) {
       console.warn('Failed to load checker:', checkErr);
     }
 
-    // 5. Get tests and download inputs
+    // Save statement for sample test output resolution
+    lastFetchedStatement = statement;
+
+    // 5. Get tests and download inputs and answers
     uploadedTests = [];
     try {
       const testsRes = await callPolygonApi('problem.tests', { problemId: probId, testset: 'tests' }, apiKey, apiSecret);
@@ -2207,11 +2377,24 @@ async function openExistingProblem(probId, btn) {
               testset: 'tests',
               testIndex: test.index.toString()
             }, apiKey, apiSecret);
+
+            let answerContent = '';
+            try {
+              answerContent = await downloadPlainFile('problem.testAnswer', {
+                problemId: probId,
+                testset: 'tests',
+                testIndex: test.index.toString()
+              }, apiKey, apiSecret);
+            } catch (ansErr) {
+              console.warn(`Could not fetch testAnswer for test ${test.index}:`, ansErr);
+            }
+
             return {
               name: `test${test.index}.txt`,
               size: inputContent.length,
               useInStatements: !!test.useInStatements,
-              content: inputContent
+              content: inputContent,
+              answer: answerContent
             };
           } catch (e) {
             console.warn(`Failed to fetch test ${test.index}:`, e);
@@ -2219,7 +2402,8 @@ async function openExistingProblem(probId, btn) {
               name: `test${test.index}.txt`,
               size: 0,
               useInStatements: !!test.useInStatements,
-              content: ''
+              content: '',
+              answer: ''
             };
           }
         });
@@ -2477,6 +2661,228 @@ function showCustomConfirm(message, title = null, okText = null, cancelText = nu
 
     customModalOkBtn.addEventListener('click', handleOk);
     customModalCancelBtn.addEventListener('click', handleCancel);
+  });
+}
+
+// ============================================================================
+// QW_Tricky Task Exporter
+// ============================================================================
+
+let currentExportPayload = null;
+
+function openQwtExportModal(taskData, mainTests) {
+  currentExportPayload = { taskData, mainTests };
+
+  if (qwtTaskIdInput) qwtTaskIdInput.value = taskData.id || 'task_a';
+  if (qwtTaskTitleInput) qwtTaskTitleInput.value = taskData.title || '';
+  if (qwtTimeLimitInput) qwtTimeLimitInput.value = taskData.timeLimit || 2000;
+  if (qwtMemoryLimitInput) qwtMemoryLimitInput.value = taskData.memoryLimit || 256;
+
+  const exampleCount = (taskData.examples || []).length;
+  const testCount = mainTests.length;
+
+  if (qwtSummaryText) {
+    qwtSummaryText.textContent = currentLang === 'en'
+      ? `Examples: ${exampleCount} test(s) | Main Tests: ${testCount} input file(s)`
+      : `Примеры: ${exampleCount} тест(ов) | Основные тесты: ${testCount} файл(ов) входа`;
+  }
+
+  if (qwtExportModal) qwtExportModal.style.display = 'flex';
+}
+
+function closeQwtExportModal() {
+  if (qwtExportModal) qwtExportModal.style.display = 'none';
+}
+
+if (qwtModalClose) {
+  qwtModalClose.addEventListener('click', closeQwtExportModal);
+}
+
+function gatherWizardTaskData() {
+  const nameVal = (document.getElementById('prob-name')?.value || '').trim() || 'Untitled Problem';
+  let sysNameVal = (document.getElementById('prob-system-name')?.value || '').trim();
+  if (!sysNameVal) {
+    sysNameVal = toSystemName(nameVal);
+  }
+  const timeVal = parseInt(document.getElementById('prob-time-limit')?.value, 10) || 2000;
+  const memVal = parseInt(document.getElementById('prob-memory-limit')?.value, 10) || 256;
+  const legendVal = document.getElementById('prob-legend')?.value || '';
+  const inputVal = document.getElementById('prob-input-format')?.value || '';
+  const outputVal = document.getElementById('prob-output-format')?.value || '';
+
+  const examples = [];
+  const mainTests = [];
+
+  uploadedTests.forEach((test, idx) => {
+    if (test.useInStatements) {
+      examples.push({
+        input: test.content || '',
+        output: test.answer || test.output || ''
+      });
+    }
+    mainTests.push({
+      name: String(idx + 1).padStart(2, '0'),
+      content: test.content || ''
+    });
+  });
+
+  // Fallback / merge with sampleTests from statement if output is empty
+  if (lastFetchedStatement && Array.isArray(lastFetchedStatement.sampleTests)) {
+    lastFetchedStatement.sampleTests.forEach((sample, idx) => {
+      if (examples[idx]) {
+        if (!examples[idx].output && sample.output) {
+          examples[idx].output = sample.output;
+        }
+        if (!examples[idx].input && sample.input) {
+          examples[idx].input = sample.input;
+        }
+      } else {
+        examples.push({
+          input: sample.input || '',
+          output: sample.output || ''
+        });
+      }
+    });
+  }
+
+  const taskData = {
+    id: sysNameVal,
+    title: nameVal,
+    description: legendVal,
+    inputFormat: inputVal,
+    outputFormat: outputVal,
+    timeLimit: timeVal,
+    memoryLimit: memVal,
+    examples: examples
+  };
+
+  return { taskData, mainTests };
+}
+
+if (exportTrickyBtn) {
+  applyRippleEffect(exportTrickyBtn);
+  exportTrickyBtn.addEventListener('click', () => {
+    const payload = gatherWizardTaskData();
+    openQwtExportModal(payload.taskData, payload.mainTests);
+  });
+}
+
+// Directory Export via File System Access API
+if (qwtSaveFolderBtn) {
+  applyRippleEffect(qwtSaveFolderBtn);
+  qwtSaveFolderBtn.addEventListener('click', async () => {
+    if (!currentExportPayload) return;
+
+    const folderName = (qwtTaskIdInput?.value || '').trim() || 'task';
+    const title = (qwtTaskTitleInput?.value || '').trim() || folderName;
+    const timeLimit = parseInt(qwtTimeLimitInput?.value, 10) || 2000;
+    const memoryLimit = parseInt(qwtMemoryLimitInput?.value, 10) || 256;
+
+    const taskData = {
+      ...currentExportPayload.taskData,
+      id: folderName,
+      title: title,
+      timeLimit: timeLimit,
+      memoryLimit: memoryLimit
+    };
+    const mainTests = currentExportPayload.mainTests;
+
+    if (typeof window.showDirectoryPicker !== 'function') {
+      showCustomAlert(
+        currentLang === 'en'
+          ? 'Your browser does not support direct folder selection. Please use the ZIP Download option.'
+          : 'Ваш браузер не поддерживает прямое сохранение в папку. Пожалуйста, используйте вариант скачивания ZIP-архива.',
+        currentLang === 'en' ? 'Notice' : 'Уведомление'
+      );
+      return;
+    }
+
+    try {
+      const parentDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+      const taskDirHandle = await parentDirHandle.getDirectoryHandle(folderName, { create: true });
+
+      // Write problem.json
+      const jsonHandle = await taskDirHandle.getFileHandle('problem.json', { create: true });
+      const writableJson = await jsonHandle.createWritable();
+      await writableJson.write(JSON.stringify(taskData, null, 2));
+      await writableJson.close();
+
+      // Write tests/ folder (inputs only)
+      if (mainTests.length > 0) {
+        const testsDirHandle = await taskDirHandle.getDirectoryHandle('tests', { create: true });
+        for (let i = 0; i < mainTests.length; i++) {
+          const fileName = String(i + 1).padStart(2, '0');
+          const fileHandle = await testsDirHandle.getFileHandle(fileName, { create: true });
+          const writableTest = await fileHandle.createWritable();
+          await writableTest.write(mainTests[i].content || '');
+          await writableTest.close();
+        }
+      }
+
+      closeQwtExportModal();
+      showCustomAlert(
+        currentLang === 'en'
+          ? `Task folder "${folderName}" successfully created in selected directory!`
+          : `Папка задачи "${folderName}" успешно создана в выбранной директории!`,
+        currentLang === 'en' ? 'Export Successful' : 'Экспорт завершен'
+      );
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error('Export to folder error:', err);
+        showCustomAlert(
+          (currentLang === 'en' ? 'Export failed: ' : 'Ошибка экспорта: ') + err.message,
+          currentLang === 'en' ? 'Error' : 'Ошибка'
+        );
+      }
+    }
+  });
+}
+
+// Download ZIP Export
+if (qwtDownloadZipBtn) {
+  applyRippleEffect(qwtDownloadZipBtn);
+  qwtDownloadZipBtn.addEventListener('click', () => {
+    if (!currentExportPayload) return;
+
+    const folderName = (qwtTaskIdInput?.value || '').trim() || 'task';
+    const title = (qwtTaskTitleInput?.value || '').trim() || folderName;
+    const timeLimit = parseInt(qwtTimeLimitInput?.value, 10) || 2000;
+    const memoryLimit = parseInt(qwtMemoryLimitInput?.value, 10) || 256;
+
+    const taskData = {
+      ...currentExportPayload.taskData,
+      id: folderName,
+      title: title,
+      timeLimit: timeLimit,
+      memoryLimit: memoryLimit
+    };
+    const mainTests = currentExportPayload.mainTests;
+
+    const zip = new SimpleZip();
+    zip.addFile(`${folderName}/problem.json`, JSON.stringify(taskData, null, 2));
+
+    mainTests.forEach((test, idx) => {
+      const fileName = String(idx + 1).padStart(2, '0');
+      zip.addFile(`${folderName}/tests/${fileName}`, test.content || '');
+    });
+
+    const blob = zip.generateBlob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${folderName}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    closeQwtExportModal();
+    showCustomAlert(
+      currentLang === 'en'
+        ? `Task package "${folderName}.zip" successfully generated and downloaded!`
+        : `Пакет задачи "${folderName}.zip" успешно сгенерирован и скачан!`,
+      currentLang === 'en' ? 'Download Started' : 'Загрузка начата'
+    );
   });
 }
 
