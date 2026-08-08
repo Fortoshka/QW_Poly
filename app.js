@@ -1,3 +1,6 @@
+import katex from 'katex';
+import 'katex/dist/katex.css';
+
 // PKZIP Store Archive Generator (Zero Dependencies)
 class SimpleZip {
   constructor() {
@@ -1275,42 +1278,177 @@ function renderProblems(problems) {
 // ============================================================================
 
 function renderTex(text) {
-  // Escape HTML tags to prevent breaking layout
-  let escaped = text
+  if (!text) return '';
+
+  const mathTokens = [];
+  const codeTokens = [];
+
+  function addMathToken(formula, isDisplay) {
+    const id = `___KATEX_TOKEN_${mathTokens.length}___`;
+    mathTokens.push({ formula, isDisplay });
+    return id;
+  }
+
+  function addCodeToken(code, isBlock) {
+    const id = `___CODE_TOKEN_${codeTokens.length}___`;
+    codeTokens.push({ code, isBlock });
+    return id;
+  }
+
+  // 1. Protect \begin{lstlisting} ... \end{lstlisting}
+  let s = text.replace(/\\begin\{lstlisting\}([\s\S]*?)\\end\{lstlisting\}/g, (match, code) => {
+    return addCodeToken(code, true);
+  });
+
+  // 2. Protect \verb|...| or \verb!...! or \verb@...@
+  s = s.replace(/\\verb([\S])([\s\S]*?)\1/g, (match, delim, code) => {
+    return addCodeToken(code, false);
+  });
+
+  // 3. Protect display math $$ ... $$
+  s = s.replace(/\$\$([\s\S]+?)\$\$/g, (match, formula) => {
+    return addMathToken(formula, true);
+  });
+
+  // 4. Protect inline math $ ... $
+  s = s.replace(/\$([^\$\n]+?)\$/g, (match, formula) => {
+    return addMathToken(formula, false);
+  });
+
+  // Escape HTML in non-protected text
+  s = s
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
 
-  // Replace em-dash outside math
-  escaped = escaped.replace(/---/g, '&mdash;');
-
-  // Replace inline TeX math $...$
-  return escaped.replace(/\$([^\$]+)\$/g, (match, formula) => {
-    let html = formula;
-
-    // Replace LaTeX operators & math elements
-    html = html.replace(/\\le\b/g, '&le;');
-    html = html.replace(/\\leq\b/g, '&le;');
-    html = html.replace(/\\ge\b/g, '&ge;');
-    html = html.replace(/\\geq\b/g, '&ge;');
-    html = html.replace(/\\dots\b/g, '&hellip;');
-
-    // Subscripts and superscripts
-    html = html.replace(/\b([a-zA-Z])_([0-9a-zA-Z])/g, '<i>$1</i><sub>$2</sub>');
-    html = html.replace(/\b([a-zA-Z])_\{([^\}]+)\}/g, '<i>$1</i><sub>$2</sub>');
-    html = html.replace(/\b([a-zA-Z])\^([0-9a-zA-Z])/g, '<i>$1</i><sup>$2</sup>');
-    html = html.replace(/\b([a-zA-Z])\^\{([^\}]+)\}/g, '<i>$1</i><sup>$2</sup>');
-    html = html.replace(/([0-9]+)\^([0-9]+)/g, '$1<sup>$2</sup>');
-    html = html.replace(/([0-9]+)\^\{([^\}]+)\}/g, '$1<sup>$2</sup>');
-
-    // Absolute values |x|
-    html = html.replace(/\|([^\|]+)\|/g, '|$1|');
-
-    // Single alphabet variables in math equations rendered in italics
-    html = html.replace(/\b([a-zA-Z])\b/g, '<i>$1</i>');
-
-    return `<span class="math-expr">${html}</span>`;
+  // 5. Epigraph \epigraph{cite}{author}
+  s = s.replace(/\\epigraph\{([\s\S]*?)\}\{([\s\S]*?)\}/g, (match, cite, author) => {
+    return `<blockquote class="tex-epigraph"><div class="epigraph-text">${cite}</div><div class="epigraph-author">&mdash; ${author}</div></blockquote>`;
   });
+
+  // 6. Environments: itemize, enumerate, center, tabular
+  s = s.replace(/\\begin\{itemize\}([\s\S]*?)\\end\{itemize\}/g, (match, content) => {
+    const items = content.split(/\\item\s*/).filter(item => item.trim());
+    const listHtml = items.map(item => `<li>${item.trim()}</li>`).join('');
+    return `<ul class="tex-ul">${listHtml}</ul>`;
+  });
+
+  s = s.replace(/\\begin\{enumerate\}([\s\S]*?)\\end\{enumerate\}/g, (match, content) => {
+    const items = content.split(/\\item\s*/).filter(item => item.trim());
+    const listHtml = items.map(item => `<li>${item.trim()}</li>`).join('');
+    return `<ol class="tex-ol">${listHtml}</ol>`;
+  });
+
+  s = s.replace(/\\begin\{center\}([\s\S]*?)\\end\{center\}/g, (match, content) => {
+    return `<div class="tex-center">${content}</div>`;
+  });
+
+  s = s.replace(/\\begin\{tabular\}\{([^}]*)\}([\s\S]*?)\\end\{tabular\}/g, (match, cols, content) => {
+    const rows = content.split(/\\\\/).map(r => r.trim()).filter(r => r && r !== '\\hline');
+    let tableHtml = '<table class="tex-table">';
+    rows.forEach(row => {
+      let cleanRow = row.replace(/\\hline/g, '').trim();
+      if (!cleanRow) return;
+      const cells = cleanRow.split('&').map(c => {
+        let cellText = c.trim();
+        cellText = cellText.replace(/\\multicolumn\{(\d+)\}\{[^}]*\}\{([^}]*)\}/g, (m, span, text) => {
+          return `<td colspan="${span}">${text}</td>`;
+        });
+        if (cellText.startsWith('<td')) return cellText;
+        return `<td>${cellText}</td>`;
+      });
+      tableHtml += `<tr>${cells.join('')}</tr>`;
+    });
+    tableHtml += '</table>';
+    return tableHtml;
+  });
+
+  // 7. Typography & Quotes
+  s = s.replace(/&lt;&lt;([\s\S]*?)&gt;&gt;/g, '«$1»');
+  s = s.replace(/``([\s\S]*?)''/g, '“$1”');
+  s = s.replace(/`([^']+)'/g, '‘$1’');
+  s = s.replace(/~---/g, '&nbsp;&mdash;');
+  s = s.replace(/~--/g, '&nbsp;&mdash;');
+  s = s.replace(/"---/g, '&mdash;');
+  s = s.replace(/---/g, '&mdash;');
+  s = s.replace(/--/g, '&ndash;');
+  s = s.replace(/\\~/g, '~');
+  s = s.replace(/~/g, '&nbsp;');
+  s = s.replace(/\\\s/g, '&nbsp;');
+
+  // 8. Text Formatting Commands
+  s = s.replace(/\\textbf\{([\s\S]*?)\}/g, '<strong>$1</strong>');
+  s = s.replace(/\\bf\{([\s\S]*?)\}/g, '<strong>$1</strong>');
+  s = s.replace(/\{\\bf\s+([\s\S]*?)\}/g, '<strong>$1</strong>');
+
+  s = s.replace(/\\textit\{([\s\S]*?)\}/g, '<em>$1</em>');
+  s = s.replace(/\\it\{([\s\S]*?)\}/g, '<em>$1</em>');
+  s = s.replace(/\{\\it\s+([\s\S]*?)\}/g, '<em>$1</em>');
+  s = s.replace(/\\emph\{([\s\S]*?)\}/g, '<em>$1</em>');
+
+  s = s.replace(/\\t\{([\s\S]*?)\}/g, '<code class="tex-code">$1</code>');
+  s = s.replace(/\\texttt\{([\s\S]*?)\}/g, '<code class="tex-code">$1</code>');
+  s = s.replace(/\\tt\{([\s\S]*?)\}/g, '<code class="tex-code">$1</code>');
+  s = s.replace(/\{\\tt\s+([\s\S]*?)\}/g, '<code class="tex-code">$1</code>');
+
+  s = s.replace(/\\underline\{([\s\S]*?)\}/g, '<u>$1</u>');
+  s = s.replace(/\\sout\{([\s\S]*?)\}/g, '<del>$1</del>');
+  s = s.replace(/\\textsc\{([\s\S]*?)\}/g, '<span style="font-variant: small-caps;">$1</span>');
+
+  // 9. Font Sizes
+  s = s.replace(/\\tiny\{([\s\S]*?)\}/g, '<span style="font-size:0.7em;">$1</span>');
+  s = s.replace(/\{\\tiny\s+([\s\S]*?)\}/g, '<span style="font-size:0.7em;">$1</span>');
+  s = s.replace(/\\scriptsize\{([\s\S]*?)\}/g, '<span style="font-size:0.75em;">$1</span>');
+  s = s.replace(/\{\\scriptsize\s+([\s\S]*?)\}/g, '<span style="font-size:0.75em;">$1</span>');
+  s = s.replace(/\\small\{([\s\S]*?)\}/g, '<span style="font-size:0.85em;">$1</span>');
+  s = s.replace(/\{\\small\s+([\s\S]*?)\}/g, '<span style="font-size:0.85em;">$1</span>');
+  s = s.replace(/\\large\{([\s\S]*?)\}/g, '<span style="font-size:1.15em;">$1</span>');
+  s = s.replace(/\{\\large\s+([\s\S]*?)\}/g, '<span style="font-size:1.15em;">$1</span>');
+  s = s.replace(/\\Large\{([\s\S]*?)\}/g, '<span style="font-size:1.3em;">$1</span>');
+  s = s.replace(/\{\\Large\s+([\s\S]*?)\}/g, '<span style="font-size:1.3em;">$1</span>');
+  s = s.replace(/\\LARGE\{([\s\S]*?)\}/g, '<span style="font-size:1.45em;">$1</span>');
+  s = s.replace(/\{\\LARGE\s+([\s\S]*?)\}/g, '<span style="font-size:1.45em;">$1</span>');
+  s = s.replace(/\\huge\{([\s\S]*?)\}/g, '<span style="font-size:1.75em;">$1</span>');
+  s = s.replace(/\{\\huge\s+([\s\S]*?)\}/g, '<span style="font-size:1.75em;">$1</span>');
+  s = s.replace(/\\Huge\{([\s\S]*?)\}/g, '<span style="font-size:2em;">$1</span>');
+  s = s.replace(/\{\\Huge\s+([\s\S]*?)\}/g, '<span style="font-size:2em;">$1</span>');
+
+  // 10. Links and Images
+  s = s.replace(/\\href\{([^}]+)\}\{([^}]+)\}/g, '<a href="$1" target="_blank" rel="noopener">$2</a>');
+  s = s.replace(/\\url\{([^}]+)\}/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+  s = s.replace(/\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}/g, '<img src="$1" alt="$1" class="tex-img" />');
+
+  // Newlines handling
+  s = s.replace(/\n\n+/g, '</p><p>');
+  s = s.replace(/\n/g, '<br>');
+
+  // Restore Code Tokens
+  codeTokens.forEach((token, index) => {
+    const placeholder = `___CODE_TOKEN_${index}___`;
+    const escapedCode = token.code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const html = token.isBlock
+      ? `<pre class="tex-listing"><code>${escapedCode}</code></pre>`
+      : `<code class="tex-code">${escapedCode}</code>`;
+    s = s.replace(placeholder, html);
+  });
+
+  // Restore KaTeX Math Tokens
+  mathTokens.forEach((token, index) => {
+    const placeholder = `___KATEX_TOKEN_${index}___`;
+    let html = '';
+    try {
+      html = katex.renderToString(token.formula, {
+        displayMode: token.isDisplay,
+        throwOnError: false
+      });
+    } catch (e) {
+      console.warn('KaTeX render error:', e);
+      html = `<span class="math-expr">${token.formula}</span>`;
+    }
+    s = s.replace(placeholder, html);
+  });
+
+  return s;
 }
 
 function updateStatementPreview() {
@@ -1327,14 +1465,14 @@ function updateStatementPreview() {
   document.getElementById('preview-time-limit').textContent = `${timeVal} ms`;
   document.getElementById('preview-memory-limit').textContent = `${memVal} MB`;
 
-  document.getElementById('preview-legend').innerHTML = renderTex(legendVal).replace(/\n/g, '<br>');
-  document.getElementById('preview-input-format').innerHTML = renderTex(inputVal).replace(/\n/g, '<br>');
-  document.getElementById('preview-output-format').innerHTML = renderTex(outputVal).replace(/\n/g, '<br>');
+  document.getElementById('preview-legend').innerHTML = renderTex(legendVal);
+  document.getElementById('preview-input-format').innerHTML = renderTex(inputVal);
+  document.getElementById('preview-output-format').innerHTML = renderTex(outputVal);
 
   const notesSection = document.getElementById('preview-notes-section');
   if (notesVal.trim() !== '') {
     notesSection.style.display = 'block';
-    document.getElementById('preview-notes').innerHTML = renderTex(notesVal).replace(/\n/g, '<br>');
+    document.getElementById('preview-notes').innerHTML = renderTex(notesVal);
   } else {
     notesSection.style.display = 'none';
   }
@@ -1342,7 +1480,7 @@ function updateStatementPreview() {
   const tutorialSection = document.getElementById('preview-tutorial-section');
   if (tutorialVal.trim() !== '') {
     tutorialSection.style.display = 'block';
-    document.getElementById('preview-tutorial').innerHTML = renderTex(tutorialVal).replace(/\n/g, '<br>');
+    document.getElementById('preview-tutorial').innerHTML = renderTex(tutorialVal);
   } else {
     tutorialSection.style.display = 'none';
   }

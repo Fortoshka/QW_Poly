@@ -11,5 +11,8 @@
   "devDependencies": {
     "release-it": "^20.2.1",
     "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "katex": "^0.18.1"
   }
 }

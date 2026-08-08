@@ -1643,3 +1643,96 @@ textarea::-webkit-scrollbar-thumb:hover,
   background-color: var(--accent-light);
   color: var(--accent-color);
 }
+
+/* ============================================================================
+   Polygon TeX Statement Formatting Styles
+   ============================================================================ */
+.tex-code {
+  font-family: 'Consolas', 'Courier New', Courier, monospace;
+  background-color: rgba(125, 125, 125, 0.12);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.92em;
+}
+
+.tex-listing {
+  font-family: 'Consolas', 'Courier New', Courier, monospace;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 12px;
+  margin: 12px 0;
+  overflow-x: auto;
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
+.tex-epigraph {
+  margin: 16px 0 20px auto;
+  max-width: 65%;
+  padding: 10px 16px;
+  border-left: 3px solid var(--accent-color);
+  background-color: var(--accent-light);
+  border-radius: 0 8px 8px 0;
+  text-align: right;
+}
+
+.tex-epigraph .epigraph-text {
+  font-style: italic;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.tex-epigraph .epigraph-author {
+  font-size: 0.9em;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.tex-img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 12px auto;
+  border-radius: 6px;
+  box-shadow: var(--card-shadow);
+}
+
+.tex-table {
+  border-collapse: collapse;
+  margin: 16px 0;
+  width: auto;
+  font-size: 0.95em;
+}
+
+.tex-table th,
+.tex-table td {
+  border: 1px solid var(--border-color);
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.tex-table th {
+  background-color: var(--bg-primary);
+  font-weight: 600;
+}
+
+.tex-center {
+  text-align: center;
+  margin: 12px 0;
+}
+
+.tex-ul, .tex-ol {
+  margin: 8px 0 8px 24px;
+  padding-left: 12px;
+}
+
+.tex-ul li, .tex-ol li {
+  margin-bottom: 4px;
+}
+
+.katex-display {
+  margin: 0.8em 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
