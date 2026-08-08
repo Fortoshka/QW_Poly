@@ -2886,4 +2886,237 @@ if (qwtDownloadZipBtn) {
   });
 }
 
+// ============================================================================
+// Pythontutor Web Archive Task Importer
+// ============================================================================
+
+const importPtBtn = document.getElementById('import-pt-btn');
+const ptImportModal = document.getElementById('pt-import-modal');
+const ptModalClose = document.getElementById('pt-modal-close');
+const ptCancelBtn = document.getElementById('pt-cancel-btn');
+const ptFetchBtn = document.getElementById('pt-fetch-btn');
+const ptUrlInput = document.getElementById('pt-url-input');
+const ptStatusAlert = document.getElementById('pt-status-alert');
+const ptStatusMsg = document.getElementById('pt-status-msg');
+const ptBtnSpinner = document.getElementById('pt-btn-spinner');
+
+function openPtModal() {
+  if (ptStatusAlert) ptStatusAlert.style.display = 'none';
+  if (ptImportModal) ptImportModal.style.display = 'flex';
+}
+
+function closePtModal() {
+  if (ptImportModal) ptImportModal.style.display = 'none';
+}
+
+if (importPtBtn) {
+  applyRippleEffect(importPtBtn);
+  importPtBtn.addEventListener('click', openPtModal);
+}
+if (ptModalClose) ptModalClose.addEventListener('click', closePtModal);
+if (ptCancelBtn) ptCancelBtn.addEventListener('click', closePtModal);
+
+function parseHtmlEntities(str) {
+  const txt = document.createElement('textarea');
+  txt.innerHTML = str;
+  return txt.value;
+}
+
+const PT_DEFAULT_LESSONS = [
+  'for_loop',
+  'inout_and_arithmetic_operations',
+  'ifelse',
+  'int_and_float',
+  'str',
+  'while',
+  'lists',
+  'functions',
+  '2d_arrays',
+  'sets',
+  'dicts'
+];
+
+async function fetchPythontutorHtml(inputVal) {
+  let raw = (inputVal || '').trim();
+  if (!raw) {
+    throw new Error(currentLang === 'en' ? 'Please enter a URL or problem slug.' : 'Пожалуйста, введите ссылку или название задачи.');
+  }
+
+  let fetchUrl = '';
+  
+  if (raw.includes('web.archive.org')) {
+    fetchUrl = raw.replace(/^https?:\/\/web\.archive\.org/, '/archive');
+  } else if (raw.includes('pythontutor.ru')) {
+    const cleanPath = raw.replace(/^https?:\/\/(www\.)?pythontutor\.ru/, '');
+    fetchUrl = `/archive/web/20240301103830/http://pythontutor.ru${cleanPath}`;
+  } else {
+    // Treat as slug e.g. "series_1"
+    const slug = raw.replace(/^\/+|\/+$/g, '');
+    
+    for (const lesson of PT_DEFAULT_LESSONS) {
+      const candidateUrl = `/archive/web/20240301103830/http://pythontutor.ru/lessons/${lesson}/problems/${slug}/`;
+      try {
+        const res = await fetch(candidateUrl);
+        if (res.ok) {
+          const text = await res.text();
+          if (text.includes('problem_name') || text.includes('example_tests')) {
+            return { html: text, resolvedUrl: candidateUrl, slug: slug };
+          }
+        }
+      } catch (e) {
+        // continue probing
+      }
+    }
+    
+    fetchUrl = `/archive/web/20240301103830/http://pythontutor.ru/lessons/for_loop/problems/${slug}/`;
+  }
+
+  const response = await fetch(fetchUrl);
+  if (!response.ok) {
+    throw new Error(`HTTP error ${response.status}: Failed to fetch web archive page.`);
+  }
+
+  const html = await response.text();
+  const slug = fetchUrl.replace(/\/+$/, '').split('/').pop();
+  return { html, resolvedUrl: fetchUrl, slug };
+}
+
+async function fetchAndImportPythontutorTask(inputVal) {
+  const { html, resolvedUrl, slug } = await fetchPythontutorHtml(inputVal);
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+
+  const titleEl = doc.querySelector('h3.problem_name');
+  let title = titleEl ? titleEl.textContent.trim() : 'Pythontutor Problem';
+  title = title.replace(/^Задача\s*[«"»&laquo;&raquo;]*/i, '').replace(/[»"»&laquo;&raquo;]*$/, '').trim();
+
+  const sysName = toSystemName(slug || title);
+
+  const h4El = doc.querySelector('.main h4');
+  let legendText = '';
+  if (h4El) {
+    let curr = h4El.nextSibling;
+    let parts = [];
+    while (curr && curr.nodeName !== 'HR') {
+      if (curr.nodeName === 'P' && curr.getAttribute && curr.getAttribute('style')?.includes('gray')) {
+        break;
+      }
+      if (curr.outerHTML) parts.push(curr.outerHTML);
+      else if (curr.textContent) parts.push(curr.textContent);
+      curr = curr.nextSibling;
+    }
+    let rawHtml = parts.join('');
+    rawHtml = rawHtml
+      .replace(/&le;/g, '\\le ')
+      .replace(/&ge;/g, '\\ge ')
+      .replace(/&times;/g, '\\times ')
+      .replace(/&ne;/g, '\\ne ')
+      .replace(/<code>(.*?)<\/code>/g, '\\t{$1}');
+    
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = rawHtml;
+    legendText = tempDiv.textContent.trim();
+  }
+
+  const testRows = doc.querySelectorAll('#example_tests tbody tr');
+  const tests = [];
+  testRows.forEach((row, idx) => {
+    const inpEl = row.querySelector('pre.input');
+    const outEl = row.querySelector('pre.output');
+    if (inpEl && outEl) {
+      const inputStr = parseHtmlEntities(inpEl.textContent);
+      const outputStr = parseHtmlEntities(outEl.textContent);
+      tests.push({
+        name: String(idx + 1).padStart(2, '0'),
+        content: inputStr.endsWith('\n') ? inputStr : inputStr + '\n',
+        answer: outputStr.endsWith('\n') ? outputStr : outputStr + '\n',
+        useInStatements: idx < 2
+      });
+    }
+  });
+
+  clearWizardData();
+
+  const probNameInput = document.getElementById('prob-name');
+  const probSysNameInput = document.getElementById('prob-system-name');
+  const probStatementLang = document.getElementById('prob-statement-lang');
+  const probTimeInput = document.getElementById('prob-time-limit');
+  const probMemInput = document.getElementById('prob-memory-limit');
+  const probLegendInput = document.getElementById('prob-legend');
+  const probInputFormat = document.getElementById('prob-input-format');
+  const probOutputFormat = document.getElementById('prob-output-format');
+
+  if (probNameInput) probNameInput.value = title;
+  if (probSysNameInput) probSysNameInput.value = sysName;
+  if (probStatementLang) probStatementLang.value = 'russian';
+  if (probTimeInput) probTimeInput.value = '2000';
+  if (probMemInput) probMemInput.value = '256';
+  if (probLegendInput) probLegendInput.value = legendText;
+  if (probInputFormat) probInputFormat.value = 'Входные данные содержат параметры согласно условию задачи.';
+  if (probOutputFormat) probOutputFormat.value = 'Выведите ответ на задачу.';
+
+  uploadedTests = tests;
+
+  ['prob-name', 'prob-system-name', 'prob-time-limit', 'prob-memory-limit', 'prob-legend', 'prob-input-format', 'prob-output-format'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.dispatchEvent(new Event('input'));
+  });
+
+  updateStatementPreview();
+  renderTestsTable();
+
+  closePtModal();
+
+  dashboardView.style.opacity = '0';
+  dashboardView.style.transform = 'translateY(-10px)';
+  dashboardView.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+
+  setTimeout(() => {
+    dashboardView.style.display = 'none';
+    createProblemView.style.display = 'block';
+    updateWizardTitleForEdit();
+
+    setTimeout(() => {
+      createProblemView.style.opacity = '1';
+      createProblemView.style.transform = 'translateY(0)';
+      createProblemView.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+    }, 50);
+  }, 300);
+
+  await showCustomAlert(
+    currentLang === 'en'
+      ? `Successfully imported "${title}" with ${tests.length} tests!`
+      : `Задача "${title}" успешно импортирована (${tests.length} тестов)!`,
+    currentLang === 'en' ? 'Import Successful' : 'Импорт завершен'
+  );
+}
+
+if (ptFetchBtn) {
+  ptFetchBtn.addEventListener('click', async () => {
+    const val = ptUrlInput ? ptUrlInput.value : '';
+    if (ptStatusAlert) ptStatusAlert.style.display = 'none';
+    if (ptBtnSpinner) ptBtnSpinner.style.display = 'inline-block';
+    ptFetchBtn.disabled = true;
+
+    try {
+      await fetchAndImportPythontutorTask(val);
+    } catch (err) {
+      console.error('Import error:', err);
+      if (ptStatusAlert && ptStatusMsg) {
+        ptStatusMsg.textContent = (currentLang === 'en' ? 'Import failed: ' : 'Ошибка импорта: ') + (err.message || err);
+        ptStatusAlert.style.display = 'flex';
+        ptStatusAlert.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+        ptStatusAlert.style.color = '#ef4444';
+        ptStatusAlert.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+      }
+    } finally {
+      if (ptBtnSpinner) ptBtnSpinner.style.display = 'none';
+      ptFetchBtn.disabled = false;
+    }
+  });
+}
+
+
+
 

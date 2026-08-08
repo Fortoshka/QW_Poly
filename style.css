@@ -501,6 +501,21 @@ footer {
   /* Pill button styling for Google style */
 }
 
+.btn-import-pt {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-import-pt:hover {
+  background-color: var(--bg-primary) !important;
+  border-color: var(--accent-color) !important;
+  color: var(--accent-color) !important;
+  box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.2) !important;
+}
+
 /* Table Card Layout */
 .table-card {
   background-color: var(--bg-card);
