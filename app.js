@@ -99,7 +99,7 @@ class SimpleZip {
 // Translation Dictionary
 const translations = {
   en: {
-    title: "QW Poly - Credentials",
+    title: "QW Poly",
     heading: "Connect Polygon Account",
     subtitle: "Authenticate using your API keys. Credentials are stored securely in your browser's local storage and never sent to external servers.",
     apiKeyLabel: "API Key (key)",
@@ -279,8 +279,11 @@ The generator should output random test cases conforming to the input format and
     logTestFileUploaded: (name, idx) => `[${idx}] Test "${name}" uploaded successfully.`,
     logCommitting: "Committing problem changes...",
     logCommitted: "Changes committed successfully.",
+    logBuildingPackage: "Launching problem package build on Polygon (full=true, verify=true)...",
+    logPackageBuilt: "Problem package build launched successfully on Polygon!",
     logUploadFinished: "All tasks completed successfully! Problem is ready on Polygon.",
     logError: (msg) => `Error: ${msg}`,
+    lblPtAutoBuild: "Auto-upload & build package on Polygon",
     uploadConfirmAlert: "Are you sure you want to upload this problem to Polygon?",
     btnExportTricky: "Export for QW_Tricky",
     qwtModalTitle: "Export Task for QW_Tricky",
@@ -295,7 +298,7 @@ The generator should output random test cases conforming to the input format and
     lblQwtDownloadZip: "Download ZIP Archive"
   },
   ru: {
-    title: "QW Poly - Доступ",
+    title: "QW Poly",
     heading: "Подключение к Polygon",
     subtitle: "Авторизуйтесь с помощью API ключей. Учетные данные хранятся локально в вашем браузере и не передаются на сторонние серверы.",
     apiKeyLabel: "API Ключ (key)",
@@ -475,8 +478,11 @@ ${output}
     logTestFileUploaded: (name, idx) => `[${idx}] Тест "${name}" успешно загружен.`,
     logCommitting: "Фиксация изменений в репозитории Polygon...",
     logCommitted: "Изменения успешно зафиксированы.",
+    logBuildingPackage: "Запуск компиляции полного пакета задачи на Polygon (с верификацией)...",
+    logPackageBuilt: "Компиляция пакета задачи успешно запущена на Polygon!",
     logUploadFinished: "Процесс завершен! Задача готова на платформе Polygon.",
     logError: (msg) => `Ошибка: ${msg}`,
+    lblPtAutoBuild: "Автоматически загрузить на Polygon и скомпилировать пакет",
     uploadConfirmAlert: "Вы уверены, что хотите загрузить эту задачу в Polygon?",
     btnExportTricky: "Экспорт для QW_Tricky",
     qwtModalTitle: "Экспорт задачи для QW_Tricky",
@@ -507,8 +513,6 @@ const authTitle = document.getElementById('auth-title');
 const authSubtitle = document.getElementById('auth-subtitle');
 const labelApiKey = document.getElementById('label-api-key');
 const labelApiSecret = document.getElementById('label-api-secret');
-const labelUsername = document.getElementById('label-poly-username');
-const labelPassword = document.getElementById('label-poly-password');
 const safetyText = document.getElementById('safety-text');
 const submitBtnTextNode = document.getElementById('btn-text');
 
@@ -555,8 +559,6 @@ const createProbBtn = document.getElementById('create-prob-btn');
 const form = document.getElementById('credentials-form');
 const apiKeyInput = document.getElementById('api-key');
 const apiSecretInput = document.getElementById('api-secret');
-const usernameInput = document.getElementById('poly-username');
-const passwordInput = document.getElementById('poly-password');
 
 const statusAlert = document.getElementById('status-alert');
 const alertMessage = document.getElementById('alert-message');
@@ -906,8 +908,6 @@ function applyLanguage(lang) {
   if (authSubtitle) authSubtitle.textContent = t.subtitle;
   if (labelApiKey) labelApiKey.textContent = t.apiKeyLabel;
   if (labelApiSecret) labelApiSecret.textContent = t.apiSecretLabel;
-  if (labelUsername) labelUsername.textContent = t.polyUsernameLabel;
-  if (labelPassword) labelPassword.textContent = t.polyPasswordLabel;
   if (safetyText) safetyText.textContent = t.infoText;
 
   if (submitBtnTextNode) {
@@ -971,6 +971,10 @@ function applyLanguage(lang) {
   if (aiCardSubtitle) aiCardSubtitle.textContent = t.aiCardSubtitle;
   if (btnGeneratePromptText) btnGeneratePromptText.textContent = t.btnGeneratePromptText;
   if (helpTitle) helpTitle.textContent = t.helpTitle;
+  
+  const lblPtAutoBuild = document.getElementById('lbl-pt-auto-build');
+  if (lblPtAutoBuild && t.lblPtAutoBuild) lblPtAutoBuild.textContent = t.lblPtAutoBuild;
+  
   if (helpSteps) {
     helpSteps.innerHTML = `
       <li>${t.helpStep1}</li>
@@ -1107,7 +1111,6 @@ function setupPasswordToggle(inputId, toggleId) {
 }
 
 setupPasswordToggle('api-secret', 'secret-toggle');
-setupPasswordToggle('poly-password', 'pass-toggle');
 
 // Ripple Effect on Buttons
 function applyRippleEffect(button) {
@@ -1147,13 +1150,9 @@ if (confirmUploadBtn) applyRippleEffect(confirmUploadBtn);
 function loadCredentials() {
   const savedKey = localStorage.getItem('poly_api_key');
   const savedSecret = localStorage.getItem('poly_api_secret');
-  const savedUsername = localStorage.getItem('poly_username');
-  const savedPassword = localStorage.getItem('poly_password');
 
   if (savedKey && apiKeyInput) apiKeyInput.value = savedKey;
   if (savedSecret && apiSecretInput) apiSecretInput.value = savedSecret;
-  if (savedUsername && usernameInput) usernameInput.value = savedUsername;
-  if (savedPassword && passwordInput) passwordInput.value = savedPassword;
 }
 
 loadCredentials();
@@ -1272,6 +1271,158 @@ function renderProblems(problems) {
     });
   });
 }
+
+// ============================================================================
+// Multi-Language Statement Management
+// ============================================================================
+
+let multiStatements = {
+  'russian': { name: '', legend: '', input: '', output: '', notes: '', tutorial: '' }
+};
+let activeStmtLang = 'russian';
+
+const stmtLangNames = {
+  'russian': 'Russian 🇷🇺',
+  'english': 'English 🇬🇧',
+  'spanish': 'Spanish 🇪🇸',
+  'german': 'German 🇩🇪',
+  'chinese': 'Chinese 🇨🇳',
+  'french': 'French 🇫🇷',
+  'kazakh': 'Kazakh 🇰🇿',
+  'vietnamese': 'Vietnamese 🇻🇳',
+  'uzbek': 'Uzbek 🇺🇿',
+  'ukrainian': 'Ukrainian 🇺🇦',
+  'tajik': 'Tajik 🇹🇯',
+  'georgian': 'Georgian 🇬🇪',
+  'kyrgyz': 'Kyrgyz 🇰🇬',
+  'portuguese': 'Portuguese 🇵🇹',
+  'japanese': 'Japanese 🇯🇵'
+};
+
+function saveActiveFormToState() {
+  if (!activeStmtLang) return;
+  multiStatements[activeStmtLang] = {
+    name: document.getElementById('prob-name').value || '',
+    legend: document.getElementById('prob-legend').value || '',
+    input: document.getElementById('prob-input-format').value || '',
+    output: document.getElementById('prob-output-format').value || '',
+    notes: document.getElementById('prob-notes').value || '',
+    tutorial: document.getElementById('prob-tutorial').value || ''
+  };
+}
+
+function loadActiveFormFromState() {
+  const data = multiStatements[activeStmtLang] || { name: '', legend: '', input: '', output: '', notes: '', tutorial: '' };
+  document.getElementById('prob-name').value = data.name || '';
+  document.getElementById('prob-legend').value = data.legend || '';
+  document.getElementById('prob-input-format').value = data.input || '';
+  document.getElementById('prob-output-format').value = data.output || '';
+  document.getElementById('prob-notes').value = data.notes || '';
+  document.getElementById('prob-tutorial').value = data.tutorial || '';
+  updateStatementPreview();
+}
+
+function renderStatementLangTabs() {
+  const container = document.getElementById('stmt-lang-tabs');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const langs = Object.keys(multiStatements);
+  if (langs.length === 0) {
+    multiStatements['russian'] = { name: '', legend: '', input: '', output: '', notes: '', tutorial: '' };
+    activeStmtLang = 'russian';
+  } else if (!multiStatements[activeStmtLang]) {
+    activeStmtLang = langs[0];
+  }
+
+  Object.keys(multiStatements).forEach(lang => {
+    const tabBtn = document.createElement('button');
+    tabBtn.type = 'button';
+    tabBtn.className = `stmt-tab ${lang === activeStmtLang ? 'active' : ''}`;
+    
+    const displayName = stmtLangNames[lang] || lang;
+    
+    if (Object.keys(multiStatements).length > 1) {
+      tabBtn.innerHTML = `<span>${displayName}</span><span class="close-tab" data-lang="${lang}">&times;</span>`;
+    } else {
+      tabBtn.innerHTML = `<span>${displayName}</span>`;
+    }
+
+    tabBtn.addEventListener('click', (e) => {
+      if (e.target.classList.contains('close-tab')) {
+        e.stopPropagation();
+        const langToRemove = e.target.getAttribute('data-lang');
+        delete multiStatements[langToRemove];
+        if (activeStmtLang === langToRemove) {
+          activeStmtLang = Object.keys(multiStatements)[0] || 'russian';
+        }
+        renderStatementLangTabs();
+        loadActiveFormFromState();
+        return;
+      }
+      if (activeStmtLang !== lang) {
+        saveActiveFormToState();
+        activeStmtLang = lang;
+        renderStatementLangTabs();
+        loadActiveFormFromState();
+      }
+    });
+
+    container.appendChild(tabBtn);
+  });
+}
+
+// Add Language Modal logic
+const btnAddStmtLang = document.getElementById('btn-add-stmt-lang');
+const addStmtLangModal = document.getElementById('add-stmt-lang-modal');
+const selectNewStmtLang = document.getElementById('select-new-stmt-lang');
+const addLangCancelBtn = document.getElementById('add-lang-cancel-btn');
+const addLangConfirmBtn = document.getElementById('add-lang-confirm-btn');
+
+if (btnAddStmtLang) {
+  btnAddStmtLang.addEventListener('click', () => {
+    if (!addStmtLangModal || !selectNewStmtLang) return;
+    selectNewStmtLang.innerHTML = '';
+    const addedLangs = Object.keys(multiStatements);
+    Object.keys(stmtLangNames).forEach(langKey => {
+      if (!addedLangs.includes(langKey)) {
+        const opt = document.createElement('option');
+        opt.value = langKey;
+        opt.textContent = stmtLangNames[langKey];
+        selectNewStmtLang.appendChild(opt);
+      }
+    });
+    if (selectNewStmtLang.children.length === 0) {
+      alert(currentLang === 'en' ? 'All supported languages have already been added.' : 'Все поддерживаемые языки уже добавлены.');
+      return;
+    }
+    addStmtLangModal.style.display = 'flex';
+  });
+}
+
+if (addLangCancelBtn) {
+  addLangCancelBtn.addEventListener('click', () => {
+    if (addStmtLangModal) addStmtLangModal.style.display = 'none';
+  });
+}
+
+if (addLangConfirmBtn) {
+  addLangConfirmBtn.addEventListener('click', () => {
+    if (!selectNewStmtLang) return;
+    const newLang = selectNewStmtLang.value;
+    if (newLang && !multiStatements[newLang]) {
+      saveActiveFormToState();
+      multiStatements[newLang] = { name: '', legend: '', input: '', output: '', notes: '', tutorial: '' };
+      activeStmtLang = newLang;
+      renderStatementLangTabs();
+      loadActiveFormFromState();
+    }
+    if (addStmtLangModal) addStmtLangModal.style.display = 'none';
+  });
+}
+
+// Initialize tabs on page load
+renderStatementLangTabs();
 
 // ============================================================================
 // LaTeX Math Equations Parser & Live Statement Preview
@@ -1495,7 +1646,10 @@ const statementInputs = [
 statementInputs.forEach(id => {
   const el = document.getElementById(id);
   if (el) {
-    el.addEventListener('input', updateStatementPreview);
+    el.addEventListener('input', () => {
+      saveActiveFormToState();
+      updateStatementPreview();
+    });
   }
 });
 
@@ -1513,13 +1667,17 @@ if (createProbBtn) {
       // Reset edit mode and wizard titles
       editingProblemId = null;
       uploadedTests = [];
+      multiStatements = {
+        'russian': { name: '', legend: '', input: '', output: '', notes: '', tutorial: '' }
+      };
+      activeStmtLang = 'russian';
       updateWizardTitleForEdit();
       renderTestsTable();
+      renderStatementLangTabs();
 
       // Prefill fields with empty/default values
       document.getElementById('prob-name').value = '';
       document.getElementById('prob-system-name').value = '';
-      document.getElementById('prob-statement-lang').value = 'russian';
       document.getElementById('prob-time-limit').value = '1000';
       document.getElementById('prob-memory-limit').value = '256';
       document.getElementById('prob-legend').value = '';
@@ -1602,8 +1760,6 @@ if (form) {
 
     const apiKey = apiKeyInput.value.trim();
     const apiSecret = apiSecretInput.value.trim();
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value.trim();
 
     const t = translations[currentLang];
 
@@ -1627,8 +1783,6 @@ if (form) {
         // Save credentials to localStorage
         localStorage.setItem('poly_api_key', apiKey);
         localStorage.setItem('poly_api_secret', apiSecret);
-        if (username) localStorage.setItem('poly_username', username);
-        if (password) localStorage.setItem('poly_password', password);
 
         // Transition to dashboard
         setTimeout(() => {
@@ -2229,8 +2383,6 @@ async function startPolygonUpload() {
   const notesVal = document.getElementById('prob-notes').value.trim();
   const tutorialVal = document.getElementById('prob-tutorial').value.trim();
 
-  const statementLang = document.getElementById('prob-statement-lang').value;
-
   addUploadLog(t.logStarting, 'pending');
   if (uploadProgressBar) uploadProgressBar.style.width = '5%';
 
@@ -2266,20 +2418,26 @@ async function startPolygonUpload() {
   addUploadLog(t.logInfoUpdated, 'success');
   if (uploadProgressBar) uploadProgressBar.style.width = '40%';
 
-  // 3. problem.saveStatement
-  addUploadLog(t.logSavingStatement(statementLang), 'info');
-  const stmtRes = await callPolygonApi('problem.saveStatement', {
-    problemId: problemId,
-    lang: statementLang,
-    name: nameVal,
-    legend: legendVal,
-    input: inputVal,
-    output: outputVal,
-    notes: notesVal,
-    tutorial: tutorialVal
-  }, apiKey, apiSecret);
-  if (stmtRes.status !== 'OK') {
-    throw new Error(stmtRes.comment || 'Failed to save statements');
+  // 3. problem.saveStatement for ALL statement languages in multiStatements
+  saveActiveFormToState();
+  const stmtLangs = Object.keys(multiStatements);
+  for (let i = 0; i < stmtLangs.length; i++) {
+    const langCode = stmtLangs[i];
+    const stmtData = multiStatements[langCode];
+    addUploadLog(t.logSavingStatement(langCode), 'info');
+    const stmtRes = await callPolygonApi('problem.saveStatement', {
+      problemId: problemId,
+      lang: langCode,
+      name: stmtData.name || nameVal,
+      legend: stmtData.legend || '',
+      input: stmtData.input || '',
+      output: stmtData.output || '',
+      notes: stmtData.notes || '',
+      tutorial: stmtData.tutorial || ''
+    }, apiKey, apiSecret);
+    if (stmtRes.status !== 'OK') {
+      throw new Error(stmtRes.comment || `Failed to save ${langCode} statement`);
+    }
   }
   addUploadLog(t.logStatementSaved, 'success');
   if (uploadProgressBar) uploadProgressBar.style.width = '60%';
@@ -2361,8 +2519,27 @@ async function startPolygonUpload() {
     throw new Error(commitRes.comment || 'Failed to commit changes');
   }
   addUploadLog(t.logCommitted, 'success');
-  if (uploadProgressBar) uploadProgressBar.style.width = '100%';
+  if (uploadProgressBar) uploadProgressBar.style.width = '90%';
 
+  // 8. problem.buildPackage
+  addUploadLog(t.logBuildingPackage, 'info');
+  try {
+    const buildRes = await callPolygonApi('problem.buildPackage', {
+      problemId: problemId,
+      full: 'true',
+      verify: 'true'
+    }, apiKey, apiSecret);
+    if (buildRes.status === 'OK') {
+      addUploadLog(t.logPackageBuilt, 'success');
+    } else {
+      addUploadLog(currentLang === 'en' ? `Package build note: ${buildRes.comment}` : `Примечание сборки пакета: ${buildRes.comment}`, 'warning');
+    }
+  } catch (buildErr) {
+    console.warn('Package build error:', buildErr);
+    addUploadLog(currentLang === 'en' ? `Package build note: ${buildErr.message}` : `Примечание сборки пакета: ${buildErr.message}`, 'warning');
+  }
+
+  if (uploadProgressBar) uploadProgressBar.style.width = '100%';
   addUploadLog(t.logUploadFinished, 'success');
 
   if (progressHeaderTitle) progressHeaderTitle.textContent = t.progressHeaderTitleSuccess;
@@ -2452,22 +2629,26 @@ async function openExistingProblem(probId, btn) {
     const statementsRes = await callPolygonApi('problem.statements', { problemId: probId }, apiKey, apiSecret);
     if (statementsRes.status !== 'OK') throw new Error(statementsRes.comment);
 
-    // Choose statement language
-    let stmtLang = 'russian';
-    let statement = statementsRes.result['russian'];
-    if (!statement && statementsRes.result['english']) {
-      stmtLang = 'english';
-      statement = statementsRes.result['english'];
-    } else if (!statement) {
-      const keys = Object.keys(statementsRes.result);
-      if (keys.length > 0) {
-        stmtLang = keys[0];
-        statement = statementsRes.result[stmtLang];
-      } else {
-        stmtLang = currentLang === 'en' ? 'english' : 'russian';
-        statement = {};
+    // Populate multiStatements from Polygon API response
+    multiStatements = {};
+    if (statementsRes.result && Object.keys(statementsRes.result).length > 0) {
+      for (const [lang, stmt] of Object.entries(statementsRes.result)) {
+        multiStatements[lang] = {
+          name: stmt.name || '',
+          legend: stmt.legend || '',
+          input: stmt.input || '',
+          output: stmt.output || '',
+          notes: stmt.notes || '',
+          tutorial: stmt.tutorial || ''
+        };
       }
+    } else {
+      multiStatements['russian'] = { name: '', legend: '', input: '', output: '', notes: '', tutorial: '' };
     }
+
+    activeStmtLang = Object.keys(multiStatements)[0] || 'russian';
+    renderStatementLangTabs();
+    loadActiveFormFromState();
 
     // 3. Get solutions and find main correct solution (MA)
     let mainSolCode = '';
@@ -2705,7 +2886,6 @@ function clearWizardData() {
 
   const probNameInput = document.getElementById('prob-name');
   const probSysNameInput = document.getElementById('prob-system-name');
-  const probStatementLang = document.getElementById('prob-statement-lang');
   const probTimeInput = document.getElementById('prob-time-limit');
   const probMemInput = document.getElementById('prob-memory-limit');
   const probLegendInput = document.getElementById('prob-legend');
@@ -2716,7 +2896,6 @@ function clearWizardData() {
 
   if (probNameInput) probNameInput.value = '';
   if (probSysNameInput) probSysNameInput.value = '';
-  if (probStatementLang) probStatementLang.value = 'russian';
   if (probTimeInput) probTimeInput.value = '1000';
   if (probMemInput) probMemInput.value = '256';
   if (probLegendInput) probLegendInput.value = '';
@@ -3081,7 +3260,7 @@ async function fetchPythontutorHtml(inputVal) {
   }
 
   let fetchUrl = '';
-  
+
   if (raw.includes('web.archive.org')) {
     fetchUrl = raw.replace(/^https?:\/\/web\.archive\.org/, '/archive');
   } else if (raw.includes('pythontutor.ru')) {
@@ -3090,7 +3269,7 @@ async function fetchPythontutorHtml(inputVal) {
   } else {
     // Treat as slug e.g. "series_1"
     const slug = raw.replace(/^\/+|\/+$/g, '');
-    
+
     for (const lesson of PT_DEFAULT_LESSONS) {
       const candidateUrl = `/archive/web/20240301103830/http://pythontutor.ru/lessons/${lesson}/problems/${slug}/`;
       try {
@@ -3105,13 +3284,13 @@ async function fetchPythontutorHtml(inputVal) {
         // continue probing
       }
     }
-    
+
     fetchUrl = `/archive/web/20240301103830/http://pythontutor.ru/lessons/for_loop/problems/${slug}/`;
   }
 
   const response = await fetch(fetchUrl);
   if (!response.ok) {
-    throw new Error(`HTTP error ${response.status}: Failed to fetch web archive page.`);
+    throw new Error(currentLang === 'en' ? `Could not find task "${inputVal}" (HTTP ${response.status}). Please check the URL or slug.` : `Не удалось найти задачу "${inputVal}" (ошибка ${response.status}). Проверьте правильность ссылки или названия задачи.`);
   }
 
   const html = await response.text();
@@ -3125,18 +3304,20 @@ async function fetchAndImportPythontutorTask(inputVal) {
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
 
-  const titleEl = doc.querySelector('h3.problem_name');
-  let title = titleEl ? titleEl.textContent.trim() : 'Pythontutor Problem';
+  // Title extraction
+  const titleEl = doc.querySelector('h3.problem_name') || doc.querySelector('h3') || doc.querySelector('h2.problem_name') || doc.querySelector('h4.problem_name');
+  let title = titleEl ? titleEl.textContent.trim() : (slug || 'Pythontutor Problem');
   title = title.replace(/^Задача\s*[«"»&laquo;&raquo;]*/i, '').replace(/[»"»&laquo;&raquo;]*$/, '').trim();
 
   const sysName = toSystemName(slug || title);
 
-  const h4El = doc.querySelector('.main h4');
+  // Legend extraction
   let legendText = '';
+  const h4El = doc.querySelector('.main h4') || doc.querySelector('h4') || doc.querySelector('h3.problem_name');
   if (h4El) {
     let curr = h4El.nextSibling;
     let parts = [];
-    while (curr && curr.nodeName !== 'HR') {
+    while (curr && curr.nodeName !== 'HR' && curr.nodeName !== 'TABLE') {
       if (curr.nodeName === 'P' && curr.getAttribute && curr.getAttribute('style')?.includes('gray')) {
         break;
       }
@@ -3151,48 +3332,69 @@ async function fetchAndImportPythontutorTask(inputVal) {
       .replace(/&times;/g, '\\times ')
       .replace(/&ne;/g, '\\ne ')
       .replace(/<code>(.*?)<\/code>/g, '\\t{$1}');
-    
+
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = rawHtml;
     legendText = tempDiv.textContent.trim();
   }
 
-  const testRows = doc.querySelectorAll('#example_tests tbody tr');
+  // Fallback legend extraction if legendText is empty
+  if (!legendText) {
+    const mainEl = doc.querySelector('.main') || doc.querySelector('#content') || doc.body;
+    if (mainEl) {
+      const clone = mainEl.cloneNode(true);
+      clone.querySelectorAll('table, script, style, h3, h2, form').forEach(el => el.remove());
+      legendText = clone.textContent.trim();
+    }
+  }
+
+  // Example tests extraction
+  const testRows = doc.querySelectorAll('#example_tests tbody tr, table.example_tests tbody tr, table.example_tests tr, #example_tests tr');
   const tests = [];
   testRows.forEach((row, idx) => {
-    const inpEl = row.querySelector('pre.input');
-    const outEl = row.querySelector('pre.output');
+    const inpEl = row.querySelector('pre.input') || row.querySelector('td.input pre') || row.querySelector('td:first-child pre');
+    const outEl = row.querySelector('pre.output') || row.querySelector('td.output pre') || row.querySelector('td:last-child pre');
     if (inpEl && outEl) {
       const inputStr = parseHtmlEntities(inpEl.textContent);
       const outputStr = parseHtmlEntities(outEl.textContent);
-      tests.push({
-        name: String(idx + 1).padStart(2, '0'),
-        content: inputStr.endsWith('\n') ? inputStr : inputStr + '\n',
-        answer: outputStr.endsWith('\n') ? outputStr : outputStr + '\n',
-        useInStatements: idx < 2
-      });
+      if (inputStr.trim() || outputStr.trim()) {
+        tests.push({
+          name: String(tests.length + 1).padStart(2, '0'),
+          content: inputStr.endsWith('\n') ? inputStr : inputStr + '\n',
+          answer: outputStr.endsWith('\n') ? outputStr : outputStr + '\n',
+          useInStatements: tests.length < 2
+        });
+      }
     }
   });
 
+  if (!legendText && tests.length === 0) {
+    throw new Error(currentLang === 'en' ? 'Failed to extract problem statement or tests from the page.' : 'Не удалось извлечь условие задачи или тесты с указанной страницы.');
+  }
+
   clearWizardData();
 
-  const probNameInput = document.getElementById('prob-name');
+  multiStatements = {
+    'russian': {
+      name: title,
+      legend: legendText,
+      input: 'Входные данные содержат параметры согласно условию задачи.',
+      output: 'Выведите ответ на задачу.',
+      notes: '',
+      tutorial: ''
+    }
+  };
+  activeStmtLang = 'russian';
+  renderStatementLangTabs();
+  loadActiveFormFromState();
+
   const probSysNameInput = document.getElementById('prob-system-name');
-  const probStatementLang = document.getElementById('prob-statement-lang');
   const probTimeInput = document.getElementById('prob-time-limit');
   const probMemInput = document.getElementById('prob-memory-limit');
-  const probLegendInput = document.getElementById('prob-legend');
-  const probInputFormat = document.getElementById('prob-input-format');
-  const probOutputFormat = document.getElementById('prob-output-format');
 
-  if (probNameInput) probNameInput.value = title;
   if (probSysNameInput) probSysNameInput.value = sysName;
-  if (probStatementLang) probStatementLang.value = 'russian';
   if (probTimeInput) probTimeInput.value = '2000';
   if (probMemInput) probMemInput.value = '256';
-  if (probLegendInput) probLegendInput.value = legendText;
-  if (probInputFormat) probInputFormat.value = 'Входные данные содержат параметры согласно условию задачи.';
-  if (probOutputFormat) probOutputFormat.value = 'Выведите ответ на задачу.';
 
   uploadedTests = tests;
 
@@ -3241,12 +3443,15 @@ if (ptFetchBtn) {
       await fetchAndImportPythontutorTask(val);
     } catch (err) {
       console.error('Import error:', err);
+      const errMsg = err.message || String(err);
       if (ptStatusAlert && ptStatusMsg) {
-        ptStatusMsg.textContent = (currentLang === 'en' ? 'Import failed: ' : 'Ошибка импорта: ') + (err.message || err);
+        ptStatusMsg.textContent = (currentLang === 'en' ? 'Import failed: ' : 'Ошибка импорта: ') + errMsg;
         ptStatusAlert.style.display = 'flex';
-        ptStatusAlert.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+        ptStatusAlert.className = 'alert alert-error show';
+        ptStatusAlert.style.backgroundColor = 'rgba(239, 68, 68, 0.15)';
         ptStatusAlert.style.color = '#ef4444';
         ptStatusAlert.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+        ptStatusAlert.style.marginTop = '12px';
       }
     } finally {
       if (ptBtnSpinner) ptBtnSpinner.style.display = 'none';

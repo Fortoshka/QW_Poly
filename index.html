@@ -13,8 +13,10 @@
   <header>
     <div class="logo-container">
       <svg class="logo-svg" viewBox="40 38 100 100" xmlns="http://www.w3.org/2000/svg">
-        <path class="shield-bg" d="m 43.587235,49.990515 c 0.337015,-8.088353 7.779423,-9.352158 9.099397,-9.324074 1.319975,0.02809 70.773088,-0.05617 74.452168,0 3.67908,0.05617 8.56579,3.20164 8.87472,8.284945 0.30893,5.083305 0.0281,73.806234 0.0281,77.457224 0,3.65099 -4.26885,8.31303 -8.31303,8.42537 -4.04417,0.11234 -18.13787,0.0988 -29.060112,0.0272 C 64.26374,133.65794 45.471298,106.92608 43.729926,82.30553 42.505025,64.987154 43.587235,49.990515 43.587235,49.990515 Z" />
-        <path class="arch-fg" d="m 98.760746,134.85292 0.13337,-43.360859 -15.871072,-7.935535 -0.100028,48.780204 c 0,0 -6.618092,-1.76811 -13.770489,-6.36843 -6.084504,-3.91346 -10.469572,-8.86913 -10.469572,-8.86913 0,0 -0.06668,-46.212828 0.06668,-54.48179 0.13337,-8.268962 9.977321,-12.459477 14.937479,-10.869683 5.201444,1.667129 32.082776,16.411909 41.411486,20.405663 7.32733,3.136932 7.9022,10.702971 7.9022,10.702971 v 52.049949 z" />
+        <path class="shield-bg"
+          d="m 43.587235,49.990515 c 0.337015,-8.088353 7.779423,-9.352158 9.099397,-9.324074 1.319975,0.02809 70.773088,-0.05617 74.452168,0 3.67908,0.05617 8.56579,3.20164 8.87472,8.284945 0.30893,5.083305 0.0281,73.806234 0.0281,77.457224 0,3.65099 -4.26885,8.31303 -8.31303,8.42537 -4.04417,0.11234 -18.13787,0.0988 -29.060112,0.0272 C 64.26374,133.65794 45.471298,106.92608 43.729926,82.30553 42.505025,64.987154 43.587235,49.990515 43.587235,49.990515 Z" />
+        <path class="arch-fg"
+          d="m 98.760746,134.85292 0.13337,-43.360859 -15.871072,-7.935535 -0.100028,48.780204 c 0,0 -6.618092,-1.76811 -13.770489,-6.36843 -6.084504,-3.91346 -10.469572,-8.86913 -10.469572,-8.86913 0,0 -0.06668,-46.212828 0.06668,-54.48179 0.13337,-8.268962 9.977321,-12.459477 14.937479,-10.869683 5.201444,1.667129 32.082776,16.411909 41.411486,20.405663 7.32733,3.136932 7.9022,10.702971 7.9022,10.702971 v 52.049949 z" />
       </svg>
       <span class="logo-text">QW <span id="logo-suffix" class="logo-suffix">Poly</span></span>
     </div>
@@ -74,23 +76,6 @@
           </button>
         </div>
 
-        <div class="input-group">
-          <input type="text" id="poly-username" placeholder=" ">
-          <label for="poly-username" id="label-poly-username">Polygon Username (Optional)</label>
-        </div>
-
-        <div class="input-group">
-          <input type="password" id="poly-password" placeholder=" ">
-          <label for="poly-password" id="label-poly-password">Polygon Password (Optional)</label>
-          <button type="button" class="password-toggle" id="pass-toggle" aria-label="Toggle password visibility">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-          </button>
-        </div>
-
         <button type="submit" class="btn-primary" id="submit-btn">
           <span class="spinner" id="btn-spinner"></span>
           <span class="btn-text" id="btn-text">Verify & Connect</span>
@@ -129,7 +114,8 @@
         </div>
         <div style="display: flex; gap: 10px; align-items: center;">
           <button id="import-pt-btn" class="btn-primary btn-new-problem btn-import-pt">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="7 10 12 15 17 10"></polyline>
               <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -192,16 +178,18 @@
 
       <div class="editor-split-layout">
         <div class="editor-pane">
+          <!-- Statement Language Tabs Bar -->
+          <div class="stmt-lang-tabs-bar" id="stmt-lang-tabs-bar">
+            <div class="stmt-lang-tabs" id="stmt-lang-tabs">
+              <!-- Rendered dynamically -->
+            </div>
+            <button type="button" class="btn-add-stmt-lang" id="btn-add-stmt-lang">
+              + <span id="text-add-stmt-lang">Add Language</span>
+            </button>
+          </div>
+
           <form id="problem-statement-form" novalidate>
-            <div class="form-row-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom: 20px;">
-              <div class="input-group">
-                <select id="prob-statement-lang" required style="padding-top: 10px;">
-                  <option value="english">English</option>
-                  <option value="russian" selected>Russian</option>
-                </select>
-                <label for="prob-statement-lang" id="label-statement-lang" class="select-label">Statement
-                  Language</label>
-              </div>
+            <div class="form-row-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 20px;">
               <div class="input-group">
                 <input type="number" id="prob-time-limit" value="1000" placeholder=" " required min="100" max="10000">
                 <label for="prob-time-limit" id="label-time-limit">Time Limit (ms)</label>
@@ -686,7 +674,8 @@
           </svg>
           <span id="btn-back-to-step3">Back to Step 3</span>
         </button>
-        <button id="export-tricky-btn" class="btn-secondary btn-export-tricky" style="margin-left: auto; margin-right: 12px; display: inline-flex; align-items: center; gap: 6px;">
+        <button id="export-tricky-btn" class="btn-secondary btn-export-tricky"
+          style="margin-left: auto; margin-right: 12px; display: inline-flex; align-items: center; gap: 6px;">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -730,11 +719,13 @@
     <div class="dialog-card" style="width: 520px; max-width: 95%;">
       <div class="dialog-header" style="display: flex; justify-content: space-between; align-items: center;">
         <h3 id="qwt-modal-title">Export Task for QW_Tricky</h3>
-        <button type="button" id="qwt-modal-close" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 24px; line-height: 1; padding: 0 4px;">&times;</button>
+        <button type="button" id="qwt-modal-close"
+          style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 24px; line-height: 1; padding: 0 4px;">&times;</button>
       </div>
       <div class="dialog-body" style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
-        <p id="qwt-modal-subtitle" style="font-size: 13px; color: var(--text-secondary); margin: 0;">Configure the task parameters before generating for QW_Tricky.</p>
-        
+        <p id="qwt-modal-subtitle" style="font-size: 13px; color: var(--text-secondary); margin: 0;">Configure the task
+          parameters before generating for QW_Tricky.</p>
+
         <div class="input-group" style="margin: 0;">
           <input type="text" id="qwt-task-id" required placeholder=" ">
           <label for="qwt-task-id" id="lbl-qwt-task-id">Task Folder Name (ID)</label>
@@ -756,26 +747,43 @@
           </div>
         </div>
 
-        <div style="background: var(--bg-primary); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
+        <div
+          style="background: var(--bg-primary); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
           <div style="display: flex; align-items: center; gap: 6px; font-weight: 600; color: var(--text-primary);">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
             <span id="lbl-qwt-summary-heading">Task Contents Summary</span>
           </div>
           <div id="qwt-summary-text" style="color: var(--text-secondary); line-height: 1.4;">
             Examples: 0 test(s) | Main Tests: 0 test(s)
           </div>
-          <div id="lbl-qwt-notice-text" style="color: var(--text-secondary); font-size: 12px; font-style: italic; margin-top: 4px;">
+          <div id="lbl-qwt-notice-text"
+            style="color: var(--text-secondary); font-size: 12px; font-style: italic; margin-top: 4px;">
             Main test files in tests/ will contain inputs only (cheat protection protocol).
           </div>
         </div>
       </div>
       <div class="dialog-footer" style="margin-top: 20px; flex-wrap: wrap; gap: 8px;">
-        <button type="button" id="qwt-save-folder-btn" class="btn-primary" style="display: inline-flex; align-items: center; gap: 6px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+        <button type="button" id="qwt-save-folder-btn" class="btn-primary"
+          style="display: inline-flex; align-items: center; gap: 6px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
           <span id="lbl-qwt-save-folder">Save to Folder on PC</span>
         </button>
-        <button type="button" id="qwt-download-zip-btn" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 6px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <button type="button" id="qwt-download-zip-btn" class="btn-secondary"
+          style="display: inline-flex; align-items: center; gap: 6px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
           <span id="lbl-qwt-download-zip">Download ZIP Archive</span>
         </button>
       </div>
@@ -787,15 +795,18 @@
     <div class="dialog-card" style="width: 540px; max-width: 95%;">
       <div class="dialog-header" style="display: flex; justify-content: space-between; align-items: center;">
         <h3 id="pt-modal-title">Pythontutor Import (Web Archive)</h3>
-        <button type="button" id="pt-modal-close" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 24px; line-height: 1; padding: 0 4px;">&times;</button>
+        <button type="button" id="pt-modal-close"
+          style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 24px; line-height: 1; padding: 0 4px;">&times;</button>
       </div>
       <div class="dialog-body" style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
         <p id="pt-modal-subtitle" style="font-size: 13px; color: var(--text-secondary); margin: 0;">
-          Enter a problem URL from pythontutor.ru (web.archive.org) or a problem slug (e.g., <code>series_1</code> or <code>factorial</code>).
+          Enter a problem URL from pythontutor.ru (web.archive.org) or a problem slug (e.g., <code>series_1</code> or
+          <code>factorial</code>).
         </p>
-        
+
         <div class="input-group" style="margin: 0;">
-          <input type="text" id="pt-url-input" required placeholder=" " value="https://web.archive.org/web/20240301103830/http://pythontutor.ru/lessons/for_loop/problems/series_1/">
+          <input type="text" id="pt-url-input" required placeholder=" "
+            value="https://web.archive.org/web/20240301103830/http://pythontutor.ru/lessons/for_loop/problems/series_1/">
           <label for="pt-url-input" id="lbl-pt-url-input">Problem Link or Slug (e.g. series_1)</label>
         </div>
 
@@ -805,10 +816,46 @@
       </div>
       <div class="dialog-footer" style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 8px;">
         <button type="button" id="pt-cancel-btn" class="btn-secondary">Cancel</button>
-        <button type="button" id="pt-fetch-btn" class="btn-primary" style="display: inline-flex; align-items: center; gap: 6px;">
+        <button type="button" id="pt-fetch-btn" class="btn-primary"
+          style="display: inline-flex; align-items: center; gap: 6px;">
           <span class="spinner" id="pt-btn-spinner" style="display: none;"></span>
           <span id="lbl-pt-fetch-btn">Import Task to Wizard</span>
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Statement Language Modal -->
+  <div id="add-stmt-lang-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card dialog-card" style="width: 380px;">
+      <div class="dialog-header">
+        <h3 id="add-lang-modal-title">Select Statement Language</h3>
+      </div>
+      <div class="modal-body dialog-body">
+        <div class="input-group">
+          <select id="select-new-stmt-lang" style="padding-top: 10px;">
+            <option value="english">English</option>
+            <option value="russian">Russian</option>
+            <option value="spanish">Spanish</option>
+            <option value="german">German</option>
+            <option value="chinese">Chinese</option>
+            <option value="french">French</option>
+            <option value="kazakh">Kazakh</option>
+            <option value="vietnamese">Vietnamese</option>
+            <option value="uzbek">Uzbek</option>
+            <option value="ukrainian">Ukrainian</option>
+            <option value="tajik">Tajik</option>
+            <option value="georgian">Georgian</option>
+            <option value="kyrgyz">Kyrgyz</option>
+            <option value="portuguese">Portuguese</option>
+            <option value="japanese">Japanese</option>
+          </select>
+          <label for="select-new-stmt-lang" id="label-select-new-stmt-lang" class="select-label">Language</label>
+        </div>
+      </div>
+      <div class="dialog-footer">
+        <button id="add-lang-cancel-btn" class="btn-secondary">Cancel</button>
+        <button id="add-lang-confirm-btn" class="btn-primary">Add</button>
       </div>
     </div>
   </div>

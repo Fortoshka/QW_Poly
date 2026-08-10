@@ -1736,3 +1736,91 @@ textarea::-webkit-scrollbar-thumb:hover,
   overflow-x: auto;
   overflow-y: hidden;
 }
+
+/* ============================================================================
+   Multi-language Statement Tabs & Buttons
+   ============================================================================ */
+.stmt-lang-tabs-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+.stmt-lang-tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+}
+
+.stmt-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.stmt-tab:hover {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.stmt-tab.active {
+  background-color: var(--bg-card);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  font-weight: 600;
+  box-shadow: var(--card-shadow);
+}
+
+.stmt-tab .close-tab {
+  font-size: 14px;
+  line-height: 1;
+  color: var(--text-secondary);
+  padding: 2px 4px;
+  border-radius: 50%;
+  transition: background 0.2s, color 0.2s;
+}
+
+.stmt-tab .close-tab:hover {
+  background-color: rgba(234, 67, 53, 0.15);
+  color: #ea4335;
+}
+
+.btn-add-stmt-lang {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--accent-light);
+  border: 1px dashed var(--accent-color);
+  color: var(--accent-color);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-add-stmt-lang:hover {
+  background: var(--accent-color);
+  color: #ffffff;
+}
