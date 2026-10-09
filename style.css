@@ -501,7 +501,8 @@ footer {
   /* Pill button styling for Google style */
 }
 
-.btn-import-pt {
+.btn-import-pt,
+.btn-import-ulearn {
   background-color: var(--bg-card) !important;
   color: var(--text-primary) !important;
   border: 1px solid var(--border-color) !important;
@@ -509,7 +510,8 @@ footer {
   transition: all 0.2s ease !important;
 }
 
-.btn-import-pt:hover {
+.btn-import-pt:hover,
+.btn-import-ulearn:hover {
   background-color: var(--bg-primary) !important;
   border-color: var(--accent-color) !important;
   color: var(--accent-color) !important;

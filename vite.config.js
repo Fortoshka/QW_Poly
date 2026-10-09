@@ -11,6 +11,12 @@ export default defineConfig({
         secure: false,
         rewrite: (path) => path.replace(/^\/archive/, '')
       },
+      '^/ulearn-api': {
+        target: 'https://api.ulearn.me',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/ulearn-api/, '')
+      },
       '^/api': {
         target: 'https://polygon.codeforces.com',
         changeOrigin: true,

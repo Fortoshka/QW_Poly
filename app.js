@@ -312,7 +312,12 @@ The generator should output random test cases conforming to the input format and
     lblQwtSummaryHeading: "Task Contents Summary",
     lblQwtNoticeText: "Main test files in tests/ will contain inputs only (cheat protection protocol).",
     lblQwtSaveFolder: "Save to Folder on PC",
-    lblQwtDownloadZip: "Download ZIP Archive"
+    lblQwtDownloadZip: "Download ZIP Archive",
+    dashImportUlearnBtn: "Ulearn Import",
+    ulearnModalTitle: "Ulearn Task Import",
+    ulearnModalSubtitle: "Enter a task URL from ulearn.me (e.g. https://ulearn.me/course/python/Griby_147686d0-aa0a-456a-9720-001fcd7f6d6c).",
+    lblUlearnUrlInput: "Task URL on ulearn.me",
+    lblUlearnFetchBtn: "Import Task to Wizard"
   },
   ru: {
     title: "QW Poly",
@@ -528,7 +533,12 @@ ${output}
     lblQwtSummaryHeading: "Содержимое задачи",
     lblQwtNoticeText: "Файлы основных тестов в папке tests/ будут содержать только входные данные (протокол защиты от списывания).",
     lblQwtSaveFolder: "Сохранить в папку на ПК",
-    lblQwtDownloadZip: "Скачать ZIP-архив"
+    lblQwtDownloadZip: "Скачать ZIP-архив",
+    dashImportUlearnBtn: "Импорт с Ulearn",
+    ulearnModalTitle: "Импорт задачи с Ulearn",
+    ulearnModalSubtitle: "Введите ссылку на задачу с сайта ulearn.me (например, https://ulearn.me/course/python/Griby_147686d0-aa0a-456a-9720-001fcd7f6d6c).",
+    lblUlearnUrlInput: "Ссылка на задачу на ulearn.me",
+    lblUlearnFetchBtn: "Импортировать в мастер"
   }
 };
 
@@ -1128,6 +1138,24 @@ function applyLanguage(lang) {
   if (lblQwtNoticeText) lblQwtNoticeText.textContent = t.lblQwtNoticeText;
   if (lblQwtSaveFolder) lblQwtSaveFolder.textContent = t.lblQwtSaveFolder;
   if (lblQwtDownloadZip) lblQwtDownloadZip.textContent = t.lblQwtDownloadZip;
+
+  // Ulearn Import translations
+  const dashImportUlearnBtn = document.getElementById('dash-import-ulearn-btn');
+  if (dashImportUlearnBtn && t.dashImportUlearnBtn) dashImportUlearnBtn.textContent = t.dashImportUlearnBtn;
+
+  const ulearnModalTitle = document.getElementById('ulearn-modal-title');
+  if (ulearnModalTitle && t.ulearnModalTitle) ulearnModalTitle.textContent = t.ulearnModalTitle;
+
+  const ulearnModalSubtitle = document.getElementById('ulearn-modal-subtitle');
+  if (ulearnModalSubtitle && t.ulearnModalSubtitle) {
+    ulearnModalSubtitle.innerHTML = t.ulearnModalSubtitle.replace(/(https:\/\/[^\s\)]+)/g, '<code>$1</code>');
+  }
+
+  const lblUlearnUrlInput = document.getElementById('lbl-ulearn-url-input');
+  if (lblUlearnUrlInput && t.lblUlearnUrlInput) lblUlearnUrlInput.textContent = t.lblUlearnUrlInput;
+
+  const lblUlearnFetchBtn = document.getElementById('lbl-ulearn-fetch-btn');
+  if (lblUlearnFetchBtn && t.lblUlearnFetchBtn) lblUlearnFetchBtn.textContent = t.lblUlearnFetchBtn;
 
   // Re-generate tests prompt if currently visible
   if (testsPromptOutputContainer && testsPromptOutputContainer.style.display !== 'none') {
@@ -3782,8 +3810,18 @@ async function fetchAndImportPythontutorTask(inputVal) {
 
 if (ptFetchBtn) {
   ptFetchBtn.addEventListener('click', async () => {
-    const val = ptUrlInput ? ptUrlInput.value : '';
+    const val = ptUrlInput ? ptUrlInput.value.trim() : '';
     if (ptStatusAlert) ptStatusAlert.style.display = 'none';
+
+    // If user provided a ulearn link inside pt modal, route to ulearn importer
+    if (val.includes('ulearn.me')) {
+      closePtModal();
+      openUlearnModal();
+      if (ulearnUrlInput) ulearnUrlInput.value = val;
+      if (ulearnFetchBtn) ulearnFetchBtn.click();
+      return;
+    }
+
     if (ptBtnSpinner) ptBtnSpinner.style.display = 'inline-block';
     ptFetchBtn.disabled = true;
 
@@ -3807,6 +3845,416 @@ if (ptFetchBtn) {
     }
   });
 }
+
+// ============================================================================
+// Ulearn Task Importer
+// ============================================================================
+
+const importUlearnBtn = document.getElementById('import-ulearn-btn');
+const ulearnImportModal = document.getElementById('ulearn-import-modal');
+const ulearnModalClose = document.getElementById('ulearn-modal-close');
+const ulearnCancelBtn = document.getElementById('ulearn-cancel-btn');
+const ulearnFetchBtn = document.getElementById('ulearn-fetch-btn');
+const ulearnUrlInput = document.getElementById('ulearn-url-input');
+const ulearnStatusAlert = document.getElementById('ulearn-status-alert');
+const ulearnStatusMsg = document.getElementById('ulearn-status-msg');
+const ulearnBtnSpinner = document.getElementById('ulearn-btn-spinner');
+
+function openUlearnModal() {
+  if (ulearnStatusAlert) ulearnStatusAlert.style.display = 'none';
+  if (ulearnImportModal) ulearnImportModal.style.display = 'flex';
+}
+
+function closeUlearnModal() {
+  if (ulearnImportModal) ulearnImportModal.style.display = 'none';
+}
+
+if (importUlearnBtn) {
+  applyRippleEffect(importUlearnBtn);
+  importUlearnBtn.addEventListener('click', openUlearnModal);
+}
+if (ulearnModalClose) ulearnModalClose.addEventListener('click', closeUlearnModal);
+if (ulearnCancelBtn) ulearnCancelBtn.addEventListener('click', closeUlearnModal);
+if (ulearnImportModal) {
+  ulearnImportModal.addEventListener('click', (e) => {
+    if (e.target === ulearnImportModal) closeUlearnModal();
+  });
+}
+
+function formatUlearnHtmlToLatex(html) {
+  if (!html) return '';
+  const temp = document.createElement('div');
+  temp.innerHTML = html;
+
+  // Remove section titles and property titles
+  temp.querySelectorAll('.section-title, .property-title').forEach(el => el.remove());
+
+  // Replace formatting elements with LaTeX equivalents
+  temp.querySelectorAll('code').forEach(el => el.replaceWith(`\\t{${el.textContent}}`));
+  temp.querySelectorAll('b, strong').forEach(el => el.replaceWith(`\\textbf{${el.textContent}}`));
+  temp.querySelectorAll('i, em').forEach(el => el.replaceWith(`\\textsl{${el.textContent}}`));
+  temp.querySelectorAll('br').forEach(el => el.replaceWith('\n'));
+
+  // Extract non-empty paragraphs
+  const pList = Array.from(temp.querySelectorAll('p'))
+    .map(p => p.textContent.trim())
+    .filter(Boolean);
+
+  let raw = '';
+  if (pList.length > 0) {
+    raw = pList.join('\n\n');
+  } else {
+    raw = temp.textContent.trim();
+  }
+
+  return raw
+    .replace(/&laquo;/g, '«')
+    .replace(/&raquo;/g, '»')
+    .replace(/&ndash;/g, '–')
+    .replace(/&mdash;/g, '—')
+    .replace(/&le;/g, '\\le ')
+    .replace(/&ge;/g, '\\ge ')
+    .replace(/&ne;/g, '\\ne ')
+    .replace(/&times;/g, '\\times ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .trim();
+}
+
+function parseUlearnUrl(input) {
+  const clean = (input || '').trim();
+  if (!clean) {
+    throw new Error(currentLang === 'en' ? 'Please enter a ulearn.me task URL.' : 'Пожалуйста, введите ссылку на задачу с ulearn.me.');
+  }
+
+  // Extract UUID if present (standard 8-4-4-4-12 hex format)
+  const uuidMatch = clean.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/i);
+  
+  // Extract courseId
+  let courseId = 'python';
+  const courseMatch = clean.match(/courses?\/([a-zA-Z0-9_\-\.]+)/i);
+  if (courseMatch) {
+    courseId = courseMatch[1];
+  } else {
+    const parts = clean.replace(/^https?:\/\/[^\/]+\//, '').split('/').filter(Boolean);
+    if (parts.length >= 2) {
+      if (parts[0].toLowerCase() === 'course' || parts[0].toLowerCase() === 'courses') {
+        courseId = parts[1];
+      } else {
+        courseId = parts[0];
+      }
+    }
+  }
+
+  // Extract slug name if present
+  let slug = '';
+  const lastPart = clean.replace(/\/+$/, '').split('/').pop() || '';
+  const slugPartMatch = lastPart.match(/^([a-zA-Z0-9_\-]+?)(?:_[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})?$/i);
+  if (slugPartMatch) {
+    slug = slugPartMatch[1];
+  }
+
+  return {
+    courseId,
+    slideId: uuidMatch ? uuidMatch[0] : null,
+    slug,
+    rawInput: clean
+  };
+}
+
+async function fetchUlearnJson(endpointPath) {
+  const urls = [
+    `/ulearn-api${endpointPath}`,
+    `https://api.ulearn.me${endpointPath}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent('https://api.ulearn.me' + endpointPath)}`
+  ];
+
+  let lastError = null;
+  for (const url of urls) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (e) {
+      lastError = e;
+    }
+  }
+  throw lastError || new Error(`Failed to fetch from ulearn: ${endpointPath}`);
+}
+
+async function resolveUlearnSlideId(courseId, slugOrQuery) {
+  try {
+    const courseData = await fetchUlearnJson(`/courses/${courseId}`);
+    const q = (slugOrQuery || '').toLowerCase().trim();
+    for (const unit of courseData.units || []) {
+      for (const slide of unit.slides || []) {
+        if (slide.id.toLowerCase() === q ||
+            (slide.slug && slide.slug.toLowerCase().includes(q)) ||
+            (slide.title && slide.title.toLowerCase().includes(q))) {
+          return slide.id;
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('Failed to resolve slide ID via course outline:', err);
+  }
+  return null;
+}
+
+async function fetchAndImportUlearnTask(inputVal) {
+  const parsedUrl = parseUlearnUrl(inputVal);
+  let slideId = parsedUrl.slideId;
+  const courseId = parsedUrl.courseId;
+
+  if (!slideId) {
+    slideId = await resolveUlearnSlideId(courseId, parsedUrl.slug || parsedUrl.rawInput);
+  }
+
+  if (!slideId) {
+    throw new Error(
+      currentLang === 'en'
+        ? `Could not identify task ID in "${inputVal}". Please provide a full link with task UUID.`
+        : `Не удалось определить ID задачи по ссылке "${inputVal}". Пожалуйста, укажите полную ссылку с UUID задачи.`
+    );
+  }
+
+  const slideData = await fetchUlearnJson(`/slides/${courseId}/${slideId}`);
+  if (!slideData) {
+    throw new Error(
+      currentLang === 'en'
+        ? `Failed to load slide data for ID ${slideId}.`
+        : `Не удалось загрузить данные задачи с ID ${slideId}.`
+    );
+  }
+
+  const title = slideData.title || parsedUrl.slug || 'Ulearn Problem';
+  const sysName = toSystemName(parsedUrl.slug || title);
+
+  let timeLimit = 1000;
+  let memoryLimit = 256;
+  let legendText = '';
+  let inputFormat = '';
+  let outputFormat = '';
+  let notesText = '';
+  let tutorialText = '';
+  const tests = [];
+
+  for (const block of slideData.blocks || []) {
+    if (block['$type'] === 'html') {
+      const content = block.content || '';
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(content, 'text/html');
+
+      // Title from HTML if not yet set
+      const docTitle = doc.querySelector('.header .title, .problem-statement .title');
+      if (docTitle && (!title || title === 'Ulearn Problem')) {
+        title = docTitle.textContent.trim();
+      }
+
+      // Time limit
+      const timeEl = doc.querySelector('.time-limit');
+      if (timeEl) {
+        timeEl.querySelectorAll('.property-title').forEach(el => el.remove());
+        const rawTime = timeEl.textContent.trim();
+        const secMatch = rawTime.match(/([\d\.]+)\s*(?:секунд|sec)/i);
+        if (secMatch) timeLimit = Math.round(parseFloat(secMatch[1]) * 1000);
+      }
+
+      // Memory limit
+      const memEl = doc.querySelector('.memory-limit');
+      if (memEl) {
+        memEl.querySelectorAll('.property-title').forEach(el => el.remove());
+        const rawMem = memEl.textContent.trim();
+        const mbMatch = rawMem.match(/(\d+)\s*(?:мегабайт|mb)/i);
+        if (mbMatch) memoryLimit = parseInt(mbMatch[1], 10);
+      }
+
+      // Legend
+      const legEl = doc.querySelector('.legend');
+      if (legEl && !legendText) {
+        legEl.querySelectorAll('.section-title').forEach(el => el.remove());
+        legendText = formatUlearnHtmlToLatex(legEl.innerHTML);
+      }
+
+      // Input specification
+      const inSpecEl = doc.querySelector('.input-specification');
+      if (inSpecEl && !inputFormat) {
+        inSpecEl.querySelectorAll('.section-title').forEach(el => el.remove());
+        inputFormat = formatUlearnHtmlToLatex(inSpecEl.innerHTML);
+      }
+
+      // Output specification
+      const outSpecEl = doc.querySelector('.output-specification');
+      if (outSpecEl && !outputFormat) {
+        outSpecEl.querySelectorAll('.section-title').forEach(el => el.remove());
+        outputFormat = formatUlearnHtmlToLatex(outSpecEl.innerHTML);
+      }
+
+      // Notes
+      const noteEl = doc.querySelector('.notes, .note');
+      if (noteEl && !notesText) {
+        noteEl.querySelectorAll('.section-title').forEach(el => el.remove());
+        notesText = formatUlearnHtmlToLatex(noteEl.innerHTML);
+      }
+
+      // Sample tests
+      const sampleTests = doc.querySelectorAll('.sample-test');
+      if (sampleTests.length > 0) {
+        sampleTests.forEach(st => {
+          const inpEl = st.querySelector('.input .content') || st.querySelector('.input pre');
+          const outEl = st.querySelector('.output .content') || st.querySelector('.output pre');
+          if (inpEl && outEl) {
+            const inputStr = parseHtmlEntities(inpEl.textContent).replace(/^\r?\n/, '');
+            const outputStr = parseHtmlEntities(outEl.textContent).replace(/^\r?\n/, '');
+            const formattedInput = inputStr.endsWith('\n') ? inputStr : inputStr + '\n';
+            const formattedOutput = outputStr.endsWith('\n') ? outputStr : outputStr + '\n';
+            const encoder = new TextEncoder();
+            tests.push({
+              name: String(tests.length + 1).padStart(2, '0'),
+              content: formattedInput,
+              answer: formattedOutput,
+              size: encoder.encode(formattedInput).length,
+              useInStatements: true
+            });
+          }
+        });
+      } else {
+        const inputs = doc.querySelectorAll('.sample-tests .input .content, .sample-tests .input pre');
+        const outputs = doc.querySelectorAll('.sample-tests .output .content, .sample-tests .output pre');
+        const count = Math.min(inputs.length, outputs.length);
+        for (let i = 0; i < count; i++) {
+          const inputStr = parseHtmlEntities(inputs[i].textContent).replace(/^\r?\n/, '');
+          const outputStr = parseHtmlEntities(outputs[i].textContent).replace(/^\r?\n/, '');
+          const formattedInput = inputStr.endsWith('\n') ? inputStr : inputStr + '\n';
+          const formattedOutput = outputStr.endsWith('\n') ? outputStr : outputStr + '\n';
+          const encoder = new TextEncoder();
+          tests.push({
+            name: String(tests.length + 1).padStart(2, '0'),
+            content: formattedInput,
+            answer: formattedOutput,
+            size: encoder.encode(formattedInput).length,
+            useInStatements: true
+          });
+        }
+      }
+    } else if (block['$type'] === 'exercise') {
+      if (block.renderedHints && block.renderedHints.length > 0) {
+        const hintTexts = block.renderedHints.map(h => formatUlearnHtmlToLatex(h)).filter(Boolean);
+        if (hintTexts.length > 0) {
+          tutorialText = hintTexts.join('\n\n');
+        }
+      }
+    }
+  }
+
+  if (!inputFormat) {
+    inputFormat = tests.length > 0
+      ? (currentLang === 'en' ? 'The input data contains parameters according to the problem statement.' : 'Входные данные содержат параметры согласно условию задачи.')
+      : (currentLang === 'en' ? 'There is no input data.' : 'Входные данные отсутствуют.');
+  }
+  if (!outputFormat) {
+    outputFormat = currentLang === 'en' ? 'Output the answer to the problem.' : 'Выведите ответ на задачу.';
+  }
+
+  if (!legendText && tests.length === 0) {
+    throw new Error(
+      currentLang === 'en'
+        ? 'Could not extract statement or tests from this ulearn slide.'
+        : 'Не удалось извлечь условие задачи или тесты из данного слайда ulearn.'
+    );
+  }
+
+  clearWizardData();
+
+  multiStatements = {
+    'russian': {
+      name: title,
+      legend: legendText,
+      input: inputFormat,
+      output: outputFormat,
+      notes: notesText,
+      tutorial: tutorialText
+    }
+  };
+  activeStmtLang = 'russian';
+  renderStatementLangTabs();
+  loadActiveFormFromState();
+
+  const probSysNameInput = document.getElementById('prob-system-name');
+  const probTimeInput = document.getElementById('prob-time-limit');
+  const probMemInput = document.getElementById('prob-memory-limit');
+
+  if (probSysNameInput) probSysNameInput.value = sysName;
+  if (probTimeInput) probTimeInput.value = String(timeLimit);
+  if (probMemInput) probMemInput.value = String(memoryLimit);
+
+  uploadedTests = tests;
+
+  ['prob-name', 'prob-system-name', 'prob-time-limit', 'prob-memory-limit', 'prob-legend', 'prob-input-format', 'prob-output-format', 'prob-notes', 'prob-tutorial'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.dispatchEvent(new Event('input'));
+  });
+
+  updateStatementPreview();
+  renderTestsTable();
+
+  closeUlearnModal();
+
+  dashboardView.style.opacity = '0';
+  dashboardView.style.transform = 'translateY(-10px)';
+  dashboardView.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+
+  setTimeout(() => {
+    dashboardView.style.display = 'none';
+    createProblemView.style.display = 'block';
+    updateWizardTitleForEdit();
+
+    setTimeout(() => {
+      createProblemView.style.opacity = '1';
+      createProblemView.style.transform = 'translateY(0)';
+      createProblemView.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+    }, 50);
+  }, 300);
+
+  await showCustomAlert(
+    currentLang === 'en'
+      ? `Successfully imported "${title}" from Ulearn with ${tests.length} tests!`
+      : `Задача "${title}" успешно импортирована с Ulearn (${tests.length} тестов)!`,
+    currentLang === 'en' ? 'Ulearn Import Successful' : 'Импорт с Ulearn завершен'
+  );
+}
+
+if (ulearnFetchBtn) {
+  ulearnFetchBtn.addEventListener('click', async () => {
+    const val = ulearnUrlInput ? ulearnUrlInput.value.trim() : '';
+    if (ulearnStatusAlert) ulearnStatusAlert.style.display = 'none';
+    if (ulearnBtnSpinner) ulearnBtnSpinner.style.display = 'inline-block';
+    ulearnFetchBtn.disabled = true;
+
+    try {
+      await fetchAndImportUlearnTask(val);
+    } catch (err) {
+      console.error('Ulearn import error:', err);
+      const errMsg = err.message || String(err);
+      if (ulearnStatusAlert && ulearnStatusMsg) {
+        ulearnStatusMsg.textContent = (currentLang === 'en' ? 'Import failed: ' : 'Ошибка импорта: ') + errMsg;
+        ulearnStatusAlert.style.display = 'flex';
+        ulearnStatusAlert.className = 'alert alert-error show';
+        ulearnStatusAlert.style.backgroundColor = 'rgba(239, 68, 68, 0.15)';
+        ulearnStatusAlert.style.color = '#ef4444';
+        ulearnStatusAlert.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+        ulearnStatusAlert.style.marginTop = '12px';
+      }
+    } finally {
+      if (ulearnBtnSpinner) ulearnBtnSpinner.style.display = 'none';
+      ulearnFetchBtn.disabled = false;
+    }
+  });
+}
+
 
 
 
