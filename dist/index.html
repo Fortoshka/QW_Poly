@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Polygon Uploader - Credentials</title>
-  <script type="module" crossorigin src="/assets/index-Eu3qzsPi.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-DRQnXPuJ.css">
+  <script type="module" crossorigin src="/assets/index-D0CCzf2D.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-C44q8CPV.css">
 </head>
 
 <body>
@@ -468,19 +468,37 @@
             <input type="file" id="tests-file-input" class="drop-zone-input" accept=".txt,.in,.out" multiple>
           </div>
 
-          <div id="tests-list-container" class="table-card" style="margin-top: 20px; display: none;">
+          <div style="display: flex; justify-content: flex-end; margin-top: 12px; margin-bottom: 6px;">
+            <button type="button" id="btn-add-manual-test" class="btn-secondary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span id="btn-add-manual-test-text">Add Test Manually</span>
+            </button>
+          </div>
+
+          <div id="tests-list-container" class="table-card" style="margin-top: 16px; display: none;">
             <div class="table-header-bar"
-              style="padding: 12px 20px; border-bottom: 1px solid var(--border-color); font-weight: 500; font-size: 14px;">
+              style="padding: 12px 20px; border-bottom: 1px solid var(--border-color); font-weight: 500; font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
               <span id="tests-list-header">Uploaded Tests</span>
+              <button type="button" id="btn-add-manual-test-table" class="btn-text-action">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span id="btn-add-manual-test-table-text">Add Test Manually</span>
+              </button>
             </div>
             <div class="table-container">
               <table id="tests-table">
                 <thead>
                   <tr>
+                    <th id="th-test-order" style="width: 55px; text-align: center;">#</th>
                     <th id="th-test-name">Test File</th>
                     <th id="th-test-size">Size</th>
-                    <th id="th-test-statements" style="text-align: center; width: 160px;">Use in Statements</th>
-                    <th id="th-test-actions" style="text-align: right; width: 100px;">Actions</th>
+                    <th id="th-test-statements" style="text-align: center; width: 150px;">Use in Statements</th>
+                    <th id="th-test-actions" style="text-align: right; width: 160px;">Actions</th>
                   </tr>
                 </thead>
                 <tbody id="tests-table-body">
@@ -857,6 +875,50 @@
       <div class="dialog-footer">
         <button id="add-lang-cancel-btn" class="btn-secondary">Cancel</button>
         <button id="add-lang-confirm-btn" class="btn-primary">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add / Edit Manual Test Modal -->
+  <div id="manual-test-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card dialog-card" style="width: 540px; max-width: 95vw;">
+      <div class="dialog-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+        <div>
+          <h3 id="manual-test-modal-title" style="margin: 0 0 4px 0;">Add Test Manually</h3>
+          <p id="manual-test-modal-subtitle" style="font-size: 13px; color: var(--text-secondary); margin: 0;">
+            Enter test input data and parameters
+          </p>
+        </div>
+        <button type="button" id="manual-test-modal-close" class="modal-close-btn" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body dialog-body" style="display: flex; flex-direction: column; gap: 16px;">
+        <input type="hidden" id="manual-test-edit-index" value="-1">
+
+        <div class="input-group">
+          <input type="text" id="manual-test-name" placeholder=" ">
+          <label for="manual-test-name" id="lbl-manual-test-name">Test Name (e.g. test01.txt)</label>
+        </div>
+
+        <div class="input-group">
+          <textarea id="manual-test-input" class="code-editor" rows="6" placeholder=" " required style="font-family: var(--font-mono, monospace); font-size: 13px; line-height: 1.4; resize: vertical;"></textarea>
+          <label for="manual-test-input" id="lbl-manual-test-input">Input Data *</label>
+        </div>
+
+        <div class="input-group">
+          <textarea id="manual-test-output" class="code-editor" rows="4" placeholder=" " style="font-family: var(--font-mono, monospace); font-size: 13px; line-height: 1.4; resize: vertical;"></textarea>
+          <label for="manual-test-output" id="lbl-manual-test-output">Expected Output / Answer (optional)</label>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+          <input type="checkbox" id="manual-test-statements" class="tests-checkbox" style="cursor: pointer; width: 18px; height: 18px;">
+          <label for="manual-test-statements" id="lbl-manual-test-statements" style="cursor: pointer; font-size: 14px; user-select: none;">
+            Use in problem statements
+          </label>
+        </div>
+      </div>
+      <div class="dialog-footer" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+        <button type="button" id="manual-test-cancel-btn" class="btn-secondary">Cancel</button>
+        <button type="button" id="manual-test-save-btn" class="btn-primary">Save Test</button>
       </div>
     </div>
   </div>

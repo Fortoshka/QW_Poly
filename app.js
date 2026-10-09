@@ -206,11 +206,28 @@ Output only the clean source code in ${langName} without any markdown formatting
     optSelectChecker: "Select Checker",
     testsDropText: "Drag & drop test files here or click to browse",
     testsListHeader: "Uploaded Tests",
+    thTestOrder: "#",
     thTestName: "Test File",
     thTestSize: "Size",
     thTestStatements: "Use in Statements",
     thTestActions: "Actions",
     thActions: "Actions",
+    btnManualTest: "Add Test Manually",
+    modalAddTestTitle: "Add Test Manually",
+    modalEditTestTitle: "Edit Test",
+    modalTestSubtitle: "Enter test input data and parameters.",
+    modalTestNameLabel: "Test Name (optional)",
+    modalTestInputLabel: "Input Data *",
+    modalTestAnswerLabel: "Expected Output / Answer (optional)",
+    modalTestUseInStatements: "Use in problem statements",
+    modalAddTestBtn: "Add Test",
+    btnSaveTest: "Save Test",
+    btnMoveUp: "Move Up",
+    btnMoveDown: "Move Down",
+    btnEditTest: "Edit",
+    btnRemove: "Remove",
+    testInputRequiredAlert: "Please enter input data for the test.",
+    dragToReorder: "Drag to reorder",
     aiTestsTitle: "AI Generator Script Builder",
     aiTestsSubtitle: "Generate a prompt for LLMs to write a test generator code.",
     btnGenerateTestsPrompt: "Generate Prompt",
@@ -405,11 +422,28 @@ ${output}
     optSelectChecker: "Выберите чекер",
     testsDropText: "Перетащите файлы тестов сюда или нажмите для выбора",
     testsListHeader: "Загруженные тесты",
+    thTestOrder: "№",
     thTestName: "Файл теста",
     thTestSize: "Размер",
     thTestStatements: "Показывать в условии",
     thTestActions: "Действия",
     thActions: "Действия",
+    btnManualTest: "Добавить тест вручную",
+    modalAddTestTitle: "Добавить тест вручную",
+    modalEditTestTitle: "Редактировать тест",
+    modalTestSubtitle: "Введите входные данные и параметры теста.",
+    modalTestNameLabel: "Имя файла теста (необязательно)",
+    modalTestInputLabel: "Входные данные *",
+    modalTestAnswerLabel: "Ожидаемый ответ / вывод (необязательно)",
+    modalTestUseInStatements: "Показывать в условии задачи",
+    modalAddTestBtn: "Добавить тест",
+    btnSaveTest: "Сохранить",
+    btnMoveUp: "Вверх",
+    btnMoveDown: "Вниз",
+    btnEditTest: "Изменить",
+    btnRemove: "Удалить",
+    testInputRequiredAlert: "Пожалуйста, введите входные данные теста.",
+    dragToReorder: "Потяните для изменения порядка",
     aiTestsTitle: "ИИ Генератор Тестов",
     aiTestsSubtitle: "Создайте промпт для нейросетей для написания генератора тестов.",
     btnGenerateTestsPrompt: "Сгенерировать промпт",
@@ -501,6 +535,7 @@ ${output}
 // Global Variables
 let currentLang = localStorage.getItem('lang') || 'en';
 let loadedProblems = [];
+let uploadedTests = [];
 
 
 const themeToggleBtn = document.getElementById('theme-toggle');
@@ -610,10 +645,31 @@ const labelCheckerSelect = document.getElementById('label-checker-select');
 const optSelectChecker = document.getElementById('opt-select-checker');
 const testsDropText = document.getElementById('tests-drop-text');
 const testsListHeader = document.getElementById('tests-list-header');
+const thTestOrder = document.getElementById('th-test-order');
 const thTestName = document.getElementById('th-test-name');
 const thTestSize = document.getElementById('th-test-size');
 const thTestStatements = document.getElementById('th-test-statements');
 const thTestActions = document.getElementById('th-test-actions');
+const btnAddManualTest = document.getElementById('btn-add-manual-test');
+const btnAddManualTestText = document.getElementById('btn-add-manual-test-text');
+const btnAddManualTestTable = document.getElementById('btn-add-manual-test-table');
+const btnAddManualTestTableText = document.getElementById('btn-add-manual-test-table-text');
+
+const manualTestModal = document.getElementById('manual-test-modal');
+const manualTestModalTitle = document.getElementById('manual-test-modal-title');
+const manualTestModalSubtitle = document.getElementById('manual-test-modal-subtitle');
+const manualTestModalClose = document.getElementById('manual-test-modal-close');
+const manualTestEditIndex = document.getElementById('manual-test-edit-index');
+const manualTestName = document.getElementById('manual-test-name');
+const lblManualTestName = document.getElementById('lbl-manual-test-name');
+const manualTestInput = document.getElementById('manual-test-input');
+const lblManualTestInput = document.getElementById('lbl-manual-test-input');
+const manualTestOutput = document.getElementById('manual-test-output');
+const lblManualTestOutput = document.getElementById('lbl-manual-test-output');
+const manualTestStatements = document.getElementById('manual-test-statements');
+const lblManualTestStatements = document.getElementById('lbl-manual-test-statements');
+const manualTestCancelBtn = document.getElementById('manual-test-cancel-btn');
+const manualTestSaveBtn = document.getElementById('manual-test-save-btn');
 const customModalOverlay = document.getElementById('custom-modal-overlay');
 const customModalTitle = document.getElementById('custom-modal-title');
 const customModalMessage = document.getElementById('custom-modal-message');
@@ -1001,10 +1057,25 @@ function applyLanguage(lang) {
   if (optSelectChecker) optSelectChecker.textContent = t.optSelectChecker;
   if (testsDropText && (!testsFileInput || !testsFileInput.files || testsFileInput.files.length === 0)) testsDropText.textContent = t.testsDropText;
   if (testsListHeader) testsListHeader.textContent = t.testsListHeader;
+  if (thTestOrder) thTestOrder.textContent = t.thTestOrder;
   if (thTestName) thTestName.textContent = t.thTestName;
   if (thTestSize) thTestSize.textContent = t.thTestSize;
   if (thTestStatements) thTestStatements.textContent = t.thTestStatements;
   if (thTestActions) thTestActions.textContent = t.thTestActions;
+  if (btnAddManualTestText) btnAddManualTestText.textContent = t.btnManualTest;
+  if (btnAddManualTestTableText) btnAddManualTestTableText.textContent = t.btnManualTest;
+
+  // Manual Test Modal translations
+  if (manualTestModalSubtitle) manualTestModalSubtitle.textContent = t.modalTestSubtitle;
+  if (lblManualTestName) lblManualTestName.textContent = t.modalTestNameLabel;
+  if (lblManualTestInput) lblManualTestInput.textContent = t.modalTestInputLabel;
+  if (lblManualTestOutput) lblManualTestOutput.textContent = t.modalTestAnswerLabel;
+  if (lblManualTestStatements) lblManualTestStatements.textContent = t.modalTestUseInStatements;
+  if (manualTestCancelBtn) manualTestCancelBtn.textContent = currentLang === 'en' ? 'Cancel' : 'Отмена';
+  if (manualTestSaveBtn) {
+    const isEdit = manualTestEditIndex && parseInt(manualTestEditIndex.value, 10) >= 0;
+    manualTestSaveBtn.textContent = isEdit ? t.btnSaveTest : t.modalAddTestBtn;
+  }
   if (aiTestsTitle) aiTestsTitle.textContent = t.aiTestsTitle;
   if (aiTestsSubtitle) aiTestsSubtitle.textContent = t.aiTestsSubtitle;
   if (btnGenerateTestsPromptText) btnGenerateTestsPromptText.textContent = t.btnGenerateTestsPrompt;
@@ -1066,6 +1137,11 @@ function applyLanguage(lang) {
   // Re-render problems table if open to refresh translations in dynamic content
   if (loadedProblems.length > 0) {
     renderProblems(loadedProblems);
+  }
+
+  // Re-render tests table if open to refresh button tooltips and labels
+  if (uploadedTests && uploadedTests.length > 0) {
+    renderTestsTable();
   }
 
   // Re-render statement preview to update labels
@@ -1340,7 +1416,7 @@ function renderStatementLangTabs() {
     tabBtn.type = 'button';
     tabBtn.className = `stmt-tab ${lang === activeStmtLang ? 'active' : ''}`;
     
-    const displayName = stmtLangNames[lang] || lang;
+    const displayName = stmtLangNames[lang] || (lang.charAt(0).toUpperCase() + lang.slice(1));
     
     if (Object.keys(multiStatements).length > 1) {
       tabBtn.innerHTML = `<span>${displayName}</span><span class="close-tab" data-lang="${lang}">&times;</span>`;
@@ -1998,8 +2074,6 @@ if (nextStep2Btn) {
 // Step 3 Checker and Tests Implementation
 // ============================================================================
 
-let uploadedTests = [];
-
 // Back to Step 2 Transition
 if (backToStep2Btn) {
   applyRippleEffect(backToStep2Btn);
@@ -2095,6 +2169,18 @@ function handleTestFiles(files) {
   }, 100);
 }
 
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+let draggedTestIdx = null;
+
 function renderTestsTable() {
   if (!testsTableBody || !testsListContainer) return;
 
@@ -2105,27 +2191,96 @@ function renderTestsTable() {
 
   testsListContainer.style.display = 'block';
   testsTableBody.innerHTML = '';
+  const t = translations[currentLang];
 
   uploadedTests.forEach((test, idx) => {
     const tr = document.createElement('tr');
-    tr.style.animation = 'fadeIn 0.2s ease';
+    tr.className = 'test-row';
+    tr.setAttribute('draggable', 'true');
+    tr.dataset.idx = idx;
 
     const checkedAttr = test.useInStatements ? 'checked' : '';
+    const isFirst = idx === 0;
+    const isLast = idx === uploadedTests.length - 1;
 
     tr.innerHTML = `
-      <td class="col-name font-medium">${test.name}</td>
+      <td class="col-order" style="text-align: center; width: 55px; white-space: nowrap;">
+        <span class="drag-handle" title="${t.dragToReorder || 'Drag to reorder'}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="19" r="1"></circle>
+            <circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="19" r="1"></circle>
+          </svg>
+        </span>
+        <span class="test-order-badge">${idx + 1}</span>
+      </td>
+      <td class="col-name font-medium">${escapeHtml(test.name)}</td>
       <td class="col-size" style="color: var(--text-secondary);">${formatBytes(test.size)}</td>
-      <td class="col-statements">
+      <td class="col-statements" style="text-align: center;">
         <div class="tests-checkbox-container">
           <input type="checkbox" class="tests-checkbox" data-idx="${idx}" ${checkedAttr}>
         </div>
       </td>
       <td class="col-actions" style="text-align: right;">
-        <button class="btn-text-action btn-delete-test text-red" data-idx="${idx}" style="padding: 4px 8px;">
-          ${currentLang === 'en' ? 'Remove' : 'Убрать'}
-        </button>
+        <div class="test-actions-group">
+          <button type="button" class="btn-icon-action btn-move-up" data-idx="${idx}" title="${t.btnMoveUp || 'Move Up'}" ${isFirst ? 'disabled' : ''}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="18 15 12 9 6 15"></polyline>
+            </svg>
+          </button>
+          <button type="button" class="btn-icon-action btn-move-down" data-idx="${idx}" title="${t.btnMoveDown || 'Move Down'}" ${isLast ? 'disabled' : ''}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <button type="button" class="btn-icon-action btn-edit-test" data-idx="${idx}" title="${t.btnEditTest || 'Edit'}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+          </button>
+          <button type="button" class="btn-icon-action btn-delete-test text-red" data-idx="${idx}" title="${t.btnRemove || 'Remove'}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+          </button>
+        </div>
       </td>
     `;
+
+    // Row drag and drop listeners
+    tr.addEventListener('dragstart', (e) => {
+      draggedTestIdx = idx;
+      tr.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', String(idx));
+    });
+
+    tr.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      tr.classList.add('drag-over');
+    });
+
+    tr.addEventListener('dragleave', () => {
+      tr.classList.remove('drag-over');
+    });
+
+    tr.addEventListener('drop', (e) => {
+      e.preventDefault();
+      tr.classList.remove('drag-over');
+      if (draggedTestIdx !== null && draggedTestIdx !== idx) {
+        const movedItem = uploadedTests.splice(draggedTestIdx, 1)[0];
+        uploadedTests.splice(idx, 0, movedItem);
+        draggedTestIdx = null;
+        renderTestsTable();
+      }
+    });
+
+    tr.addEventListener('dragend', () => {
+      tr.classList.remove('dragging');
+      draggedTestIdx = null;
+    });
 
     testsTableBody.appendChild(tr);
   });
@@ -2133,18 +2288,178 @@ function renderTestsTable() {
   // Bind checkbox changes
   testsTableBody.querySelectorAll('.tests-checkbox').forEach(cb => {
     cb.addEventListener('change', (e) => {
-      const idx = parseInt(e.target.getAttribute('data-idx'));
-      uploadedTests[idx].useInStatements = e.target.checked;
+      const idx = parseInt(e.target.getAttribute('data-idx'), 10);
+      if (uploadedTests[idx]) {
+        uploadedTests[idx].useInStatements = e.target.checked;
+      }
+    });
+  });
+
+  // Bind move up
+  testsTableBody.querySelectorAll('.btn-move-up').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = parseInt(e.currentTarget.getAttribute('data-idx'), 10);
+      moveTestUp(idx);
+    });
+  });
+
+  // Bind move down
+  testsTableBody.querySelectorAll('.btn-move-down').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = parseInt(e.currentTarget.getAttribute('data-idx'), 10);
+      moveTestDown(idx);
+    });
+  });
+
+  // Bind edit
+  testsTableBody.querySelectorAll('.btn-edit-test').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = parseInt(e.currentTarget.getAttribute('data-idx'), 10);
+      openManualTestModal(idx);
     });
   });
 
   // Bind delete test buttons
   testsTableBody.querySelectorAll('.btn-delete-test').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      const idx = parseInt(e.currentTarget.getAttribute('data-idx'));
+      e.stopPropagation();
+      const idx = parseInt(e.currentTarget.getAttribute('data-idx'), 10);
       uploadedTests.splice(idx, 1);
       renderTestsTable();
     });
+  });
+}
+
+function moveTestUp(idx) {
+  if (idx > 0 && idx < uploadedTests.length) {
+    const temp = uploadedTests[idx];
+    uploadedTests[idx] = uploadedTests[idx - 1];
+    uploadedTests[idx - 1] = temp;
+    renderTestsTable();
+  }
+}
+
+function moveTestDown(idx) {
+  if (idx >= 0 && idx < uploadedTests.length - 1) {
+    const temp = uploadedTests[idx];
+    uploadedTests[idx] = uploadedTests[idx + 1];
+    uploadedTests[idx + 1] = temp;
+    renderTestsTable();
+  }
+}
+
+// Manual Test Modal Handlers
+function openManualTestModal(editIdx = -1) {
+  const isEdit = editIdx >= 0 && editIdx < uploadedTests.length;
+  const t = translations[currentLang];
+
+  if (manualTestEditIndex) manualTestEditIndex.value = editIdx.toString();
+  if (manualTestModalTitle) manualTestModalTitle.textContent = isEdit ? t.modalEditTestTitle : t.modalAddTestTitle;
+  if (manualTestSaveBtn) manualTestSaveBtn.textContent = isEdit ? t.btnSaveTest : t.modalAddTestBtn;
+
+  if (isEdit) {
+    const test = uploadedTests[editIdx];
+    if (manualTestName) manualTestName.value = test.name || '';
+    if (manualTestInput) manualTestInput.value = test.content || '';
+    if (manualTestOutput) manualTestOutput.value = test.answer || '';
+    if (manualTestStatements) manualTestStatements.checked = !!test.useInStatements;
+  } else {
+    const defaultName = `test${uploadedTests.length + 1}.txt`;
+    if (manualTestName) manualTestName.value = defaultName;
+    if (manualTestInput) manualTestInput.value = '';
+    if (manualTestOutput) manualTestOutput.value = '';
+    if (manualTestStatements) manualTestStatements.checked = uploadedTests.length < 2;
+  }
+
+  [manualTestName, manualTestInput, manualTestOutput].forEach(el => {
+    if (el) el.dispatchEvent(new Event('input'));
+  });
+
+  if (manualTestModal) {
+    manualTestModal.style.display = 'flex';
+  }
+  if (manualTestInput) {
+    setTimeout(() => manualTestInput.focus(), 60);
+  }
+}
+
+function closeManualTestModal() {
+  if (manualTestModal) {
+    manualTestModal.style.display = 'none';
+  }
+}
+
+function saveManualTest() {
+  const t = translations[currentLang];
+  const editIdx = manualTestEditIndex ? parseInt(manualTestEditIndex.value, 10) : -1;
+  const isEdit = editIdx >= 0 && editIdx < uploadedTests.length;
+
+  const contentVal = manualTestInput ? manualTestInput.value : '';
+  const answerVal = manualTestOutput ? manualTestOutput.value : '';
+  let nameVal = manualTestName ? manualTestName.value.trim() : '';
+
+  if (!contentVal.trim()) {
+    showCustomAlert(t.testInputRequiredAlert);
+    if (manualTestInput) manualTestInput.focus();
+    return;
+  }
+
+  if (!nameVal) {
+    nameVal = isEdit ? uploadedTests[editIdx].name : `test${uploadedTests.length + 1}.txt`;
+  }
+
+  const encoder = new TextEncoder();
+  const byteSize = encoder.encode(contentVal).length;
+  const useInStatements = manualTestStatements ? manualTestStatements.checked : false;
+
+  if (isEdit) {
+    uploadedTests[editIdx] = {
+      ...uploadedTests[editIdx],
+      name: nameVal,
+      content: contentVal,
+      answer: answerVal,
+      size: byteSize,
+      useInStatements: useInStatements
+    };
+  } else {
+    uploadedTests.push({
+      name: nameVal,
+      content: contentVal,
+      answer: answerVal,
+      size: byteSize,
+      useInStatements: useInStatements
+    });
+  }
+
+  closeManualTestModal();
+  renderTestsTable();
+}
+
+if (btnAddManualTest) {
+  applyRippleEffect(btnAddManualTest);
+  btnAddManualTest.addEventListener('click', () => openManualTestModal(-1));
+}
+if (btnAddManualTestTable) {
+  applyRippleEffect(btnAddManualTestTable);
+  btnAddManualTestTable.addEventListener('click', () => openManualTestModal(-1));
+}
+if (manualTestModalClose) {
+  manualTestModalClose.addEventListener('click', closeManualTestModal);
+}
+if (manualTestCancelBtn) {
+  manualTestCancelBtn.addEventListener('click', closeManualTestModal);
+}
+if (manualTestSaveBtn) {
+  manualTestSaveBtn.addEventListener('click', saveManualTest);
+}
+if (manualTestModal) {
+  manualTestModal.addEventListener('click', (e) => {
+    if (e.target === manualTestModal) {
+      closeManualTestModal();
+    }
   });
 }
 
@@ -2631,9 +2946,11 @@ async function openExistingProblem(probId, btn) {
 
     // Populate multiStatements from Polygon API response
     multiStatements = {};
-    if (statementsRes.result && Object.keys(statementsRes.result).length > 0) {
+    if (statementsRes.result && typeof statementsRes.result === 'object' && !Array.isArray(statementsRes.result)) {
       for (const [lang, stmt] of Object.entries(statementsRes.result)) {
-        multiStatements[lang] = {
+        if (!stmt || typeof stmt !== 'object') continue;
+        const normalizedLang = String(lang).toLowerCase().trim();
+        multiStatements[normalizedLang] = {
           name: stmt.name || '',
           legend: stmt.legend || '',
           input: stmt.input || '',
@@ -2642,11 +2959,28 @@ async function openExistingProblem(probId, btn) {
           tutorial: stmt.tutorial || ''
         };
       }
-    } else {
-      multiStatements['russian'] = { name: '', legend: '', input: '', output: '', notes: '', tutorial: '' };
     }
 
-    activeStmtLang = Object.keys(multiStatements)[0] || 'russian';
+    if (Object.keys(multiStatements).length === 0) {
+      const defaultLang = currentLang === 'en' ? 'english' : 'russian';
+      multiStatements[defaultLang] = { name: '', legend: '', input: '', output: '', notes: '', tutorial: '' };
+    }
+
+    // Determine active statement language:
+    // Prefer user's interface language if present in statements,
+    // otherwise fallback to 'russian', then 'english', then the first available statement language
+    const availableLangs = Object.keys(multiStatements);
+    const preferredLang = currentLang === 'en' ? 'english' : 'russian';
+    if (availableLangs.includes(preferredLang)) {
+      activeStmtLang = preferredLang;
+    } else if (availableLangs.includes('russian')) {
+      activeStmtLang = 'russian';
+    } else if (availableLangs.includes('english')) {
+      activeStmtLang = 'english';
+    } else {
+      activeStmtLang = availableLangs[0] || 'russian';
+    }
+
     renderStatementLangTabs();
     loadActiveFormFromState();
 
@@ -2681,7 +3015,9 @@ async function openExistingProblem(probId, btn) {
     }
 
     // Save statement for sample test output resolution
-    lastFetchedStatement = statement;
+    lastFetchedStatement = (statementsRes.result && statementsRes.result[activeStmtLang])
+      || (statementsRes.result && typeof statementsRes.result === 'object' && Object.values(statementsRes.result)[0])
+      || null;
 
     // 5. Get tests and download inputs and answers
     uploadedTests = [];
@@ -2732,20 +3068,25 @@ async function openExistingProblem(probId, btn) {
       console.warn('Failed to load tests:', testsErr);
     }
 
-    // Pre-populate Step 1
-    document.getElementById('prob-name').value = statement.name || '';
-    document.getElementById('prob-system-name').value = '';
-    document.getElementById('prob-statement-lang').value = stmtLang;
-    document.getElementById('prob-time-limit').value = infoRes.result.timeLimit || 1000;
-    document.getElementById('prob-memory-limit').value = infoRes.result.memoryLimit || 256;
-    document.getElementById('prob-legend').value = statement.legend || '';
-    document.getElementById('prob-input-format').value = statement.input || '';
-    document.getElementById('prob-output-format').value = statement.output || '';
-    document.getElementById('prob-notes').value = statement.notes || '';
-    document.getElementById('prob-tutorial').value = statement.tutorial || '';
+    // Pre-populate Step 1 general info & limits
+    const matchedProb = loadedProblems.find(p => String(p.id) === String(probId));
+    const sysNameEl = document.getElementById('prob-system-name');
+    if (sysNameEl) {
+      sysNameEl.value = (matchedProb && matchedProb.name) || '';
+    }
+
+    const timeLimitEl = document.getElementById('prob-time-limit');
+    if (timeLimitEl) {
+      timeLimitEl.value = (infoRes.result && infoRes.result.timeLimit) || 1000;
+    }
+
+    const memLimitEl = document.getElementById('prob-memory-limit');
+    if (memLimitEl) {
+      memLimitEl.value = (infoRes.result && infoRes.result.memoryLimit) || 256;
+    }
 
     // Dispatch input events
-    ['prob-name', 'prob-time-limit', 'prob-memory-limit', 'prob-legend', 'prob-input-format', 'prob-output-format', 'prob-notes', 'prob-tutorial'].forEach(id => {
+    ['prob-name', 'prob-system-name', 'prob-time-limit', 'prob-memory-limit', 'prob-legend', 'prob-input-format', 'prob-output-format', 'prob-notes', 'prob-tutorial'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.dispatchEvent(new Event('input'));
     });
@@ -2883,6 +3224,13 @@ function updateWizardTitleForEdit() {
 function clearWizardData() {
   editingProblemId = null;
   uploadedTests = [];
+  lastFetchedStatement = null;
+
+  multiStatements = {
+    'russian': { name: '', legend: '', input: '', output: '', notes: '', tutorial: '' }
+  };
+  activeStmtLang = 'russian';
+  renderStatementLangTabs();
 
   const probNameInput = document.getElementById('prob-name');
   const probSysNameInput = document.getElementById('prob-system-name');

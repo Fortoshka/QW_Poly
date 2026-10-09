@@ -1824,3 +1824,215 @@ textarea::-webkit-scrollbar-thumb:hover,
   background: var(--accent-color);
   color: #ffffff;
 }
+
+/* ============================================================================
+   Tests Table Reordering & Manual Actions Styling
+   ============================================================================ */
+.test-row {
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.test-row.dragging {
+  opacity: 0.35;
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.test-row.drag-over {
+  border-top: 2px solid var(--accent-color) !important;
+  background-color: rgba(16, 185, 129, 0.08) !important;
+}
+
+.drag-handle {
+  cursor: grab;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  opacity: 0.6;
+  margin-right: 4px;
+  vertical-align: middle;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.drag-handle:hover {
+  opacity: 1;
+  color: var(--accent-color);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.test-order-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 1px 5px;
+  min-width: 20px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.test-actions-group {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+}
+
+.btn-icon-action {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  width: 28px;
+  height: 28px;
+  transition: all 0.2s ease;
+}
+
+.btn-icon-action:hover:not(:disabled) {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.btn-icon-action:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+.btn-icon-action.text-red:hover:not(:disabled) {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+/* Modal Close Button */
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 26px;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.modal-close-btn:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-secondary);
+}
+
+.modal-close-btn:active {
+  transform: scale(0.92);
+}
+
+/* Standalone Secondary Button Style */
+.btn-secondary {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-secondary:hover {
+  background-color: var(--bg-secondary);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
+}
+
+/* Manual Test Action Buttons */
+#btn-add-manual-test {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+#btn-add-manual-test:hover {
+  background-color: var(--accent-light);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+  transform: translateY(-1px);
+}
+
+#btn-add-manual-test:active {
+  transform: translateY(0) scale(0.98);
+}
+
+#btn-add-manual-test svg {
+  stroke: currentColor;
+  transition: transform 0.25s ease;
+}
+
+#btn-add-manual-test:hover svg {
+  transform: rotate(90deg);
+}
+
+#btn-add-manual-test-text {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+#btn-add-manual-test-table {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent-color);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+#btn-add-manual-test-table:hover {
+  background-color: var(--accent-light);
+  color: var(--accent-hover);
+}
