@@ -1,6 +1,6 @@
 {
   "name": "qw-poly",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Polygon API Problem Uploader",
   "type": "module",
   "scripts": {
