@@ -240,6 +240,42 @@ Output only the clean source code in ${langName} without any markdown formatting
     btnBackToStep2: "Back to Step 2",
     btnFinishProblem: "Submit Problem",
     selectCheckerAlert: "Please select a checker first.",
+    tabManualTests: "Manual Tests",
+    tabGeneratorTests: "Test Generator",
+    genInfoPrefix: "See the guide to learn ",
+    genInfoLink: "how testlib generators work",
+    genInfoSuffix: " in Polygon and Codeforces.",
+    genDropText: "Drag & drop generator files (.cpp, .py, etc.) or click to browse",
+    btnAddGeneratorCode: "Add Generator as Code",
+    generatorsListHeader: "Uploaded Generators",
+    thGenOrder: "#",
+    thGenName: "Generator File",
+    thGenSize: "Size",
+    thGenActions: "Actions",
+    lblTestsScriptTitle: "Tests Generation Script",
+    lblTestsScriptDesc: "Specify commands to run generators. Each line generates a test, e.g.: gen 10 5 > $",
+    testsScriptPlaceholder: "gen 10 5 > $\ngen 100 10 > $\ngen 1000 100 > $",
+    generatorModalTitleAdd: "Add Generator",
+    generatorModalTitleEdit: "Edit Generator",
+    generatorModalSubtitle: "Provide generator source code (C++, Python, etc.)",
+    lblGeneratorName: "Filename (e.g. gen.cpp or generator.py) *",
+    lblGeneratorCode: "Generator Source Code *",
+    generatorSaveBtn: "Save Generator",
+    generatorCancelBtn: "Cancel",
+    btnDownloadGen: "Download generator file",
+    btnEditGen: "Edit generator code",
+    btnDeleteGen: "Remove generator",
+    genFileAlreadyExists: (name) => `Generator '${name}' already exists.`,
+    genFileNameRequired: "Please enter a valid generator filename.",
+    genCodeRequired: "Please enter generator source code.",
+    summaryLabelGeneratorsCount: "Test Generators:",
+    summaryLabelScriptStatus: "Tests Script:",
+    summaryScriptConfigured: "Configured",
+    summaryScriptNone: "None",
+    logUploadingGenerators: (count) => `Uploading ${count} generator file(s)...`,
+    logGeneratorUploaded: (name) => `Generator '${name}' uploaded successfully.`,
+    logSavingScript: "Saving tests generation script...",
+    logScriptSaved: "Tests generation script saved successfully.",
     testsPromptTemplate: (name, legend, input, output) => `Write a test generator program in C++ using testlib.h for the following programming task.
 
 Problem Name: ${name}
@@ -461,6 +497,42 @@ ${output}
     btnBackToStep2: "Назад к Шагу 2",
     btnFinishProblem: "Создать задачу",
     selectCheckerAlert: "Пожалуйста, сначала выберите чекер.",
+    tabManualTests: "Ручные тесты",
+    tabGeneratorTests: "Генератор теста",
+    genInfoPrefix: "Обратитесь к ",
+    genInfoLink: "руководству по генераторам testlib",
+    genInfoSuffix: " для ознакомления с принципом их работы в Polygon.",
+    genDropText: "Перетащите файлы генераторов (.cpp, .py и др.) или нажмите для выбора",
+    btnAddGeneratorCode: "Добавить код вручную",
+    generatorsListHeader: "Загруженные генераторы",
+    thGenOrder: "№",
+    thGenName: "Файл генератора",
+    thGenSize: "Размер",
+    thGenActions: "Действия",
+    lblTestsScriptTitle: "Скрипт генерации тестов",
+    lblTestsScriptDesc: "Укажите команды для запуска генераторов. Каждая строка генерирует тест, например: gen 10 5 > $",
+    testsScriptPlaceholder: "gen 10 5 > $\ngen 100 10 > $\ngen 1000 100 > $",
+    generatorModalTitleAdd: "Добавить генератор",
+    generatorModalTitleEdit: "Редактировать генератор",
+    generatorModalSubtitle: "Исходный код генератора (C++, Python и т.д.)",
+    lblGeneratorName: "Имя файла (напр. gen.cpp или generator.py) *",
+    lblGeneratorCode: "Исходный код генератора *",
+    generatorSaveBtn: "Сохранить генератор",
+    generatorCancelBtn: "Отмена",
+    btnDownloadGen: "Скачать файл",
+    btnEditGen: "Редактировать код",
+    btnDeleteGen: "Удалить генератор",
+    genFileAlreadyExists: (name) => `Генератор '${name}' уже добавлен.`,
+    genFileNameRequired: "Пожалуйста, введите корректное имя файла генератора.",
+    genCodeRequired: "Пожалуйста, введите исходный код генератора.",
+    summaryLabelGeneratorsCount: "Генераторов:",
+    summaryLabelScriptStatus: "Скрипт тестов:",
+    summaryScriptConfigured: "Настроен",
+    summaryScriptNone: "Нет",
+    logUploadingGenerators: (count) => `Загрузка генераторов тестов (${count})...`,
+    logGeneratorUploaded: (name) => `Генератор '${name}' успешно сохранён.`,
+    logSavingScript: "Сохранение скрипта генерации тестов...",
+    logScriptSaved: "Скрипт генерации тестов успешно сохранён.",
     testsPromptTemplate: (name, legend, input, output) => `Напиши программу-генератор тестов на C++ с использованием библиотеки testlib.h для следующей задачи.
 
 Название задачи: ${name}
@@ -546,6 +618,8 @@ ${output}
 let currentLang = localStorage.getItem('lang') || 'en';
 let loadedProblems = [];
 let uploadedTests = [];
+let problemGenerators = [];
+let activeTestsTab = 'manual';
 
 
 const themeToggleBtn = document.getElementById('theme-toggle');
@@ -700,6 +774,45 @@ const testsDropZone = document.getElementById('tests-drop-zone');
 const testsFileInput = document.getElementById('tests-file-input');
 const testsListContainer = document.getElementById('tests-list-container');
 const testsTableBody = document.getElementById('tests-table-body');
+
+const tabBtnManualTests = document.getElementById('tab-btn-manual-tests');
+const tabBtnGeneratorTests = document.getElementById('tab-btn-generator-tests');
+const tabLabelManualTests = document.getElementById('tab-label-manual-tests');
+const tabLabelGeneratorTests = document.getElementById('tab-label-generator-tests');
+const badgeManualTestsCount = document.getElementById('badge-manual-tests-count');
+const badgeGeneratorTestsCount = document.getElementById('badge-generator-tests-count');
+const sectionManualTests = document.getElementById('section-manual-tests');
+const sectionGeneratorTests = document.getElementById('section-generator-tests');
+const genInfoPrefix = document.getElementById('gen-info-prefix');
+const genInfoLink = document.getElementById('gen-info-link');
+const genInfoSuffix = document.getElementById('gen-info-suffix');
+const generatorDropZone = document.getElementById('generator-drop-zone');
+const generatorDropText = document.getElementById('generator-drop-text');
+const generatorFileInput = document.getElementById('generator-file-input');
+const btnAddGeneratorCode = document.getElementById('btn-add-generator-code');
+const btnAddGeneratorCodeText = document.getElementById('btn-add-generator-code-text');
+const generatorsListContainer = document.getElementById('generators-list-container');
+const generatorsListHeader = document.getElementById('generators-list-header');
+const thGenOrder = document.getElementById('th-gen-order');
+const thGenName = document.getElementById('th-gen-name');
+const thGenSize = document.getElementById('th-gen-size');
+const thGenActions = document.getElementById('th-gen-actions');
+const generatorsTableBody = document.getElementById('generators-table-body');
+const lblTestsScriptTitle = document.getElementById('lbl-tests-script-title');
+const lblTestsScriptDesc = document.getElementById('lbl-tests-script-desc');
+const testsScriptInput = document.getElementById('tests-script-input');
+
+const generatorModal = document.getElementById('generator-modal');
+const generatorModalTitle = document.getElementById('generator-modal-title');
+const generatorModalSubtitle = document.getElementById('generator-modal-subtitle');
+const generatorModalClose = document.getElementById('generator-modal-close');
+const generatorEditIndex = document.getElementById('generator-edit-index');
+const generatorName = document.getElementById('generator-name');
+const lblGeneratorName = document.getElementById('lbl-generator-name');
+const generatorCode = document.getElementById('generator-code');
+const lblGeneratorCode = document.getElementById('lbl-generator-code');
+const generatorCancelBtn = document.getElementById('generator-cancel-btn');
+const generatorSaveBtn = document.getElementById('generator-save-btn');
 const generateTestsPromptBtn = document.getElementById('generate-tests-prompt-btn');
 const copyTestsPromptBtn = document.getElementById('copy-tests-prompt-btn');
 const testsPromptOutputContainer = document.getElementById('tests-prompt-output-container');
@@ -743,6 +856,10 @@ const summaryValSolLang = document.getElementById('summary-val-sol-lang');
 const summaryValSolCode = document.getElementById('summary-val-sol-code');
 const summaryValChecker = document.getElementById('summary-val-checker');
 const summaryValTestsCount = document.getElementById('summary-val-tests-count');
+const summaryLabelGeneratorsCount = document.getElementById('summary-label-generators-count');
+const summaryValGeneratorsCount = document.getElementById('summary-val-generators-count');
+const summaryLabelScriptStatus = document.getElementById('summary-label-script-status');
+const summaryValScriptStatus = document.getElementById('summary-val-script-status');
 const summaryTestsTableBody = document.getElementById('summary-tests-table-body');
 const uploadProgressContainer = document.getElementById('upload-progress-container');
 const progressHeaderTitle = document.getElementById('progress-header-title');
@@ -1103,6 +1220,37 @@ function applyLanguage(lang) {
   if (btnBackToStep2Text) btnBackToStep2Text.textContent = t.btnBackToStep2;
   if (btnFinishProblemText) btnFinishProblemText.textContent = t.btnFinishProblem;
 
+  // Mode tabs & generator translations
+  if (tabLabelManualTests) tabLabelManualTests.textContent = t.tabManualTests;
+  if (tabLabelGeneratorTests) tabLabelGeneratorTests.textContent = t.tabGeneratorTests;
+  if (genInfoPrefix) genInfoPrefix.textContent = t.genInfoPrefix;
+  if (genInfoLink) genInfoLink.textContent = t.genInfoLink;
+  if (genInfoSuffix) genInfoSuffix.textContent = t.genInfoSuffix;
+  if (generatorDropText && (!generatorFileInput || !generatorFileInput.files || generatorFileInput.files.length === 0)) {
+    generatorDropText.textContent = t.genDropText;
+  }
+  if (btnAddGeneratorCodeText) btnAddGeneratorCodeText.textContent = t.btnAddGeneratorCode;
+  if (generatorsListHeader) generatorsListHeader.textContent = t.generatorsListHeader;
+  if (thGenOrder) thGenOrder.textContent = t.thGenOrder;
+  if (thGenName) thGenName.textContent = t.thGenName;
+  if (thGenSize) thGenSize.textContent = t.thGenSize;
+  if (thGenActions) thGenActions.textContent = t.thGenActions;
+  if (lblTestsScriptTitle) lblTestsScriptTitle.textContent = t.lblTestsScriptTitle;
+  if (lblTestsScriptDesc) lblTestsScriptDesc.textContent = t.lblTestsScriptDesc;
+  if (testsScriptInput) testsScriptInput.placeholder = t.testsScriptPlaceholder;
+
+  // Generator Modal translations
+  if (generatorModalSubtitle) generatorModalSubtitle.textContent = t.generatorModalSubtitle;
+  if (lblGeneratorName) lblGeneratorName.textContent = t.lblGeneratorName;
+  if (lblGeneratorCode) lblGeneratorCode.textContent = t.lblGeneratorCode;
+  if (generatorCancelBtn) generatorCancelBtn.textContent = t.generatorCancelBtn;
+  if (generatorSaveBtn) {
+    const isEditGen = generatorEditIndex && parseInt(generatorEditIndex.value, 10) >= 0;
+    generatorSaveBtn.textContent = isEditGen ? t.btnSaveTest : t.generatorSaveBtn;
+  }
+  if (summaryLabelGeneratorsCount) summaryLabelGeneratorsCount.textContent = t.summaryLabelGeneratorsCount;
+  if (summaryLabelScriptStatus) summaryLabelScriptStatus.textContent = t.summaryLabelScriptStatus;
+
   // Step 4 translations
   if (step4Title) step4Title.textContent = t.step4Title;
   if (step4Subtitle) step4Subtitle.textContent = t.step4Subtitle;
@@ -1170,6 +1318,13 @@ function applyLanguage(lang) {
   // Re-render tests table if open to refresh button tooltips and labels
   if (uploadedTests && uploadedTests.length > 0) {
     renderTestsTable();
+  }
+
+  if (typeof updateTestsBadges === 'function') {
+    updateTestsBadges();
+  }
+  if (typeof renderGeneratorsTable === 'function') {
+    renderGeneratorsTable();
   }
 
   // Re-render statement preview to update labels
@@ -2212,6 +2367,10 @@ let draggedTestIdx = null;
 function renderTestsTable() {
   if (!testsTableBody || !testsListContainer) return;
 
+  if (typeof updateTestsBadges === 'function') {
+    updateTestsBadges();
+  }
+
   if (uploadedTests.length === 0) {
     testsListContainer.style.display = 'none';
     return;
@@ -2491,6 +2650,303 @@ if (manualTestModal) {
   });
 }
 
+// ============================================================================
+// Test Generator & Script Implementation
+// ============================================================================
+
+function switchTestsTab(mode) {
+  activeTestsTab = mode;
+  if (mode === 'generator') {
+    if (tabBtnGeneratorTests) tabBtnGeneratorTests.classList.add('active');
+    if (tabBtnManualTests) tabBtnManualTests.classList.remove('active');
+    if (sectionGeneratorTests) sectionGeneratorTests.style.display = 'block';
+    if (sectionManualTests) sectionManualTests.style.display = 'none';
+  } else {
+    if (tabBtnManualTests) tabBtnManualTests.classList.add('active');
+    if (tabBtnGeneratorTests) tabBtnGeneratorTests.classList.remove('active');
+    if (sectionManualTests) sectionManualTests.style.display = 'block';
+    if (sectionGeneratorTests) sectionGeneratorTests.style.display = 'none';
+  }
+}
+
+if (tabBtnManualTests) {
+  tabBtnManualTests.addEventListener('click', () => switchTestsTab('manual'));
+}
+if (tabBtnGeneratorTests) {
+  tabBtnGeneratorTests.addEventListener('click', () => switchTestsTab('generator'));
+}
+
+function updateTestsBadges() {
+  if (badgeManualTestsCount) {
+    badgeManualTestsCount.textContent = (uploadedTests ? uploadedTests.length : 0).toString();
+  }
+  if (badgeGeneratorTestsCount) {
+    badgeGeneratorTestsCount.textContent = (problemGenerators ? problemGenerators.length : 0).toString();
+  }
+}
+
+function renderGeneratorsTable() {
+  if (!generatorsTableBody || !generatorsListContainer) return;
+
+  updateTestsBadges();
+
+  if (!problemGenerators || problemGenerators.length === 0) {
+    generatorsListContainer.style.display = 'none';
+    return;
+  }
+
+  generatorsListContainer.style.display = 'block';
+  generatorsTableBody.innerHTML = '';
+  const t = translations[currentLang];
+
+  problemGenerators.forEach((gen, idx) => {
+    const tr = document.createElement('tr');
+    tr.className = 'generator-row';
+
+    const fileSize = gen.size || (gen.content ? new TextEncoder().encode(gen.content).length : 0);
+
+    tr.innerHTML = `
+      <td class="col-order" style="text-align: center; width: 55px; white-space: nowrap;">
+        <span class="test-order-badge">${idx + 1}</span>
+      </td>
+      <td class="col-name font-medium">${escapeHtml(gen.name)}</td>
+      <td class="col-size" style="color: var(--text-secondary);">${formatBytes(fileSize)}</td>
+      <td class="col-actions" style="text-align: right; width: 180px;">
+        <div class="test-actions-group" style="justify-content: flex-end;">
+          <button type="button" class="btn-icon-action btn-download-gen" data-idx="${idx}" title="${t.btnDownloadGen || 'Download file'}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+          </button>
+          <button type="button" class="btn-icon-action btn-edit-gen" data-idx="${idx}" title="${t.btnEditGen || 'Edit code'}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+          </button>
+          <button type="button" class="btn-icon-action btn-delete-gen text-red" data-idx="${idx}" title="${t.btnDeleteGen || 'Remove'}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+          </button>
+        </div>
+      </td>
+    `;
+
+    generatorsTableBody.appendChild(tr);
+  });
+
+  // Action listeners
+  generatorsTableBody.querySelectorAll('.btn-download-gen').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = parseInt(e.currentTarget.getAttribute('data-idx'), 10);
+      downloadGeneratorFile(idx);
+    });
+  });
+
+  generatorsTableBody.querySelectorAll('.btn-edit-gen').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = parseInt(e.currentTarget.getAttribute('data-idx'), 10);
+      openGeneratorModal(idx);
+    });
+  });
+
+  generatorsTableBody.querySelectorAll('.btn-delete-gen').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = parseInt(e.currentTarget.getAttribute('data-idx'), 10);
+      if (idx >= 0 && idx < problemGenerators.length) {
+        problemGenerators.splice(idx, 1);
+        renderGeneratorsTable();
+      }
+    });
+  });
+}
+
+function downloadGeneratorFile(idx) {
+  const gen = problemGenerators[idx];
+  if (!gen) return;
+  const content = gen.content || '';
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = gen.name || 'generator.cpp';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+if (generatorDropZone) {
+  generatorDropZone.addEventListener('click', () => generatorFileInput.click());
+
+  generatorDropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    generatorDropZone.classList.add('drop-zone--over');
+  });
+
+  ['dragleave', 'dragend'].forEach(type => {
+    generatorDropZone.addEventListener(type, () => {
+      generatorDropZone.classList.remove('drop-zone--over');
+    });
+  });
+
+  generatorDropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    generatorDropZone.classList.remove('drop-zone--over');
+    if (e.dataTransfer.files.length) {
+      handleGeneratorFiles(e.dataTransfer.files);
+    }
+  });
+}
+
+if (generatorFileInput) {
+  generatorFileInput.addEventListener('change', () => {
+    if (generatorFileInput.files.length) {
+      handleGeneratorFiles(generatorFileInput.files);
+    }
+  });
+}
+
+function handleGeneratorFiles(files) {
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const existingIdx = problemGenerators.findIndex(g => g.name === file.name);
+    const genObj = {
+      name: file.name,
+      size: file.size,
+      content: ''
+    };
+
+    if (existingIdx >= 0) {
+      problemGenerators[existingIdx] = genObj;
+    } else {
+      problemGenerators.push(genObj);
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      genObj.content = e.target.result;
+      genObj.size = new TextEncoder().encode(genObj.content).length;
+      renderGeneratorsTable();
+    };
+    reader.readAsText(file);
+  }
+
+  setTimeout(() => {
+    renderGeneratorsTable();
+  }, 100);
+}
+
+function openGeneratorModal(idx = -1) {
+  const t = translations[currentLang];
+  const isEdit = idx >= 0 && idx < problemGenerators.length;
+  if (generatorEditIndex) generatorEditIndex.value = idx.toString();
+
+  if (isEdit) {
+    const gen = problemGenerators[idx];
+    if (generatorModalTitle) generatorModalTitle.textContent = t.generatorModalTitleEdit;
+    if (generatorName) generatorName.value = gen.name;
+    if (generatorCode) generatorCode.value = gen.content || '';
+    if (generatorSaveBtn) generatorSaveBtn.textContent = t.btnSaveTest;
+  } else {
+    if (generatorModalTitle) generatorModalTitle.textContent = t.generatorModalTitleAdd;
+    const defaultName = `gen${problemGenerators.length > 0 ? problemGenerators.length + 1 : ''}.cpp`;
+    if (generatorName) generatorName.value = defaultName;
+    if (generatorCode) generatorCode.value = '';
+    if (generatorSaveBtn) generatorSaveBtn.textContent = t.generatorSaveBtn;
+  }
+
+  if (generatorModal) {
+    generatorModal.style.display = 'flex';
+    requestAnimationFrame(() => {
+      generatorModal.classList.add('visible');
+      if (generatorCode) generatorCode.focus();
+    });
+  }
+}
+
+function closeGeneratorModal() {
+  if (!generatorModal) return;
+  generatorModal.classList.remove('visible');
+  setTimeout(() => {
+    generatorModal.style.display = 'none';
+  }, 200);
+}
+
+async function saveGeneratorModal() {
+  const t = translations[currentLang];
+  const editIdx = generatorEditIndex ? parseInt(generatorEditIndex.value, 10) : -1;
+  const isEdit = editIdx >= 0 && editIdx < problemGenerators.length;
+
+  let nameVal = (generatorName?.value || '').trim();
+  const codeVal = generatorCode?.value || '';
+
+  if (!nameVal) {
+    await showCustomAlert(t.genFileNameRequired, currentLang === 'en' ? 'Validation Error' : 'Ошибка валидации');
+    if (generatorName) generatorName.focus();
+    return;
+  }
+
+  if (!codeVal.trim()) {
+    await showCustomAlert(t.genCodeRequired, currentLang === 'en' ? 'Validation Error' : 'Ошибка валидации');
+    if (generatorCode) generatorCode.focus();
+    return;
+  }
+
+  const dupIdx = problemGenerators.findIndex((g, i) => g.name.toLowerCase() === nameVal.toLowerCase() && i !== editIdx);
+  if (dupIdx >= 0) {
+    await showCustomAlert(t.genFileAlreadyExists(nameVal), currentLang === 'en' ? 'Duplicate Filename' : 'Дубликат имени файла');
+    if (generatorName) generatorName.focus();
+    return;
+  }
+
+  const byteSize = new TextEncoder().encode(codeVal).length;
+
+  if (isEdit) {
+    problemGenerators[editIdx] = {
+      name: nameVal,
+      content: codeVal,
+      size: byteSize
+    };
+  } else {
+    problemGenerators.push({
+      name: nameVal,
+      content: codeVal,
+      size: byteSize
+    });
+  }
+
+  closeGeneratorModal();
+  renderGeneratorsTable();
+}
+
+if (btnAddGeneratorCode) {
+  btnAddGeneratorCode.addEventListener('click', () => openGeneratorModal(-1));
+}
+if (generatorModalClose) {
+  generatorModalClose.addEventListener('click', closeGeneratorModal);
+}
+if (generatorCancelBtn) {
+  generatorCancelBtn.addEventListener('click', closeGeneratorModal);
+}
+if (generatorSaveBtn) {
+  generatorSaveBtn.addEventListener('click', saveGeneratorModal);
+}
+if (generatorModal) {
+  generatorModal.addEventListener('click', (e) => {
+    if (e.target === generatorModal) {
+      closeGeneratorModal();
+    }
+  });
+}
+
 // Collapsible accordion for tests generator
 if (accordionTestsToggleBtn) {
   accordionTestsToggleBtn.addEventListener('click', () => {
@@ -2658,6 +3114,14 @@ function populateConfirmationSummary() {
   }
   if (summaryValTestsCount) {
     summaryValTestsCount.textContent = uploadedTests.length.toString();
+  }
+  if (summaryValGeneratorsCount) {
+    summaryValGeneratorsCount.textContent = (problemGenerators ? problemGenerators.length : 0).toString();
+  }
+  if (summaryValScriptStatus) {
+    const hasScript = testsScriptInput && testsScriptInput.value.trim().length > 0;
+    const t = translations[currentLang];
+    summaryValScriptStatus.textContent = hasScript ? (t.summaryScriptConfigured || 'Configured') : (t.summaryScriptNone || 'None');
   }
 
   if (summaryTestsTableBody) {
@@ -2849,7 +3313,40 @@ async function startPolygonUpload() {
       if (uploadProgressBar) uploadProgressBar.style.width = `${percent}%`;
     }
   } else {
-    if (uploadProgressBar) uploadProgressBar.style.width = '90%';
+    if (uploadProgressBar) uploadProgressBar.style.width = '88%';
+  }
+
+  // 6b. problem.saveFile (test generators)
+  if (problemGenerators && problemGenerators.length > 0) {
+    addUploadLog(t.logUploadingGenerators(problemGenerators.length), 'info');
+    for (let i = 0; i < problemGenerators.length; i++) {
+      const gen = problemGenerators[i];
+      const genRes = await callPolygonApi('problem.saveFile', {
+        problemId: problemId,
+        type: 'source',
+        name: gen.name,
+        file: gen.content || ''
+      }, apiKey, apiSecret);
+      if (genRes.status !== 'OK') {
+        throw new Error(genRes.comment || `Failed to upload generator ${gen.name}`);
+      }
+      addUploadLog(t.logGeneratorUploaded(gen.name), 'success');
+    }
+  }
+
+  // 6c. problem.saveScript (tests generation script)
+  const scriptContent = testsScriptInput ? testsScriptInput.value.trim() : '';
+  if (scriptContent) {
+    addUploadLog(t.logSavingScript, 'info');
+    const scriptRes = await callPolygonApi('problem.saveScript', {
+      problemId: problemId,
+      testset: 'tests',
+      source: scriptContent
+    }, apiKey, apiSecret);
+    if (scriptRes.status !== 'OK') {
+      throw new Error(scriptRes.comment || 'Failed to save tests generation script');
+    }
+    addUploadLog(t.logScriptSaved, 'success');
   }
 
   // 7. problem.commitChanges
@@ -3096,6 +3593,70 @@ async function openExistingProblem(probId, btn) {
       console.warn('Failed to load tests:', testsErr);
     }
 
+    // 5b. Get generators and test generation script
+    problemGenerators = [];
+    let loadedScript = '';
+    try {
+      const filesRes = await callPolygonApi('problem.files', { problemId: probId }, apiKey, apiSecret);
+      if (filesRes.status === 'OK' && filesRes.result && Array.isArray(filesRes.result.sourceFiles)) {
+        const excludeNames = new Set();
+        if (checkerName) excludeNames.add(checkerName.toLowerCase().trim());
+
+        try {
+          const valRes = await callPolygonApi('problem.validator', { problemId: probId }, apiKey, apiSecret);
+          if (valRes.status === 'OK' && valRes.result) {
+            excludeNames.add(valRes.result.toLowerCase().trim());
+          }
+        } catch (_) {}
+
+        try {
+          const interactorRes = await callPolygonApi('problem.interactor', { problemId: probId }, apiKey, apiSecret);
+          if (interactorRes.status === 'OK' && interactorRes.result) {
+            excludeNames.add(interactorRes.result.toLowerCase().trim());
+          }
+        } catch (_) {}
+
+        const genSourceFiles = filesRes.result.sourceFiles.filter(sf => sf.name && !excludeNames.has(sf.name.toLowerCase().trim()));
+
+        const genPromises = genSourceFiles.map(async (sf) => {
+          try {
+            const content = await downloadPlainFile('problem.viewFile', {
+              problemId: probId,
+              type: 'source',
+              name: sf.name
+            }, apiKey, apiSecret);
+            return {
+              name: sf.name,
+              size: content.length,
+              content: content
+            };
+          } catch (e) {
+            console.warn(`Failed to fetch generator ${sf.name}:`, e);
+            return null;
+          }
+        });
+
+        const downloadedGens = await Promise.all(genPromises);
+        problemGenerators = downloadedGens.filter(Boolean);
+      }
+    } catch (genErr) {
+      console.warn('Failed to load generators:', genErr);
+    }
+
+    try {
+      const scriptContent = await downloadPlainFile('problem.script', {
+        problemId: probId,
+        testset: 'tests'
+      }, apiKey, apiSecret);
+      loadedScript = scriptContent || '';
+    } catch (scErr) {
+      console.warn('Failed to load test script:', scErr);
+    }
+
+    if (testsScriptInput) {
+      testsScriptInput.value = loadedScript;
+    }
+
     // Pre-populate Step 1 general info & limits
     const matchedProb = loadedProblems.find(p => String(p.id) === String(probId));
     const sysNameEl = document.getElementById('prob-system-name');
@@ -3146,6 +3707,8 @@ async function openExistingProblem(probId, btn) {
     }
 
     renderTestsTable();
+    renderGeneratorsTable();
+    switchTestsTab('manual');
     editingProblemId = probId;
 
     dashboardView.style.opacity = '0';
@@ -3285,8 +3848,21 @@ function clearWizardData() {
 
   if (checkerSelect) checkerSelect.value = 'std::ncmp.cpp';
 
+  problemGenerators = [];
+  if (testsScriptInput) testsScriptInput.value = '';
+
   updateStatementPreview();
   renderTestsTable();
+  renderGeneratorsTable();
+  switchTestsTab('manual');
+
+  if (promptOutputContainer) promptOutputContainer.style.display = 'none';
+  if (testsPromptOutputContainer) testsPromptOutputContainer.style.display = 'none';
+  if (accordionToggleBtn) accordionToggleBtn.setAttribute('aria-expanded', 'false');
+  if (accordionContent) accordionContent.style.maxHeight = '0px';
+  if (accordionTestsToggleBtn) accordionTestsToggleBtn.setAttribute('aria-expanded', 'false');
+  if (accordionTestsContent) accordionTestsContent.style.maxHeight = '0px';
+
   updateWizardTitleForEdit();
 }
 

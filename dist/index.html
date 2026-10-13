@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Polygon Uploader - Credentials</title>
-  <script type="module" crossorigin src="/assets/index-BMQYAiwF.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-BywQVCT8.css">
+  <script type="module" crossorigin src="/assets/index-Deci6l0n.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DYjVzqza.css">
 </head>
 
 <body>
@@ -115,28 +115,12 @@
         </div>
         <div style="display: flex; gap: 10px; align-items: center;">
           <button id="import-pt-btn" class="btn-primary btn-new-problem btn-import-pt">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
             <span id="dash-import-pt-btn">Pythontutor Import</span>
           </button>
           <button id="import-ulearn-btn" class="btn-primary btn-new-problem btn-import-ulearn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-            </svg>
             <span id="dash-import-ulearn-btn">Ulearn Import</span>
           </button>
           <button id="create-prob-btn" class="btn-primary btn-new-problem">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
             <span id="dash-new-problem-btn">New Problem</span>
           </button>
         </div>
@@ -465,47 +449,155 @@
             <label for="checker-select" id="label-checker-select" class="select-label">Checker Program</label>
           </div>
 
-          <div class="drop-zone" id="tests-drop-zone">
-            <svg class="drop-zone-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="17 8 12 3 7 8"></polyline>
-              <line x1="12" y1="3" x2="12" y2="15"></line>
-            </svg>
-            <div class="drop-zone-text" id="tests-drop-text">Drag & drop test files here or click to browse</div>
-            <input type="file" id="tests-file-input" class="drop-zone-input" accept=".txt,.in,.out" multiple>
-          </div>
-
-          <div style="display: flex; justify-content: flex-end; margin-top: 12px; margin-bottom: 6px;">
-            <button type="button" id="btn-add-manual-test" class="btn-secondary">
+          <div class="tests-mode-tabs-bar" id="tests-mode-tabs-bar">
+            <button type="button" class="tests-mode-tab active" id="tab-btn-manual-tests">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
               </svg>
-              <span id="btn-add-manual-test-text">Add Test Manually</span>
+              <span id="tab-label-manual-tests">Manual Tests</span>
+              <span class="tests-count-badge" id="badge-manual-tests-count">0</span>
+            </button>
+            <button type="button" class="tests-mode-tab" id="tab-btn-generator-tests">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+              <span id="tab-label-generator-tests">Test Generator</span>
+              <span class="tests-count-badge" id="badge-generator-tests-count">0</span>
             </button>
           </div>
 
-          <div id="tests-list-container" class="table-card" style="margin-top: 16px; display: none;">
-            <div class="table-header-bar"
-              style="padding: 12px 20px; border-bottom: 1px solid var(--border-color); font-weight: 500; font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
-              <span id="tests-list-header">Uploaded Tests</span>
+          <div id="section-manual-tests">
+            <div class="drop-zone" id="tests-drop-zone">
+              <svg class="drop-zone-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <div class="drop-zone-text" id="tests-drop-text">Drag & drop test files here or click to browse</div>
+              <input type="file" id="tests-file-input" class="drop-zone-input" accept=".txt,.in,.out" multiple>
             </div>
-            <div class="table-container">
-              <table id="tests-table">
-                <thead>
-                  <tr>
-                    <th id="th-test-order" style="width: 55px; text-align: center;">#</th>
-                    <th id="th-test-name">Test File</th>
-                    <th id="th-test-size">Size</th>
-                    <th id="th-test-statements" style="text-align: center; width: 150px;">Use in Statements</th>
-                    <th id="th-test-actions" style="text-align: right; width: 160px;">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="tests-table-body">
-                </tbody>
-              </table>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 12px; margin-bottom: 6px;">
+              <button type="button" id="btn-add-manual-test" class="btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span id="btn-add-manual-test-text">Add Test Manually</span>
+              </button>
+            </div>
+
+            <div id="tests-list-container" class="table-card" style="margin-top: 16px; display: none;">
+              <div class="table-header-bar"
+                style="padding: 12px 20px; border-bottom: 1px solid var(--border-color); font-weight: 500; font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
+                <span id="tests-list-header">Uploaded Tests</span>
+              </div>
+              <div class="table-container">
+                <table id="tests-table">
+                  <thead>
+                    <tr>
+                      <th id="th-test-order" style="width: 55px; text-align: center;">#</th>
+                      <th id="th-test-name">Test File</th>
+                      <th id="th-test-size">Size</th>
+                      <th id="th-test-statements" style="text-align: center; width: 150px;">Use in Statements</th>
+                      <th id="th-test-actions" style="text-align: right; width: 160px;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tests-table-body">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div id="section-generator-tests" style="display: none;">
+            <div class="tex-info-box" id="generator-info-box">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span>
+                <span id="gen-info-prefix">See the guide to learn</span>
+                <a href="https://codeforces.com/blog/entry/18291" target="_blank" class="accent-link"
+                  id="gen-info-link">how testlib generators work</a>
+                <span id="gen-info-suffix">in Polygon and Codeforces.</span>
+              </span>
+            </div>
+
+            <div class="drop-zone" id="generator-drop-zone">
+              <svg class="drop-zone-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="18" x2="12" y2="12"></line>
+                <line x1="9" y1="15" x2="12" y2="12"></line>
+                <line x1="15" y1="15" x2="12" y2="12"></line>
+              </svg>
+              <div class="drop-zone-text" id="generator-drop-text">Drag & drop generator files (.cpp, .py, etc.) or click to browse</div>
+              <input type="file" id="generator-file-input" class="drop-zone-input" accept=".cpp,.c,.cc,.cxx,.py,.java,.pas" multiple>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 12px; margin-bottom: 6px;">
+              <button type="button" id="btn-add-generator-code" class="btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span id="btn-add-generator-code-text">Add Generator as Code</span>
+              </button>
+            </div>
+
+            <div id="generators-list-container" class="table-card" style="margin-top: 16px; display: none;">
+              <div class="table-header-bar"
+                style="padding: 12px 20px; border-bottom: 1px solid var(--border-color); font-weight: 500; font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
+                <span id="generators-list-header">Uploaded Generators</span>
+              </div>
+              <div class="table-container">
+                <table id="generators-table">
+                  <thead>
+                    <tr>
+                      <th id="th-gen-order" style="width: 55px; text-align: center;">#</th>
+                      <th id="th-gen-name">Generator File</th>
+                      <th id="th-gen-size">Size</th>
+                      <th id="th-gen-actions" style="text-align: right; width: 180px;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="generators-table-body">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="tests-script-card" style="margin-top: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label for="tests-script-input" id="lbl-tests-script"
+                  style="font-weight: 600; font-size: 14px; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="4 17 10 11 4 5"></polyline>
+                    <line x1="12" y1="19" x2="20" y2="19"></line>
+                  </svg>
+                  <span id="lbl-tests-script-title">Tests Generation Script</span>
+                </label>
+              </div>
+              <p id="lbl-tests-script-desc"
+                style="font-size: 12px; color: var(--text-secondary); margin: 0 0 8px 0; line-height: 1.4;">
+                Specify commands to run generators. Each line generates a test, e.g.: <code>gen 10 5 > $</code>
+              </p>
+              <textarea id="tests-script-input" class="code-editor" rows="6" placeholder="gen 10 5 > $&#10;gen 100 10 > $&#10;gen 1000 100 > $"
+                style="width: 100%; box-sizing: border-box; font-family: var(--font-mono, monospace); font-size: 13px; line-height: 1.4; resize: vertical; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; background: var(--bg-card); color: var(--text-primary);"></textarea>
             </div>
           </div>
         </div>
@@ -656,6 +748,14 @@
               <span id="summary-label-tests-count" class="summary-label">Uploaded Tests:</span>
               <span id="summary-val-tests-count" class="summary-value font-medium"></span>
             </div>
+            <div class="summary-field">
+              <span id="summary-label-generators-count" class="summary-label">Test Generators:</span>
+              <span id="summary-val-generators-count" class="summary-value font-medium">0</span>
+            </div>
+            <div class="summary-field">
+              <span id="summary-label-script-status" class="summary-label">Tests Script:</span>
+              <span id="summary-val-script-status" class="summary-value font-medium">-</span>
+            </div>
             <div class="table-container summary-tests-table scrollable-y" style="max-height: 200px; margin-top: 10px;">
               <table id="summary-tests-table-el">
                 <thead>
@@ -718,7 +818,9 @@
   </main>
 
   <footer>
-    &copy; 2026 QW_Poly. all rights reserved via MIT lisence.
+    &copy; 2026 QW_Poly by Maxim Kuznetsov (aka <a href="https://github.com/Fortoshka"
+      style="text-decoration: none; color: var(--accent-color);">Fortoshka</a>). all rights
+    reserved via MIT lisence.
   </footer>
   <div id="custom-modal-overlay" class="modal-overlay" style="display: none;">
     <div class="modal-card dialog-card">
@@ -855,7 +957,8 @@
       </div>
       <div class="dialog-body" style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
         <p id="ulearn-modal-subtitle" style="font-size: 13px; color: var(--text-secondary); margin: 0;">
-          Enter a task URL from ulearn.me (e.g. <code>https://ulearn.me/course/python/Griby_147686d0-aa0a-456a-9720-001fcd7f6d6c</code>).
+          Enter a task URL from ulearn.me (e.g.
+          <code>https://ulearn.me/course/python/Griby_147686d0-aa0a-456a-9720-001fcd7f6d6c</code>).
         </p>
 
         <div class="input-group" style="margin: 0;">
@@ -960,6 +1063,41 @@
       <div class="dialog-footer" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
         <button type="button" id="manual-test-cancel-btn" class="btn-secondary">Cancel</button>
         <button type="button" id="manual-test-save-btn" class="btn-primary">Save Test</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add / Edit Generator Modal -->
+  <div id="generator-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card dialog-card" style="width: 650px; max-width: 95vw;">
+      <div class="dialog-header"
+        style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+        <div>
+          <h3 id="generator-modal-title" style="margin: 0 0 4px 0;">Add Generator</h3>
+          <p id="generator-modal-subtitle" style="font-size: 13px; color: var(--text-secondary); margin: 0;">
+            Provide generator source code (C++, Python, etc.)
+          </p>
+        </div>
+        <button type="button" id="generator-modal-close" class="modal-close-btn"
+          aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body dialog-body" style="display: flex; flex-direction: column; gap: 16px;">
+        <input type="hidden" id="generator-edit-index" value="-1">
+
+        <div class="input-group">
+          <input type="text" id="generator-name" placeholder=" " required value="gen.cpp">
+          <label for="generator-name" id="lbl-generator-name">Filename (e.g. gen.cpp or generator.py) *</label>
+        </div>
+
+        <div class="input-group">
+          <textarea id="generator-code" class="code-editor" rows="12" placeholder=" " required
+            style="font-family: var(--font-mono, monospace); font-size: 13px; line-height: 1.4; resize: vertical;"></textarea>
+          <label for="generator-code" id="lbl-generator-code">Generator Source Code *</label>
+        </div>
+      </div>
+      <div class="dialog-footer" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px;">
+        <button type="button" id="generator-cancel-btn" class="btn-secondary">Cancel</button>
+        <button type="button" id="generator-save-btn" class="btn-primary">Save Generator</button>
       </div>
     </div>
   </div>
