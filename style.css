@@ -2159,9 +2159,11 @@ textarea::-webkit-scrollbar-thumb:hover,
   transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
 }
 
-/* Generator action buttons: download and edit stay neutral on hover, only delete turns red */
+/* Generator and Test action buttons: download and edit stay neutral on hover, only delete turns red */
 .btn-icon-action.btn-download-gen:hover,
-.btn-icon-action.btn-edit-gen:hover {
+.btn-icon-action.btn-edit-gen:hover,
+.btn-icon-action.btn-download-test:hover,
+.btn-icon-action.btn-edit-test:hover {
   color: var(--text-secondary);
 }
 
@@ -2183,5 +2185,72 @@ textarea::-webkit-scrollbar-thumb:hover,
   #upload-solution-view .editor-split-layout,
   #checker-tests-view .editor-split-layout {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ========================================================
+   Custom Checker Panel
+   ======================================================== */
+.custom-checker-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+  box-shadow: var(--card-shadow);
+  animation: fadeInDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+.custom-checker-card:focus-within {
+  border-color: var(--accent-color);
+}
+
+.custom-checker-header {
+  margin-bottom: 12px;
+}
+
+.custom-checker-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent-color);
+}
+
+.custom-checker-title-wrap h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.custom-checker-title-wrap svg {
+  color: var(--accent-color);
+  flex-shrink: 0;
+}
+
+.custom-checker-desc {
+  margin: 4px 0 0 0;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.custom-checker-card .code-editor {
+  min-height: 180px;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  tab-size: 4;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Polygon Uploader - Credentials</title>
-  <script type="module" crossorigin src="/assets/index-Deci6l0n.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-DYjVzqza.css">
+  <script type="module" crossorigin src="/assets/index-Dc-xKk3D.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-D7nb0-NA.css">
 </head>
 
 <body>
@@ -444,9 +444,63 @@
               <option value="std::rcmp9.cpp">std::rcmp9.cpp (Floats, error &le; 10^-9)</option>
               <option value="std::yesno.cpp">std::yesno.cpp (Yes/No, case-insensitive)</option>
               <option value="std::lcmp.cpp">std::lcmp.cpp (Line-by-line comparison)</option>
-              <option value="custom">Custom checker source file...</option>
+              <option value="custom" id="opt-custom-checker">Custom checker source file...</option>
             </select>
             <label for="checker-select" id="label-checker-select" class="select-label">Checker Program</label>
+          </div>
+
+          <!-- Custom Checker Panel (shown when custom checker is selected) -->
+          <div id="custom-checker-panel" class="custom-checker-card" style="display: none;">
+            <div class="custom-checker-header">
+              <div class="custom-checker-title-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <polyline points="9 12 11 14 15 10"></polyline>
+                </svg>
+                <h4 id="custom-checker-title">Custom Checker Source Code</h4>
+              </div>
+              <p id="custom-checker-subtitle" class="custom-checker-desc">
+                Upload your custom checker source file (.cpp, .py) or write the code directly using testlib.h.
+              </p>
+            </div>
+
+            <div class="tex-info-box" id="custom-checker-info-box">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span>
+                <span id="custom-checker-info-prefix">Check the documentation on </span>
+                <a href="https://codeforces.com/blog/entry/18431" target="_blank" class="accent-link"
+                  id="custom-checker-info-link">writing custom checkers with testlib.h</a>
+                <span id="custom-checker-info-suffix"> in Polygon.</span>
+              </span>
+            </div>
+
+            <div class="input-group" style="margin-top: 14px; margin-bottom: 14px;">
+              <input type="text" id="custom-checker-name" value="check.cpp" placeholder=" " required>
+              <label for="custom-checker-name" id="lbl-custom-checker-name">Checker File Name</label>
+            </div>
+
+            <div class="drop-zone" id="custom-checker-drop-zone">
+              <svg class="drop-zone-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <div class="drop-zone-text" id="custom-checker-drop-text">Drag & drop checker file here or click to browse</div>
+              <input type="file" id="custom-checker-file-input" class="drop-zone-input"
+                accept=".cpp,.c,.cc,.cxx,.h,.hpp,.py,.pas,.txt">
+            </div>
+
+            <div class="input-group" style="margin-top: 16px;">
+              <textarea id="custom-checker-code" class="code-editor" placeholder=" " rows="12"></textarea>
+              <label for="custom-checker-code" id="lbl-custom-checker-code">Checker Source Code *</label>
+            </div>
           </div>
 
           <div class="tests-mode-tabs-bar" id="tests-mode-tabs-bar">
@@ -485,7 +539,16 @@
               <input type="file" id="tests-file-input" class="drop-zone-input" accept=".txt,.in,.out" multiple>
             </div>
 
-            <div style="display: flex; justify-content: flex-end; margin-top: 12px; margin-bottom: 6px;">
+            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 12px; margin-bottom: 6px;">
+              <button type="button" id="btn-download-all-tests" class="btn-secondary" style="display: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span id="btn-download-all-tests-text">Download All Tests</span>
+              </button>
               <button type="button" id="btn-add-manual-test" class="btn-secondary">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -500,6 +563,14 @@
               <div class="table-header-bar"
                 style="padding: 12px 20px; border-bottom: 1px solid var(--border-color); font-weight: 500; font-size: 14px; display: flex; justify-content: space-between; align-items: center;">
                 <span id="tests-list-header">Uploaded Tests</span>
+                <button type="button" id="btn-download-all-tests-table" class="btn-text-action" style="font-size: 13px; color: var(--accent-color); font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span id="btn-download-all-tests-table-text">Download All Tests</span>
+                </button>
               </div>
               <div class="table-container">
                 <table id="tests-table">
@@ -509,7 +580,7 @@
                       <th id="th-test-name">Test File</th>
                       <th id="th-test-size">Size</th>
                       <th id="th-test-statements" style="text-align: center; width: 150px;">Use in Statements</th>
-                      <th id="th-test-actions" style="text-align: right; width: 160px;">Actions</th>
+                      <th id="th-test-actions" style="text-align: right; width: 190px;">Actions</th>
                     </tr>
                   </thead>
                   <tbody id="tests-table-body">

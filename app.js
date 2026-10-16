@@ -197,13 +197,25 @@ ${input}
 Output Format:
 ${output}
 
-Output only the clean source code in ${langName} without any markdown formatting, explanations, or code blocks.`,
+Output only the clean source code in ${langName}.`,
 
     // Step 3 Upload Tests Translations
     step3Title: "Step 3: Checker and Tests",
     step3Subtitle: "Select checker program, upload test files, and select statements tests.",
     labelCheckerSelect: "Checker Program",
     optSelectChecker: "Select Checker",
+    optCustomChecker: "Custom checker source file...",
+    customCheckerTitle: "Custom Checker Source Code",
+    customCheckerSubtitle: "Upload your custom checker source file (.cpp, .py) or write the code directly using testlib.h.",
+    customCheckerInfoPrefix: "Check the documentation on ",
+    customCheckerInfoLink: "writing custom checkers with testlib.h",
+    customCheckerInfoSuffix: " in Polygon.",
+    lblCustomCheckerName: "Checker File Name",
+    lblCustomCheckerCode: "Checker Source Code *",
+    customCheckerDropText: "Drag & drop checker file here or click to browse",
+    customCheckerCodeRequiredAlert: "Please upload a custom checker file or enter its source code.",
+    customCheckerNameRequiredAlert: "Please specify the checker file name.",
+    summaryCustomCheckerPrefix: "Custom checker:",
     testsDropText: "Drag & drop test files here or click to browse",
     testsListHeader: "Uploaded Tests",
     thTestOrder: "#",
@@ -225,6 +237,8 @@ Output only the clean source code in ${langName} without any markdown formatting
     btnMoveUp: "Move Up",
     btnMoveDown: "Move Down",
     btnEditTest: "Edit",
+    btnDownloadTest: "Download test file",
+    btnDownloadAllTests: "Download All Tests",
     btnRemove: "Remove",
     testInputRequiredAlert: "Please enter input data for the test.",
     dragToReorder: "Drag to reorder",
@@ -289,7 +303,7 @@ ${input}
 Output Format:
 ${output}
 
-The generator should output random test cases conforming to the input format and constraints. Use standard testlib.h methods (e.g., registerGen, opt, rnd.next). Output only the clean C++ source code without any markdown formatting, explanations, or code blocks.`,
+The generator should output random test cases conforming to the input format and constraints. Use standard testlib.h methods (e.g., registerGen, opt, rnd.next). Output only the clean C++ source code.`,
 
     // Step 4 Final Confirmation Translations
     step4Title: "Step 4: Final Confirmation",
@@ -327,6 +341,8 @@ The generator should output random test cases conforming to the input format and
     logSolutionSaved: "Correct solution saved as Main (MA).",
     logSettingChecker: (checker) => `Configuring checker to ${checker}...`,
     logCheckerSet: "Checker configured successfully.",
+    logSavingCustomChecker: (checker) => `Uploading custom checker source file (${checker})...`,
+    logCustomCheckerSaved: "Custom checker source file uploaded successfully.",
     logUploadingTests: (count) => `Found ${count} test files to upload.`,
     logUploadingTestFile: (name, idx) => `[${idx}] Uploading test file "${name}"...`,
     logTestFileUploaded: (name, idx) => `[${idx}] Test "${name}" uploaded successfully.`,
@@ -454,13 +470,25 @@ ${input}
 Формат выходных данных:
 ${output}
 
-Выведи только чистый исходный код на языке ${langName} без какого-либо форматирования markdown (без блоков \`\`\`), пояснений или комментариев.`,
+Выведи только чистый исходный код на языке ${langName}.`,
 
     // Step 3 Upload Tests Translations
     step3Title: "Шаг 3: Чекер и тесты",
     step3Subtitle: "Выберите программу-чекер, загрузите тесты и настройте их отображение в условии.",
     labelCheckerSelect: "Программа-чекер",
     optSelectChecker: "Выберите чекер",
+    optCustomChecker: "Кастомный чекер (исходный код)...",
+    customCheckerTitle: "Кастомная программа-чекер",
+    customCheckerSubtitle: "Загрузите файл чекера (.cpp, .py) или напишите исходный код напрямую с использованием testlib.h.",
+    customCheckerInfoPrefix: "Ознакомьтесь с ",
+    customCheckerInfoLink: "руководством по написанию чекеров в testlib.h",
+    customCheckerInfoSuffix: " для Polygon.",
+    lblCustomCheckerName: "Имя файла чекера",
+    lblCustomCheckerCode: "Исходный код чекера *",
+    customCheckerDropText: "Перетащите файл чекера сюда (.cpp, .py и др.) или нажмите для выбора",
+    customCheckerCodeRequiredAlert: "Пожалуйста, загрузите файл кастомного чекера или введите его исходный код.",
+    customCheckerNameRequiredAlert: "Пожалуйста, укажите имя файла чекера.",
+    summaryCustomCheckerPrefix: "Кастомный чекер:",
     testsDropText: "Перетащите файлы тестов сюда или нажмите для выбора",
     testsListHeader: "Загруженные тесты",
     thTestOrder: "№",
@@ -482,6 +510,8 @@ ${output}
     btnMoveUp: "Вверх",
     btnMoveDown: "Вниз",
     btnEditTest: "Изменить",
+    btnDownloadTest: "Скачать файл теста",
+    btnDownloadAllTests: "Скачать все тесты",
     btnRemove: "Удалить",
     testInputRequiredAlert: "Пожалуйста, введите входные данные теста.",
     dragToReorder: "Потяните для изменения порядка",
@@ -584,6 +614,8 @@ ${output}
     logSolutionSaved: "Решение сохранено как основное (MA).",
     logSettingChecker: (checker) => `Настройка программы-чекера (${checker})...`,
     logCheckerSet: "Чекер успешно настроен.",
+    logSavingCustomChecker: (checker) => `Загрузка исходного кода кастомного чекера (${checker})...`,
+    logCustomCheckerSaved: "Исходный код кастомного чекера успешно сохранен.",
     logUploadingTests: (count) => `Найдено файлов тестов для загрузки: ${count}.`,
     logUploadingTestFile: (name, idx) => `[${idx}] Загрузка файла теста "${name}"...`,
     logTestFileUploaded: (name, idx) => `[${idx}] Тест "${name}" успешно загружен.`,
@@ -770,10 +802,28 @@ const btnBackToStep2Text = document.getElementById('btn-back-to-step2');
 const btnFinishProblemText = document.getElementById('btn-finish-problem-text');
 
 const checkerSelect = document.getElementById('checker-select');
+const optCustomChecker = document.getElementById('opt-custom-checker');
+const customCheckerPanel = document.getElementById('custom-checker-panel');
+const customCheckerTitle = document.getElementById('custom-checker-title');
+const customCheckerSubtitle = document.getElementById('custom-checker-subtitle');
+const customCheckerInfoPrefix = document.getElementById('custom-checker-info-prefix');
+const customCheckerInfoLink = document.getElementById('custom-checker-info-link');
+const customCheckerInfoSuffix = document.getElementById('custom-checker-info-suffix');
+const customCheckerName = document.getElementById('custom-checker-name');
+const lblCustomCheckerName = document.getElementById('lbl-custom-checker-name');
+const customCheckerDropZone = document.getElementById('custom-checker-drop-zone');
+const customCheckerDropText = document.getElementById('custom-checker-drop-text');
+const customCheckerFileInput = document.getElementById('custom-checker-file-input');
+const customCheckerCode = document.getElementById('custom-checker-code');
+const lblCustomCheckerCode = document.getElementById('lbl-custom-checker-code');
 const testsDropZone = document.getElementById('tests-drop-zone');
 const testsFileInput = document.getElementById('tests-file-input');
 const testsListContainer = document.getElementById('tests-list-container');
 const testsTableBody = document.getElementById('tests-table-body');
+const btnDownloadAllTests = document.getElementById('btn-download-all-tests');
+const btnDownloadAllTestsText = document.getElementById('btn-download-all-tests-text');
+const btnDownloadAllTestsTable = document.getElementById('btn-download-all-tests-table');
+const btnDownloadAllTestsTableText = document.getElementById('btn-download-all-tests-table-text');
 
 const tabBtnManualTests = document.getElementById('tab-btn-manual-tests');
 const tabBtnGeneratorTests = document.getElementById('tab-btn-generator-tests');
@@ -1154,10 +1204,10 @@ function applyLanguage(lang) {
   if (aiCardSubtitle) aiCardSubtitle.textContent = t.aiCardSubtitle;
   if (btnGeneratePromptText) btnGeneratePromptText.textContent = t.btnGeneratePromptText;
   if (helpTitle) helpTitle.textContent = t.helpTitle;
-  
+
   const lblPtAutoBuild = document.getElementById('lbl-pt-auto-build');
   if (lblPtAutoBuild && t.lblPtAutoBuild) lblPtAutoBuild.textContent = t.lblPtAutoBuild;
-  
+
   if (helpSteps) {
     helpSteps.innerHTML = `
       <li>${t.helpStep1}</li>
@@ -1182,6 +1232,17 @@ function applyLanguage(lang) {
   if (step3Subtitle) step3Subtitle.textContent = t.step3Subtitle;
   if (labelCheckerSelect) labelCheckerSelect.textContent = t.labelCheckerSelect;
   if (optSelectChecker) optSelectChecker.textContent = t.optSelectChecker;
+  if (optCustomChecker) optCustomChecker.textContent = t.optCustomChecker;
+  if (customCheckerTitle) customCheckerTitle.textContent = t.customCheckerTitle;
+  if (customCheckerSubtitle) customCheckerSubtitle.textContent = t.customCheckerSubtitle;
+  if (customCheckerInfoPrefix) customCheckerInfoPrefix.textContent = t.customCheckerInfoPrefix;
+  if (customCheckerInfoLink) customCheckerInfoLink.textContent = t.customCheckerInfoLink;
+  if (customCheckerInfoSuffix) customCheckerInfoSuffix.textContent = t.customCheckerInfoSuffix;
+  if (lblCustomCheckerName) lblCustomCheckerName.textContent = t.lblCustomCheckerName;
+  if (lblCustomCheckerCode) lblCustomCheckerCode.textContent = t.lblCustomCheckerCode;
+  if (customCheckerDropText && (!customCheckerFileInput || !customCheckerFileInput.files || customCheckerFileInput.files.length === 0)) {
+    customCheckerDropText.textContent = t.customCheckerDropText;
+  }
   if (testsDropText && (!testsFileInput || !testsFileInput.files || testsFileInput.files.length === 0)) testsDropText.textContent = t.testsDropText;
   if (testsListHeader) testsListHeader.textContent = t.testsListHeader;
   if (thTestOrder) thTestOrder.textContent = t.thTestOrder;
@@ -1191,6 +1252,8 @@ function applyLanguage(lang) {
   if (thTestActions) thTestActions.textContent = t.thTestActions;
   if (btnAddManualTestText) btnAddManualTestText.textContent = t.btnManualTest;
   if (btnAddManualTestTableText) btnAddManualTestTableText.textContent = t.btnManualTest;
+  if (btnDownloadAllTestsText) btnDownloadAllTestsText.textContent = t.btnDownloadAllTests;
+  if (btnDownloadAllTestsTableText) btnDownloadAllTestsTableText.textContent = t.btnDownloadAllTests;
 
   // Manual Test Modal translations
   if (manualTestModalSubtitle) manualTestModalSubtitle.textContent = t.modalTestSubtitle;
@@ -1598,9 +1661,9 @@ function renderStatementLangTabs() {
     const tabBtn = document.createElement('button');
     tabBtn.type = 'button';
     tabBtn.className = `stmt-tab ${lang === activeStmtLang ? 'active' : ''}`;
-    
+
     const displayName = stmtLangNames[lang] || (lang.charAt(0).toUpperCase() + lang.slice(1));
-    
+
     if (Object.keys(multiStatements).length > 1) {
       tabBtn.innerHTML = `<span>${displayName}</span><span class="close-tab" data-lang="${lang}">&times;</span>`;
     } else {
@@ -2278,6 +2341,80 @@ if (backToStep2Btn) {
   });
 }
 
+// Checker Selection and Custom Checker Panel Toggle
+if (checkerSelect) {
+  checkerSelect.addEventListener('change', () => {
+    if (checkerSelect.value === 'custom') {
+      if (customCheckerPanel) {
+        customCheckerPanel.style.display = 'block';
+      }
+      if (customCheckerCode && !customCheckerCode.value.trim()) {
+        customCheckerCode.value = ``;
+      }
+      if (customCheckerName) customCheckerName.dispatchEvent(new Event('input'));
+      if (customCheckerCode) customCheckerCode.dispatchEvent(new Event('input'));
+    } else {
+      if (customCheckerPanel) {
+        customCheckerPanel.style.display = 'none';
+      }
+    }
+  });
+}
+
+// Custom Checker Drag & Drop and File Selection
+if (customCheckerDropZone) {
+  customCheckerDropZone.addEventListener('click', () => {
+    if (customCheckerFileInput) customCheckerFileInput.click();
+  });
+
+  customCheckerDropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    customCheckerDropZone.classList.add('drop-zone--over');
+  });
+
+  ['dragleave', 'dragend'].forEach(type => {
+    customCheckerDropZone.addEventListener(type, () => {
+      customCheckerDropZone.classList.remove('drop-zone--over');
+    });
+  });
+
+  customCheckerDropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    customCheckerDropZone.classList.remove('drop-zone--over');
+
+    if (e.dataTransfer.files.length) {
+      if (customCheckerFileInput) customCheckerFileInput.files = e.dataTransfer.files;
+      handleCustomCheckerFile(e.dataTransfer.files[0]);
+    }
+  });
+}
+
+if (customCheckerFileInput) {
+  customCheckerFileInput.addEventListener('change', () => {
+    if (customCheckerFileInput.files.length) {
+      handleCustomCheckerFile(customCheckerFileInput.files[0]);
+    }
+  });
+}
+
+function handleCustomCheckerFile(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    if (customCheckerCode) {
+      customCheckerCode.value = e.target.result;
+      customCheckerCode.dispatchEvent(new Event('input'));
+    }
+    if (customCheckerName) {
+      customCheckerName.value = file.name;
+      customCheckerName.dispatchEvent(new Event('input'));
+    }
+    if (customCheckerDropText) {
+      customCheckerDropText.textContent = `${file.name} (${Math.round(file.size / 1024) || 1} KB)`;
+    }
+  };
+  reader.readAsText(file);
+}
+
 // Drag & Drop Tests Events
 if (testsDropZone) {
   testsDropZone.addEventListener('click', () => testsFileInput.click());
@@ -2373,10 +2510,14 @@ function renderTestsTable() {
 
   if (uploadedTests.length === 0) {
     testsListContainer.style.display = 'none';
+    if (btnDownloadAllTests) btnDownloadAllTests.style.display = 'none';
+    if (btnDownloadAllTestsTable) btnDownloadAllTestsTable.style.display = 'none';
     return;
   }
 
   testsListContainer.style.display = 'block';
+  if (btnDownloadAllTests) btnDownloadAllTests.style.display = 'inline-flex';
+  if (btnDownloadAllTestsTable) btnDownloadAllTestsTable.style.display = 'inline-flex';
   testsTableBody.innerHTML = '';
   const t = translations[currentLang];
 
@@ -2407,7 +2548,7 @@ function renderTestsTable() {
           <input type="checkbox" class="tests-checkbox" data-idx="${idx}" ${checkedAttr}>
         </div>
       </td>
-      <td class="col-actions" style="text-align: right;">
+      <td class="col-actions" style="text-align: right; width: 190px;">
         <div class="test-actions-group">
           <button type="button" class="btn-icon-action btn-move-up" data-idx="${idx}" title="${t.btnMoveUp || 'Move Up'}" ${isFirst ? 'disabled' : ''}>
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -2417,6 +2558,13 @@ function renderTestsTable() {
           <button type="button" class="btn-icon-action btn-move-down" data-idx="${idx}" title="${t.btnMoveDown || 'Move Down'}" ${isLast ? 'disabled' : ''}>
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <button type="button" class="btn-icon-action btn-download-test" data-idx="${idx}" title="${t.btnDownloadTest || 'Download test file'}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
             </svg>
           </button>
           <button type="button" class="btn-icon-action btn-edit-test" data-idx="${idx}" title="${t.btnEditTest || 'Edit'}">
@@ -2500,6 +2648,15 @@ function renderTestsTable() {
     });
   });
 
+  // Bind download individual test
+  testsTableBody.querySelectorAll('.btn-download-test').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = parseInt(e.currentTarget.getAttribute('data-idx'), 10);
+      downloadSingleTest(idx);
+    });
+  });
+
   // Bind edit
   testsTableBody.querySelectorAll('.btn-edit-test').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -2518,6 +2675,80 @@ function renderTestsTable() {
       renderTestsTable();
     });
   });
+}
+
+function triggerFileDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function downloadSingleTest(idx) {
+  const test = uploadedTests[idx];
+  if (!test) return;
+
+  const defaultBase = String(idx + 1).padStart(2, '0');
+  const rawName = (test.name || '').trim();
+  const baseName = rawName ? rawName.replace(/\.[^/.]+$/, '') : defaultBase;
+  const hasAnswer = Boolean(test.answer && test.answer.trim().length > 0);
+
+  if (hasAnswer) {
+    const zip = new SimpleZip();
+    zip.addFile(`${baseName}.in`, test.content || '');
+    zip.addFile(`${baseName}.ans`, test.answer || '');
+    const blob = zip.generateBlob();
+    triggerFileDownload(blob, `${baseName}.zip`);
+  } else {
+    let fileName = rawName || `${defaultBase}.txt`;
+    if (!fileName.includes('.')) fileName += '.txt';
+    const blob = new Blob([test.content || ''], { type: 'text/plain;charset=utf-8' });
+    triggerFileDownload(blob, fileName);
+  }
+}
+
+function downloadAllTests() {
+  if (!uploadedTests || uploadedTests.length === 0) {
+    const msg = currentLang === 'en' ? 'No tests available to download.' : 'Нет тестов для скачивания.';
+    showCustomAlert(msg);
+    return;
+  }
+
+  const probName = (document.getElementById('prob-system-name')?.value || document.getElementById('prob-name')?.value || 'problem').trim() || 'problem';
+  const zip = new SimpleZip();
+
+  uploadedTests.forEach((test, idx) => {
+    const defaultBase = String(idx + 1).padStart(2, '0');
+    const rawName = (test.name || '').trim();
+    const baseName = rawName ? rawName.replace(/\.[^/.]+$/, '') : defaultBase;
+    const hasAnswer = Boolean(test.answer && test.answer.trim().length > 0);
+
+    if (hasAnswer) {
+      zip.addFile(`tests/${baseName}.in`, test.content || '');
+      zip.addFile(`tests/${baseName}.ans`, test.answer || '');
+    } else {
+      let fileName = rawName || `${defaultBase}.txt`;
+      if (!fileName.includes('.')) fileName += '.txt';
+      zip.addFile(`tests/${fileName}`, test.content || '');
+    }
+  });
+
+  const blob = zip.generateBlob();
+  const zipName = `${probName}_tests.zip`;
+  triggerFileDownload(blob, zipName);
+}
+
+if (btnDownloadAllTests) {
+  applyRippleEffect(btnDownloadAllTests);
+  btnDownloadAllTests.addEventListener('click', downloadAllTests);
+}
+
+if (btnDownloadAllTestsTable) {
+  btnDownloadAllTestsTable.addEventListener('click', downloadAllTests);
 }
 
 function moveTestUp(idx) {
@@ -3016,6 +3247,21 @@ if (finishProblemBtn) {
       return;
     }
 
+    if (checkerSelect.value === 'custom') {
+      const cName = customCheckerName ? customCheckerName.value.trim() : '';
+      const cCode = customCheckerCode ? customCheckerCode.value.trim() : '';
+      if (!cName) {
+        await showCustomAlert(translations[currentLang].customCheckerNameRequiredAlert);
+        if (customCheckerName) customCheckerName.focus();
+        return;
+      }
+      if (!cCode) {
+        await showCustomAlert(translations[currentLang].customCheckerCodeRequiredAlert);
+        if (customCheckerCode) customCheckerCode.focus();
+        return;
+      }
+    }
+
     // Populate the confirmation summaries dynamically
     populateConfirmationSummary();
 
@@ -3110,7 +3356,13 @@ function populateConfirmationSummary() {
   }
 
   if (summaryValChecker && checkerSelect) {
-    summaryValChecker.textContent = checkerSelect.options[checkerSelect.selectedIndex].text;
+    if (checkerSelect.value === 'custom') {
+      const cName = customCheckerName ? customCheckerName.value.trim() || 'check.cpp' : 'check.cpp';
+      const prefix = translations[currentLang].summaryCustomCheckerPrefix || 'Custom checker:';
+      summaryValChecker.textContent = `${prefix} ${cName}`;
+    } else {
+      summaryValChecker.textContent = checkerSelect.options[checkerSelect.selectedIndex].text;
+    }
   }
   if (summaryValTestsCount) {
     summaryValTestsCount.textContent = uploadedTests.length.toString();
@@ -3284,6 +3536,30 @@ async function startPolygonUpload() {
     }, apiKey, apiSecret);
     if (checkerRes.status !== 'OK') {
       throw new Error(checkerRes.comment || 'Failed to configure checker');
+    }
+    addUploadLog(t.logCheckerSet, 'success');
+  } else if (checkerName === 'custom') {
+    const customName = customCheckerName ? customCheckerName.value.trim() || 'check.cpp' : 'check.cpp';
+    const customCode = customCheckerCode ? customCheckerCode.value : '';
+    addUploadLog(t.logSavingCustomChecker(customName), 'info');
+    const saveFileRes = await callPolygonApi('problem.saveFile', {
+      problemId: problemId,
+      type: 'source',
+      name: customName,
+      file: customCode
+    }, apiKey, apiSecret);
+    if (saveFileRes.status !== 'OK') {
+      throw new Error(saveFileRes.comment || 'Failed to upload custom checker source file');
+    }
+    addUploadLog(t.logCustomCheckerSaved, 'success');
+
+    addUploadLog(t.logSettingChecker(customName), 'info');
+    const checkerRes = await callPolygonApi('problem.setChecker', {
+      problemId: problemId,
+      checker: customName
+    }, apiKey, apiSecret);
+    if (checkerRes.status !== 'OK') {
+      throw new Error(checkerRes.comment || 'Failed to configure custom checker');
     }
     addUploadLog(t.logCheckerSet, 'success');
   }
@@ -3607,14 +3883,14 @@ async function openExistingProblem(probId, btn) {
           if (valRes.status === 'OK' && valRes.result) {
             excludeNames.add(valRes.result.toLowerCase().trim());
           }
-        } catch (_) {}
+        } catch (_) { }
 
         try {
           const interactorRes = await callPolygonApi('problem.interactor', { problemId: probId }, apiKey, apiSecret);
           if (interactorRes.status === 'OK' && interactorRes.result) {
             excludeNames.add(interactorRes.result.toLowerCase().trim());
           }
-        } catch (_) {}
+        } catch (_) { }
 
         const genSourceFiles = filesRes.result.sourceFiles.filter(sf => sf.name && !excludeNames.has(sf.name.toLowerCase().trim()));
 
@@ -3655,6 +3931,76 @@ async function openExistingProblem(probId, btn) {
 
     if (testsScriptInput) {
       testsScriptInput.value = loadedScript;
+    }
+
+    // 5c. Fetch custom checker code if checker is custom
+    let loadedCustomCheckerCode = '';
+    const isStandardChecker = checkerName.startsWith('std::') || [
+      'std::ncmp.cpp', 'std::wcmp.cpp', 'std::rcmp6.cpp', 'std::rcmp9.cpp', 'std::yesno.cpp', 'std::lcmp.cpp'
+    ].includes(checkerName);
+
+    if (!isStandardChecker && checkerName) {
+      let targetCheckerName = checkerName;
+      let targetCheckerType = 'source';
+
+      if (filesRes && filesRes.status === 'OK' && filesRes.result) {
+        const sourceFiles = Array.isArray(filesRes.result.sourceFiles) ? filesRes.result.sourceFiles : [];
+        const resourceFiles = Array.isArray(filesRes.result.resourceFiles) ? filesRes.result.resourceFiles : [];
+
+        // Exact match in source files
+        const sMatch = sourceFiles.find(f => f.name && f.name.toLowerCase() === checkerName.toLowerCase());
+        if (sMatch) {
+          targetCheckerName = sMatch.name;
+          targetCheckerType = 'source';
+        } else {
+          // Exact match in resource files
+          const rMatch = resourceFiles.find(f => f.name && f.name.toLowerCase() === checkerName.toLowerCase());
+          if (rMatch) {
+            targetCheckerName = rMatch.name;
+            targetCheckerType = 'resource';
+          } else {
+            // Partial match (e.g. checker is "check" and file is "check.cpp")
+            const sPartial = sourceFiles.find(f => f.name && f.name.toLowerCase().startsWith(checkerName.toLowerCase() + '.'));
+            if (sPartial) {
+              targetCheckerName = sPartial.name;
+              targetCheckerType = 'source';
+            }
+          }
+        }
+      }
+
+      // Try primary target type
+      try {
+        const code = await downloadPlainFile('problem.viewFile', {
+          problemId: probId,
+          type: targetCheckerType,
+          name: targetCheckerName
+        }, apiKey, apiSecret);
+        if (code && !code.startsWith('{"status":"FAILED"')) {
+          loadedCustomCheckerCode = code;
+          checkerName = targetCheckerName;
+        }
+      } catch (err) {
+        console.warn(`Failed to download custom checker with type=${targetCheckerType}:`, err);
+      }
+
+      // Fallback to opposite type if not loaded
+      if (!loadedCustomCheckerCode) {
+        const altType = targetCheckerType === 'source' ? 'resource' : 'source';
+        try {
+          const code = await downloadPlainFile('problem.viewFile', {
+            problemId: probId,
+            type: altType,
+            name: targetCheckerName
+          }, apiKey, apiSecret);
+          if (code && !code.startsWith('{"status":"FAILED"')) {
+            loadedCustomCheckerCode = code;
+            checkerName = targetCheckerName;
+          }
+        } catch (errAlt) {
+          console.warn(`Fallback custom checker download with type=${altType} failed:`, errAlt);
+        }
+      }
     }
 
     // Pre-populate Step 1 general info & limits
@@ -3702,6 +4048,28 @@ async function openExistingProblem(probId, btn) {
       }
       if (!matched) {
         checkerSelect.value = 'custom';
+        if (customCheckerPanel) {
+          customCheckerPanel.style.display = 'block';
+        }
+        if (customCheckerName) {
+          customCheckerName.value = checkerName || 'check.cpp';
+          customCheckerName.dispatchEvent(new Event('input'));
+        }
+        if (customCheckerCode) {
+          customCheckerCode.value = loadedCustomCheckerCode || '';
+          customCheckerCode.dispatchEvent(new Event('input'));
+        }
+        if (customCheckerDropText) {
+          if (loadedCustomCheckerCode) {
+            customCheckerDropText.textContent = `${checkerName} (${Math.round(loadedCustomCheckerCode.length / 1024) || 1} KB)`;
+          } else {
+            customCheckerDropText.textContent = translations[currentLang].customCheckerDropText;
+          }
+        }
+      } else {
+        if (customCheckerPanel) {
+          customCheckerPanel.style.display = 'none';
+        }
       }
       checkerSelect.dispatchEvent(new Event('change'));
     }
@@ -3847,6 +4215,11 @@ function clearWizardData() {
   if (solLangSelect) solLangSelect.value = 'cpp.g++20';
 
   if (checkerSelect) checkerSelect.value = 'std::ncmp.cpp';
+  if (customCheckerPanel) customCheckerPanel.style.display = 'none';
+  if (customCheckerName) customCheckerName.value = 'check.cpp';
+  if (customCheckerCode) customCheckerCode.value = '';
+  if (customCheckerFileInput) customCheckerFileInput.value = '';
+  if (customCheckerDropText) customCheckerDropText.textContent = translations[currentLang].customCheckerDropText;
 
   problemGenerators = [];
   if (testsScriptInput) testsScriptInput.value = '';
@@ -4507,7 +4880,7 @@ function parseUlearnUrl(input) {
 
   // Extract UUID if present (standard 8-4-4-4-12 hex format)
   const uuidMatch = clean.match(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/i);
-  
+
   // Extract courseId
   let courseId = 'python';
   const courseMatch = clean.match(/courses?\/([a-zA-Z0-9_\-\.]+)/i);
@@ -4568,8 +4941,8 @@ async function resolveUlearnSlideId(courseId, slugOrQuery) {
     for (const unit of courseData.units || []) {
       for (const slide of unit.slides || []) {
         if (slide.id.toLowerCase() === q ||
-            (slide.slug && slide.slug.toLowerCase().includes(q)) ||
-            (slide.title && slide.title.toLowerCase().includes(q))) {
+          (slide.slug && slide.slug.toLowerCase().includes(q)) ||
+          (slide.title && slide.title.toLowerCase().includes(q))) {
           return slide.id;
         }
       }
@@ -4606,7 +4979,7 @@ async function fetchAndImportUlearnTask(inputVal) {
     );
   }
 
-  const title = slideData.title || parsedUrl.slug || 'Ulearn Problem';
+  let title = slideData.title || parsedUrl.slug || 'Ulearn Problem';
   const sysName = toSystemName(parsedUrl.slug || title);
 
   let timeLimit = 1000;
