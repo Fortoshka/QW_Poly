@@ -20,6 +20,18 @@
   --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03), 0 0 0 1px rgba(0, 0, 0, 0.05);
   --input-shadow-focus: 0 0 0 2px rgba(115, 211, 0, 0.20);
 
+  /* Code Syntax Highlighting (Light Theme) */
+  --code-bg: #f8f9fa;
+  --code-text: #202124;
+  --code-comment: #5f6368;
+  --code-keyword: #4b8b00;
+  --code-string: #b06000;
+  --code-number: #d93025;
+  --code-function: #1a73e8;
+  --code-operator: #3c4043;
+  --code-punctuation: #5f6368;
+  --code-macro: #8e24aa;
+
   --transition-speed: 0.3s;
 }
 
@@ -42,6 +54,18 @@
 
   --card-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05);
   --input-shadow-focus: 0 0 0 2px rgba(115, 211, 0, 0.25);
+
+  /* Code Syntax Highlighting (Dark Theme) */
+  --code-bg: #161616;
+  --code-text: #e8eaed;
+  --code-comment: #9aa0a6;
+  --code-keyword: var(--accent-color);
+  --code-string: #fdd663;
+  --code-number: #a3e4a6;
+  --code-function: #41d47a;
+  --code-operator: #e8eaed;
+  --code-punctuation: #9aa0a6;
+  --code-macro: #d670d6;
 }
 
 * {
@@ -1023,15 +1047,179 @@ tbody tr:last-child td {
   color: var(--accent-color) !important;
 }
 
-/* Code Editor Textarea */
+/* Code Editor Base Textarea (when not wrapped) */
 .code-editor {
   font-family: 'Consolas', 'Courier New', Courier, monospace !important;
   font-size: 14px !important;
-  line-height: 1.5 !important;
+  line-height: 21px !important;
   background-color: var(--bg-primary) !important;
   border: 1px solid var(--border-color) !important;
   color: var(--text-primary) !important;
   tab-size: 4;
+}
+
+/* Synchronized Syntax Highlighting Overlay Architecture */
+.code-editor-wrapper {
+  position: relative;
+  width: 100%;
+  display: block;
+}
+
+/* Strict metric parity between invisible textarea and highlight pre layer */
+.code-editor-wrapper .code-editor,
+.code-editor-wrapper .code-highlight-layer {
+  font-family: 'Consolas', 'Courier New', Courier, monospace !important;
+  font-size: 14px !important;
+  line-height: 21px !important;
+  tab-size: 4 !important;
+  -moz-tab-size: 4 !important;
+  letter-spacing: 0px !important;
+  word-spacing: 0px !important;
+  padding: 16px !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  white-space: pre !important;
+  word-wrap: normal !important;
+  word-break: normal !important;
+  text-align: left !important;
+  border-radius: 8px !important;
+}
+
+/* Underlying Highlighted Code Layer */
+.code-editor-wrapper .code-highlight-layer {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+  overflow: hidden !important;
+  background-color: var(--code-bg, var(--bg-card)) !important;
+  border: 1px solid transparent !important;
+  color: var(--code-text, var(--text-primary)) !important;
+}
+
+.code-editor-wrapper .code-highlight-layer code {
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  white-space: inherit !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  color: inherit !important;
+}
+
+/* Foreground Interactive Textarea */
+.code-editor-wrapper .code-editor {
+  position: relative !important;
+  z-index: 2 !important;
+  width: 100% !important;
+  background-color: transparent !important;
+  color: transparent !important;
+  caret-color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+  outline: none !important;
+  overflow: auto !important;
+  resize: vertical !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.code-editor-wrapper .code-editor:focus {
+  border-color: var(--accent-color) !important;
+  box-shadow: var(--input-shadow-focus) !important;
+}
+
+.code-editor-wrapper .code-editor::selection {
+  background-color: rgba(115, 211, 0, 0.28) !important;
+  color: transparent !important;
+}
+
+/* Floating labels adjustments for wrapped code editors */
+.input-group .code-editor-wrapper~label {
+  z-index: 5;
+}
+
+.input-group .code-editor-wrapper:focus-within~label,
+.input-group .code-editor-wrapper.has-value~label,
+.input-group:has(.code-editor-wrapper:focus-within) label,
+.input-group:has(.code-editor-wrapper.has-value) label {
+  top: 0 !important;
+  transform: translateY(-50%) !important;
+  font-size: 12px !important;
+  color: var(--accent-color) !important;
+  font-weight: 500 !important;
+}
+
+.input-group:not(:focus-within) .code-editor-wrapper.has-value~label,
+.input-group:not(:focus-within):has(.code-editor-wrapper.has-value) label {
+  color: var(--text-secondary) !important;
+}
+
+/* Prism.js Syntax Highlighting Tokens */
+.code-highlight-layer .token.comment,
+.code-highlight-layer .token.prolog,
+.code-highlight-layer .token.doctype,
+.code-highlight-layer .token.cdata {
+  color: var(--code-comment);
+  font-style: italic;
+}
+
+.code-highlight-layer .token.punctuation {
+  color: var(--code-punctuation);
+}
+
+.code-highlight-layer .token.property,
+.code-highlight-layer .token.tag,
+.code-highlight-layer .token.boolean,
+.code-highlight-layer .token.number,
+.code-highlight-layer .token.constant,
+.code-highlight-layer .token.symbol {
+  color: var(--code-number);
+}
+
+.code-highlight-layer .token.selector,
+.code-highlight-layer .token.attr-name,
+.code-highlight-layer .token.string,
+.code-highlight-layer .token.char,
+.code-highlight-layer .token.builtin {
+  color: var(--code-string);
+}
+
+.code-highlight-layer .token.operator,
+.code-highlight-layer .token.entity,
+.code-highlight-layer .token.url {
+  color: var(--code-operator);
+}
+
+.code-highlight-layer .token.keyword,
+.code-highlight-layer .token.atrule,
+.code-highlight-layer .token.attr-value {
+  color: var(--code-keyword);
+  font-weight: 600;
+}
+
+.code-highlight-layer .token.function,
+.code-highlight-layer .token.class-name {
+  color: var(--code-function);
+  font-weight: 500;
+}
+
+.code-highlight-layer .token.macro,
+.code-highlight-layer .token.directive,
+.code-highlight-layer .token.directive-hash {
+  color: var(--code-macro);
+  font-weight: 500;
+}
+
+.code-highlight-layer .token.regex,
+.code-highlight-layer .token.important,
+.code-highlight-layer .token.variable {
+  color: var(--code-string);
 }
 
 /* AI Prompt Section and Controls */
@@ -1724,12 +1912,14 @@ textarea::-webkit-scrollbar-thumb:hover,
   margin: 12px 0;
 }
 
-.tex-ul, .tex-ol {
+.tex-ul,
+.tex-ol {
   margin: 8px 0 8px 24px;
   padding-left: 12px;
 }
 
-.tex-ul li, .tex-ol li {
+.tex-ul li,
+.tex-ol li {
   margin-bottom: 4px;
 }
 
@@ -2182,6 +2372,7 @@ textarea::-webkit-scrollbar-thumb:hover,
 }
 
 @media (max-width: 960px) {
+
   #upload-solution-view .editor-split-layout,
   #checker-tests-view .editor-split-layout {
     grid-template-columns: 1fr;
@@ -2249,6 +2440,7 @@ textarea::-webkit-scrollbar-thumb:hover,
     opacity: 0;
     transform: translateY(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

@@ -1,5 +1,6 @@
 import katex from 'katex';
 import 'katex/dist/katex.css';
+import { attachSyntaxHighlight } from './code-highlighter.js';
 
 // PKZIP Store Archive Generator (Zero Dependencies)
 class SimpleZip {
@@ -376,7 +377,7 @@ The generator should output random test cases conforming to the input format and
     heading: "Подключение к Polygon",
     subtitle: "Авторизуйтесь с помощью API ключей. Учетные данные хранятся локально в вашем браузере и не передаются на сторонние серверы.",
     apiKeyLabel: "API Ключ (key)",
-    apiSecretLabel: "API Секрет (secret)",
+    apiSecretLabel: "API Секретный ключ (secret)",
     polyUsernameLabel: "Имя пользователя Polygon (опционально)",
     polyPasswordLabel: "Пароль Polygon (опционально)",
     submitBtnText: "Проверить и подключить",
@@ -396,9 +397,9 @@ The generator should output random test cases conforming to the input format and
     thId: "ID",
     thName: "Название",
     thOwner: "Владелец",
-    thRevision: "Ревизия",
+    thRevision: "Версия",
     thAccess: "Доступ",
-    thModified: "Изменено",
+    thModified: "Редактирование не завершено",
     thActions: "Действия",
     loadingProblems: "Загрузка задач...",
     noProblems: "Задач на данном аккаунте не найдено.",
@@ -411,7 +412,7 @@ The generator should output random test cases conforming to the input format and
 
     // Step 1 Create Problem Translations
     stepTitle: "Шаг 1: Условие и основная информация",
-    stepSubtitle: "Заполните условие и основные настройки создаваемой задачи.",
+    stepSubtitle: "Заполните условие и настройки создаваемой задачи.",
     labelTimeLimit: "Ограничение по времени (мс)",
     labelMemoryLimit: "Ограничение по памяти (МБ)",
     labelStatementLang: "Язык условия",
@@ -455,7 +456,7 @@ The generator should output random test cases conforming to the input format and
     btnCopyPromptText: "Копировать",
     btnBackToStep1: "Назад к Шагу 1",
     btnNextStep2Text: "Следующий шаг",
-    selectLangAlert: "Пожалуйста, сначала выберите язык программирования.",
+    selectLangAlert: "Пожалуйста, выберите язык программирования.",
     promptCopiedAlert: "Промпт скопирован в буфер обмена!",
     promptTemplate: (langName, name, legend, input, output) => `Напиши полное и правильное решение на языке ${langName} для следующей задачи.
 
@@ -528,7 +529,7 @@ ${output}
     btnFinishProblem: "Создать задачу",
     selectCheckerAlert: "Пожалуйста, сначала выберите чекер.",
     tabManualTests: "Ручные тесты",
-    tabGeneratorTests: "Генератор теста",
+    tabGeneratorTests: "Генератор тестов",
     genInfoPrefix: "Обратитесь к ",
     genInfoLink: "руководству по генераторам testlib",
     genInfoSuffix: " для ознакомления с принципом их работы в Polygon.",
@@ -581,7 +582,7 @@ ${output}
     // Step 4 Final Confirmation Translations
     step4Title: "Шаг 4: Подтверждение",
     step4Subtitle: "Проверьте все введенные параметры задачи перед отправкой в Polygon.",
-    summarySectionInfoTitle: "Основные настройки",
+    summarySectionInfoTitle: "Настройки задачи",
     summarySectionStatementTitle: "Условие задачи",
     summarySectionSolutionTitle: "Эталонное решение",
     summarySectionTestsTitle: "Чекер и тесты",
@@ -941,6 +942,49 @@ const qwtSaveFolderBtn = document.getElementById('qwt-save-folder-btn');
 const qwtDownloadZipBtn = document.getElementById('qwt-download-zip-btn');
 const lblQwtSaveFolder = document.getElementById('lbl-qwt-save-folder');
 const lblQwtDownloadZip = document.getElementById('lbl-qwt-download-zip');
+
+// ==========================================
+// Code Syntax Highlighters Initialization
+// ==========================================
+function getSolLanguage() {
+  const val = (solLangSelect?.value || '').toLowerCase();
+  if (val.startsWith('python') || val.startsWith('pypy')) return 'python';
+  return 'cpp';
+}
+
+function getCheckerLanguage() {
+  const name = (customCheckerName?.value || '').trim().toLowerCase();
+  if (name.endsWith('.py')) return 'python';
+  return 'cpp';
+}
+
+function getGeneratorLanguage() {
+  const name = (generatorName?.value || '').trim().toLowerCase();
+  if (name.endsWith('.py')) return 'python';
+  return 'cpp';
+}
+
+const solCodeEditor = attachSyntaxHighlight(solCodeTextarea, getSolLanguage);
+const customCheckerEditor = attachSyntaxHighlight(customCheckerCode, getCheckerLanguage);
+const generatorCodeEditor = attachSyntaxHighlight(generatorCode, getGeneratorLanguage);
+
+if (solLangSelect) {
+  solLangSelect.addEventListener('change', () => {
+    solCodeEditor.setLanguage(getSolLanguage());
+  });
+}
+
+if (customCheckerName) {
+  customCheckerName.addEventListener('input', () => {
+    customCheckerEditor.setLanguage(getCheckerLanguage());
+  });
+}
+
+if (generatorName) {
+  generatorName.addEventListener('input', () => {
+    generatorCodeEditor.setLanguage(getGeneratorLanguage());
+  });
+}
 
 // Utility function to generate a 6-character random string for Polygon apiSig
 function generateRand() {
@@ -2213,6 +2257,9 @@ function handleSolutionFile(file) {
 
     if (detectedLang && solLangSelect) {
       solLangSelect.value = detectedLang;
+      if (typeof solCodeEditor !== 'undefined' && solCodeEditor.setLanguage) {
+        solCodeEditor.setLanguage(getSolLanguage());
+      }
     }
   };
   reader.readAsText(file);
@@ -3092,6 +3139,11 @@ function openGeneratorModal(idx = -1) {
     if (generatorName) generatorName.value = defaultName;
     if (generatorCode) generatorCode.value = '';
     if (generatorSaveBtn) generatorSaveBtn.textContent = t.generatorSaveBtn;
+  }
+
+  if (typeof generatorCodeEditor !== 'undefined' && generatorCodeEditor.update) {
+    generatorCodeEditor.setLanguage(getGeneratorLanguage());
+    generatorCodeEditor.update();
   }
 
   if (generatorModal) {
