@@ -542,6 +542,26 @@ footer {
   box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.2) !important;
 }
 
+.btn-logout {
+  border-radius: 24px !important;
+  padding: 10px 18px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-size: 14px !important;
+  background-color: var(--bg-card) !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-logout:hover {
+  background-color: var(--bg-primary) !important;
+  border-color: var(--google-red) !important;
+  color: var(--google-red) !important;
+  box-shadow: 0 1px 3px 0 rgba(234, 67, 53, 0.15) !important;
+}
+
 /* Table Card Layout */
 .table-card {
   background-color: var(--bg-card);
@@ -1450,15 +1470,6 @@ tbody tr:last-child td {
   padding-right: 8px;
 }
 
-.confirmation-pane::-webkit-scrollbar {
-  width: 6px;
-}
-
-.confirmation-pane::-webkit-scrollbar-thumb {
-  background-color: var(--border-color);
-  border-radius: 4px;
-}
-
 .summary-card {
   background-color: var(--bg-card);
   border-radius: 12px;
@@ -1641,38 +1652,48 @@ tbody tr:last-child td {
   color: #ff9800;
 }
 
-/* Custom Scrollbar Styles for Textareas, Code Editors, and Previews */
+/* Custom Scrollbar Styles - Universal & Global for all elements (Vertical & Horizontal) */
+*,
+*::before,
+*::after,
+html,
+body,
 textarea,
+pre,
+code,
 .code-editor,
+.code-highlight-layer,
 .log-screen,
 .preview-pane,
-.table-container {
+.confirmation-pane,
+.table-container,
+.statement-tabs,
+.test-subtabs-nav,
+.upload-log-list,
+.summary-val,
+.diff-items-list,
+.modal-overlay,
+.modal-card,
+.dialog-overlay,
+.dialog-content,
+.katex-display {
   scrollbar-width: thin;
   scrollbar-color: var(--border-color) transparent;
 }
 
-textarea::-webkit-scrollbar,
-.code-editor::-webkit-scrollbar,
-.log-screen::-webkit-scrollbar,
-.preview-pane::-webkit-scrollbar,
-.table-container::-webkit-scrollbar {
+::-webkit-scrollbar,
+*::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
-textarea::-webkit-scrollbar-track,
-.code-editor::-webkit-scrollbar-track,
-.log-screen::-webkit-scrollbar-track,
-.preview-pane::-webkit-scrollbar-track,
-.table-container::-webkit-scrollbar-track {
+::-webkit-scrollbar-track,
+*::-webkit-scrollbar-track {
   background: transparent;
 }
 
-textarea::-webkit-scrollbar-thumb,
-.code-editor::-webkit-scrollbar-thumb,
-.log-screen::-webkit-scrollbar-thumb,
-.preview-pane::-webkit-scrollbar-thumb,
-.table-container::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-thumb {
   background-color: var(--border-color);
   border-radius: 4px;
   border: 2px solid transparent;
@@ -1680,12 +1701,14 @@ textarea::-webkit-scrollbar-thumb,
   transition: background-color 0.2s ease;
 }
 
-textarea::-webkit-scrollbar-thumb:hover,
-.code-editor::-webkit-scrollbar-thumb:hover,
-.log-screen::-webkit-scrollbar-thumb:hover,
-.preview-pane::-webkit-scrollbar-thumb:hover,
-.table-container::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb:hover,
+*::-webkit-scrollbar-thumb:hover {
   background-color: var(--text-secondary);
+}
+
+::-webkit-scrollbar-corner,
+*::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 /* Custom Modal Dialog styles */
@@ -2445,4 +2468,141 @@ textarea::-webkit-scrollbar-thumb:hover,
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Diff Summary & Change Buffer Card */
+.diff-summary-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--card-shadow);
+  transition: border-color var(--transition-speed) ease, background-color var(--transition-speed) ease;
+}
+
+.diff-summary-card.has-changes {
+  border: 1px solid var(--accent-color);
+}
+
+.diff-summary-card.no-changes {
+  border: 1px solid var(--google-yellow);
+}
+
+.diff-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.diff-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.diff-header-left h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.diff-icon {
+  color: var(--accent-color);
+  flex-shrink: 0;
+}
+
+.diff-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.diff-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  gap: 12px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.diff-item-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.diff-item-bullet {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.diff-item-bullet.changed {
+  background-color: var(--accent-color);
+  box-shadow: 0 0 6px var(--accent-color);
+}
+
+.diff-item-bullet.unchanged {
+  background-color: var(--text-secondary);
+  opacity: 0.5;
+}
+
+.diff-item-text {
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.diff-item-text strong {
+  font-weight: 600;
+}
+
+.diff-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+}
+
+.diff-badge-changed {
+  background-color: var(--accent-light);
+  color: var(--accent-color);
+  border: 1px solid var(--accent-color);
+}
+
+.diff-badge-unchanged {
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.diff-no-changes-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background-color: rgba(251, 188, 5, 0.08);
+  border: 1px solid rgba(251, 188, 5, 0.25);
+  color: var(--text-primary);
+  font-size: 13.5px;
+}
+
+.diff-no-changes-alert svg {
+  color: var(--google-yellow);
+  flex-shrink: 0;
 }

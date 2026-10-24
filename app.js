@@ -136,6 +136,11 @@ const translations = {
     btnEdit: "Edit",
     btnDelete: "Delete",
     btnOpen: "Open",
+    dashLogoutBtn: "Switch API Keys",
+    logoutConfirm: "Are you sure you want to log out and switch API keys?",
+    logoutTitle: "Switch API Keys",
+    btnLogoutConfirm: "Log Out",
+    btnLogoutCancel: "Cancel",
 
     // Step 1 Create Problem Translations
     stepTitle: "Step 1: Statement and Main Information",
@@ -328,6 +333,18 @@ The generator should output random test cases conforming to the input format and
     thSumTestStatements: "Statements",
     btnBackToStep3: "Back to Step 3",
     btnConfirmUploadText: "Confirm & Upload",
+    diffCardTitle: "Pending Changes Buffer",
+    diffCardDesc: "Only modified components will be updated on Polygon. Unchanged parts will be skipped to save time and API calls.",
+    diffCategoryLimits: "Limits",
+    diffCategoryStatements: "Statements",
+    diffCategorySolution: "Solution",
+    diffCategoryChecker: "Checker",
+    diffCategoryTests: "Tests",
+    diffCategoryGenerators: "Generators",
+    diffCategoryScript: "Tests Script",
+    diffBadgeModified: "MODIFIED",
+    diffBadgeUnchanged: "SKIPPED",
+    diffNoChangesNotice: "No modifications detected compared to Polygon. All components are identical.",
     progressHeaderTitleUploading: "Uploading to Polygon...",
     progressHeaderTitleSuccess: "Upload Successful!",
     progressHeaderTitleFailed: "Upload Failed",
@@ -409,6 +426,11 @@ The generator should output random test cases conforming to the input format and
     btnEdit: "Редактировать",
     btnDelete: "Удалить",
     btnOpen: "Открыть",
+    dashLogoutBtn: "Сменить ключи",
+    logoutConfirm: "Вы действительно хотите выйти и сменить API ключи?",
+    logoutTitle: "Смена API ключей",
+    btnLogoutConfirm: "Выйти",
+    btnLogoutCancel: "Отмена",
 
     // Step 1 Create Problem Translations
     stepTitle: "Шаг 1: Условие и основная информация",
@@ -601,6 +623,18 @@ ${output}
     thSumTestStatements: "В условии",
     btnBackToStep3: "Назад к Шагу 3",
     btnConfirmUploadText: "Подтвердить и загрузить",
+    diffCardTitle: "Буфер изменений (Обновление задачи)",
+    diffCardDesc: "Будут отправлены только измененные компоненты, остальные части задачи на Polygon останутся нетронутыми.",
+    diffCategoryLimits: "Ограничения",
+    diffCategoryStatements: "Условия",
+    diffCategorySolution: "Решение",
+    diffCategoryChecker: "Чекер",
+    diffCategoryTests: "Тесты",
+    diffCategoryGenerators: "Генераторы",
+    diffCategoryScript: "Скрипт тестов",
+    diffBadgeModified: "ИЗМЕНЕНО",
+    diffBadgeUnchanged: "БЕЗ ИЗМ.",
+    diffNoChangesNotice: "Изменений относительно версии на Polygon не обнаружено. Все компоненты идентичны.",
     progressHeaderTitleUploading: "Загрузка в Polygon...",
     progressHeaderTitleSuccess: "Загрузка успешно завершена!",
     progressHeaderTitleFailed: "Ошибка загрузки",
@@ -653,6 +687,9 @@ let loadedProblems = [];
 let uploadedTests = [];
 let problemGenerators = [];
 let activeTestsTab = 'manual';
+let editingProblemId = null;
+let lastFetchedStatement = null;
+let initialProblemSnapshot = null;
 
 
 const themeToggleBtn = document.getElementById('theme-toggle');
@@ -671,6 +708,8 @@ const submitBtnTextNode = document.getElementById('btn-text');
 const dashTitle = document.getElementById('dash-title');
 const dashSubtitle = document.getElementById('dash-subtitle');
 const createProbBtnText = document.getElementById('dash-new-problem-btn');
+const logoutBtn = document.getElementById('logout-btn');
+const dashLogoutBtnText = document.getElementById('dash-logout-btn');
 const thId = document.getElementById('th-id');
 const thName = document.getElementById('th-name');
 const thOwner = document.getElementById('th-owner');
@@ -919,6 +958,11 @@ const uploadProgressBar = document.getElementById('upload-progress-bar');
 const uploadLogList = document.getElementById('upload-log-list');
 const backToStep3Btn = document.getElementById('back-to-step3-btn');
 const confirmUploadBtn = document.getElementById('confirm-upload-btn');
+const diffSummaryContainer = document.getElementById('diff-summary-container');
+const diffCardTitle = document.getElementById('diff-card-title');
+const diffCardDesc = document.getElementById('diff-card-desc');
+const diffStatusBadge = document.getElementById('diff-status-badge');
+const diffItemsList = document.getElementById('diff-items-list');
 const exportTrickyBtn = document.getElementById('export-tricky-btn');
 const btnExportTrickyText = document.getElementById('btn-export-tricky-text');
 
@@ -1133,6 +1177,17 @@ function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('theme', theme);
   updateThemeIcon(theme);
+  updateFavicon(theme);
+}
+
+function updateFavicon(theme) {
+  const favicon = document.getElementById('app-favicon');
+  if (!favicon) return;
+  const isDark = theme === 'dark';
+  const bg = isDark ? '#484c4f' : '#78c257';
+  const fg = isDark ? '#cbcbcb' : '#ffffff';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 38 100 100"><path fill="${bg}" d="m 43.587235,49.990515 c 0.337015,-8.088353 7.779423,-9.352158 9.099397,-9.324074 1.319975,0.02809 70.773088,-0.05617 74.452168,0 3.67908,0.05617 8.56579,3.20164 8.87472,8.284945 0.30893,5.083305 0.0281,73.806234 0.0281,77.457224 0,3.65099 -4.26885,8.31303 -8.31303,8.42537 -4.04417,0.11234 -18.13787,0.0988 -29.060112,0.0272 C 64.26374,133.65794 45.471298,106.92608 43.729926,82.30553 42.505025,64.987154 43.587235,49.990515 43.587235,49.990515 Z"/><path fill="${fg}" d="m 98.760746,134.85292 0.13337,-43.360859 -15.871072,-7.935535 -0.100028,48.780204 c 0,0 -6.618092,-1.76811 -13.770489,-6.36843 -6.084504,-3.91346 -10.469572,-8.86913 -10.469572,-8.86913 0,0 -0.06668,-46.212828 0.06668,-54.48179 0.13337,-8.268962 9.977321,-12.459477 14.937479,-10.869683 5.201444,1.667129 32.082776,16.411909 41.411486,20.405663 7.32733,3.136932 7.9022,10.702971 7.9022,10.702971 v 52.049949 z"/></svg>`;
+  favicon.href = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
 
 function updateThemeIcon(theme) {
@@ -1201,6 +1256,7 @@ function applyLanguage(lang) {
   if (dashTitle) dashTitle.textContent = t.dashTitle;
   if (dashSubtitle) dashSubtitle.textContent = t.dashSubtitle;
   if (createProbBtnText) createProbBtnText.textContent = t.newProblemBtn;
+  if (dashLogoutBtnText) dashLogoutBtnText.textContent = t.dashLogoutBtn;
   if (thId) thId.textContent = t.thId;
   if (thName) thName.textContent = t.thName;
   if (thOwner) thOwner.textContent = t.thOwner;
@@ -1381,6 +1437,8 @@ function applyLanguage(lang) {
   if (btnBackToStep3Text) btnBackToStep3Text.textContent = t.btnBackToStep3;
   if (btnConfirmUploadText) btnConfirmUploadText.textContent = t.btnConfirmUploadText;
   if (btnExportTrickyText) btnExportTrickyText.textContent = t.btnExportTricky;
+  if (diffCardTitle && !editingProblemId) diffCardTitle.textContent = t.diffCardTitle;
+  if (diffCardDesc) diffCardDesc.textContent = t.diffCardDesc;
 
   // QW_Tricky Export Modal translations
   if (qwtModalTitle) qwtModalTitle.textContent = t.qwtModalTitle;
@@ -1514,17 +1572,27 @@ if (confirmUploadBtn) applyRippleEffect(confirmUploadBtn);
 // ============================================================================
 
 function loadCredentials() {
-  const savedKey = localStorage.getItem('poly_api_key');
-  const savedSecret = localStorage.getItem('poly_api_secret');
+  const savedKey = (localStorage.getItem('poly_api_key') || '').trim();
+  const savedSecret = (localStorage.getItem('poly_api_secret') || '').trim();
 
   if (savedKey && apiKeyInput) apiKeyInput.value = savedKey;
   if (savedSecret && apiSecretInput) apiSecretInput.value = savedSecret;
-}
 
-loadCredentials();
+  return { savedKey, savedSecret };
+}
 
 // Initialize dynamic translations
 applyLanguage(currentLang);
+
+// Auto-login on startup if credentials exist
+function initAuth() {
+  const { savedKey, savedSecret } = loadCredentials();
+  if (savedKey && savedSecret) {
+    performLogin(savedKey, savedSecret, true);
+  }
+}
+
+initAuth();
 
 // Alert Notification Manager
 function showAlert(message, type = 'error') {
@@ -2116,58 +2184,110 @@ if (nextStepBtn) {
 }
 
 // ============================================================================
-// Form Submission & API Verification
+// Form Submission & API Verification / Auto-login
 // ============================================================================
+
+// Perform Login & Problem Fetching
+async function performLogin(apiKey, apiSecret, isAutoLogin = false) {
+  apiKey = (apiKey || '').trim();
+  apiSecret = (apiSecret || '').trim();
+
+  const t = translations[currentLang];
+
+  if (!apiKey || !apiSecret) {
+    if (!isAutoLogin) showAlert(t.fillRequiredFields);
+    return;
+  }
+
+  // Enter loading state
+  if (submitBtn) {
+    submitBtn.classList.add('loading');
+    submitBtn.disabled = true;
+  }
+  if (submitBtnTextNode) {
+    submitBtnTextNode.textContent = t.connectingBtnText;
+  }
+
+  try {
+    const responseData = await callPolygonApi('problems.list', {}, apiKey, apiSecret);
+
+    if (responseData && responseData.status === 'OK') {
+      // Save credentials in localStorage
+      localStorage.setItem('poly_api_key', apiKey);
+      localStorage.setItem('poly_api_secret', apiSecret);
+
+      if (isAutoLogin) {
+        showDashboard(responseData.result);
+      } else {
+        showAlert(t.successMessage(responseData.result.length), 'success');
+        setTimeout(() => {
+          showDashboard(responseData.result);
+        }, 500);
+      }
+    } else {
+      showAlert(t.authFailedMessage(responseData?.comment || 'Unknown error'));
+      if (isAutoLogin && authView) {
+        authView.style.display = 'block';
+      }
+    }
+  } catch (err) {
+    console.error('Login error:', err);
+    showAlert(t.connectionFailedMessage(err.message || 'Check your internet connection or proxy status.'));
+    if (isAutoLogin && authView) {
+      authView.style.display = 'block';
+    }
+  } finally {
+    if (submitBtn) {
+      submitBtn.classList.remove('loading');
+      submitBtn.disabled = false;
+      if (submitBtnTextNode) {
+        submitBtnTextNode.textContent = t.submitBtnText;
+      }
+    }
+  }
+}
 
 if (form) {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     hideAlert();
+    const apiKey = apiKeyInput ? apiKeyInput.value : '';
+    const apiSecret = apiSecretInput ? apiSecretInput.value : '';
+    await performLogin(apiKey, apiSecret, false);
+  });
+}
 
-    const apiKey = apiKeyInput.value.trim();
-    const apiSecret = apiSecretInput.value.trim();
-
+// Logout & Switch API Keys handler
+if (logoutBtn) {
+  applyRippleEffect(logoutBtn);
+  logoutBtn.addEventListener('click', async () => {
     const t = translations[currentLang];
+    const confirmed = await showCustomConfirm(
+      t.logoutConfirm,
+      t.logoutTitle,
+      t.btnLogoutConfirm,
+      t.btnLogoutCancel
+    );
+    if (confirmed) {
+      localStorage.removeItem('poly_api_key');
+      localStorage.removeItem('poly_api_secret');
+      if (apiKeyInput) apiKeyInput.value = '';
+      if (apiSecretInput) apiSecretInput.value = '';
+      hideAlert();
 
-    if (!apiKey || !apiSecret) {
-      showAlert(t.fillRequiredFields);
-      return;
-    }
+      dashboardView.style.opacity = '0';
+      dashboardView.style.transform = 'translateY(15px)';
+      dashboardView.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
 
-    // Enter loading state
-    submitBtn.classList.add('loading');
-    submitBtn.disabled = true;
-    submitBtnTextNode.textContent = t.connectingBtnText;
-
-    try {
-      // Attempt problems.list call to verify credentials
-      const responseData = await callPolygonApi('problems.list', {}, apiKey, apiSecret);
-
-      if (responseData.status === 'OK') {
-        showAlert(t.successMessage(responseData.result.length), 'success');
-
-        // Save credentials to localStorage
-        localStorage.setItem('poly_api_key', apiKey);
-        localStorage.setItem('poly_api_secret', apiSecret);
-
-        // Transition to dashboard
+      setTimeout(() => {
+        dashboardView.style.display = 'none';
+        authView.style.display = 'block';
         setTimeout(() => {
-          showDashboard(responseData.result);
-        }, 1000);
-
-      } else {
-        showAlert(t.authFailedMessage(responseData.comment || 'Unknown error'));
-      }
-    } catch (err) {
-      console.error(err);
-      showAlert(t.connectionFailedMessage(err.message || 'Check your internet connection or proxy status.'));
-    } finally {
-      // Exit loading state
-      if (submitBtn) {
-        submitBtn.classList.remove('loading');
-        submitBtn.disabled = false;
-        submitBtnTextNode.textContent = t.submitBtnText;
-      }
+          authView.style.opacity = '1';
+          authView.style.transform = 'translateY(0)';
+          authView.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        }, 50);
+      }, 300);
     }
   });
 }
@@ -3443,6 +3563,79 @@ function populateConfirmationSummary() {
       summaryTestsTableBody.appendChild(tr);
     });
   }
+
+  // Render Change Buffer / Diff Summary if editing existing problem
+  if (editingProblemId && initialProblemSnapshot) {
+    const diff = calculateProblemDiff();
+    if (diffSummaryContainer) {
+      diffSummaryContainer.style.display = 'block';
+
+      if (diffCardTitle) {
+        diffCardTitle.textContent = currentLang === 'en'
+          ? `Pending Changes Buffer (Problem #${editingProblemId})`
+          : `Буфер изменений (Задача #${editingProblemId})`;
+      }
+      if (diffCardDesc) {
+        diffCardDesc.textContent = currentLang === 'en'
+          ? 'Only modified components will be updated on Polygon. Unchanged parts will be skipped.'
+          : 'Будут отправлены только измененные компоненты, остальные части задачи на Polygon останутся нетронутыми.';
+      }
+
+      if (diff && diff.hasChanges) {
+        diffSummaryContainer.className = 'diff-summary-card has-changes';
+        if (diffStatusBadge) {
+          diffStatusBadge.className = 'badge badge-modified';
+          diffStatusBadge.textContent = currentLang === 'en'
+            ? `${diff.changedCategoriesCount} component(s) modified`
+            : `${diff.changedCategoriesCount} компонент(ов) изменено`;
+        }
+      } else {
+        diffSummaryContainer.className = 'diff-summary-card no-changes';
+        if (diffStatusBadge) {
+          diffStatusBadge.className = 'badge badge-read';
+          diffStatusBadge.textContent = currentLang === 'en' ? '0 changes' : '0 изменений';
+        }
+      }
+
+      if (diffItemsList && diff) {
+        diffItemsList.innerHTML = '';
+
+        if (!diff.hasChanges) {
+          const noChangesEl = document.createElement('div');
+          noChangesEl.className = 'diff-no-changes-alert';
+          noChangesEl.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span>${currentLang === 'en' ? 'No modifications detected compared to Polygon. All components are identical.' : 'Изменений относительно версии на Polygon не обнаружено. Все компоненты идентичны.'}</span>
+          `;
+          diffItemsList.appendChild(noChangesEl);
+        } else {
+          diff.summaryList.forEach(item => {
+            const isChanged = item.status === 'changed';
+            const itemEl = document.createElement('div');
+            itemEl.className = 'diff-item';
+            itemEl.innerHTML = `
+              <div class="diff-item-left">
+                <span class="diff-item-bullet ${isChanged ? 'changed' : 'unchanged'}"></span>
+                <span class="diff-item-text">
+                  <strong>${item.category}:</strong> ${item.details}
+                </span>
+              </div>
+              <span class="diff-badge ${isChanged ? 'diff-badge-changed' : 'diff-badge-unchanged'}">
+                ${isChanged ? (currentLang === 'en' ? 'MODIFIED' : 'ИЗМЕНЕНО') : (currentLang === 'en' ? 'SKIPPED' : 'БЕЗ ИЗМ.')}
+              </span>
+            `;
+            diffItemsList.appendChild(itemEl);
+          });
+        }
+      }
+    }
+  } else {
+    if (diffSummaryContainer) diffSummaryContainer.style.display = 'none';
+  }
 }
 
 // Wrapper for uploader trigger
@@ -3499,6 +3692,235 @@ async function startPolygonUpload() {
 
   let problemId = editingProblemId;
 
+  // SELECTIVE UPLOAD FLOW FOR EXISTING PROBLEMS
+  if (editingProblemId && initialProblemSnapshot) {
+    const diff = calculateProblemDiff();
+
+    if (!diff || !diff.hasChanges) {
+      addUploadLog(currentLang === 'en'
+        ? 'No changes detected relative to Polygon. Nothing to upload.'
+        : 'Изменений относительно версии на Polygon не обнаружено. Нечего отправлять.', 'warning');
+      if (uploadProgressBar) uploadProgressBar.style.width = '100%';
+      if (progressHeaderTitle) progressHeaderTitle.textContent = t.progressHeaderTitleSuccess;
+      if (progressSpinner) progressSpinner.style.display = 'none';
+      confirmUploadBtn.disabled = false;
+      confirmUploadBtn.classList.remove('loading');
+      confirmUploadBtn.innerHTML = `<span>${t.btnBackToDash}</span>`;
+      confirmUploadBtn.onclick = () => location.reload();
+      return;
+    }
+
+    addUploadLog(currentLang === 'en'
+      ? `Starting selective update for problem #${problemId} (${diff.changedCategoriesCount} component(s) modified)...`
+      : `Запуск выборочного обновления для задачи #${problemId} (компонентов изменено: ${diff.changedCategoriesCount})...`, 'info');
+
+    if (uploadProgressBar) uploadProgressBar.style.width = '10%';
+
+    // 1. Info (limits): only if changed
+    if (diff.info) {
+      addUploadLog(t.logUpdatingInfo, 'info');
+      const infoRes = await callPolygonApi('problem.updateInfo', {
+        problemId: problemId,
+        timeLimit: diff.info.timeLimit,
+        memoryLimit: diff.info.memoryLimit
+      }, apiKey, apiSecret);
+      if (infoRes.status !== 'OK') {
+        throw new Error(infoRes.comment || 'Failed to update problem limits');
+      }
+      addUploadLog(t.logInfoUpdated, 'success');
+    } else {
+      addUploadLog(currentLang === 'en' ? 'Limits: unchanged (skipped)' : 'Ограничения: без изменений (пропущено)', 'pending');
+    }
+    if (uploadProgressBar) uploadProgressBar.style.width = '25%';
+
+    // 2. Statements: only changed/added languages
+    const changedLangs = Object.keys(diff.statements);
+    if (changedLangs.length > 0) {
+      for (const langCode of changedLangs) {
+        const stmtData = diff.statements[langCode];
+        addUploadLog(t.logSavingStatement(langCode), 'info');
+        const stmtRes = await callPolygonApi('problem.saveStatement', {
+          problemId: problemId,
+          lang: langCode,
+          name: stmtData.name || nameVal,
+          legend: stmtData.legend || '',
+          input: stmtData.input || '',
+          output: stmtData.output || '',
+          notes: stmtData.notes || '',
+          tutorial: stmtData.tutorial || ''
+        }, apiKey, apiSecret);
+        if (stmtRes.status !== 'OK') {
+          throw new Error(stmtRes.comment || `Failed to save ${langCode} statement`);
+        }
+      }
+      addUploadLog(t.logStatementSaved, 'success');
+    } else {
+      addUploadLog(currentLang === 'en' ? 'Statements: unchanged (skipped)' : 'Условия: без изменений (пропущено)', 'pending');
+    }
+    if (uploadProgressBar) uploadProgressBar.style.width = '45%';
+
+    // 3. Solution: only if changed
+    if (diff.solution) {
+      addUploadLog(t.logSavingSolution, 'info');
+      const solRes = await callPolygonApi('problem.saveSolution', {
+        problemId: problemId,
+        name: diff.solution.fileName,
+        file: diff.solution.code,
+        tag: 'MA',
+        checkExisting: 'false'
+      }, apiKey, apiSecret);
+      if (solRes.status !== 'OK') {
+        throw new Error(solRes.comment || 'Failed to upload solution file');
+      }
+      addUploadLog(t.logSolutionSaved, 'success');
+    } else {
+      addUploadLog(currentLang === 'en' ? 'Solution: unchanged (skipped)' : 'Решение: без изменений (пропущено)', 'pending');
+    }
+    if (uploadProgressBar) uploadProgressBar.style.width = '60%';
+
+    // 4. Checker: only if changed
+    if (diff.checker) {
+      if (diff.checker.type === 'custom') {
+        addUploadLog(t.logSavingCustomChecker(diff.checker.name), 'info');
+        const saveFileRes = await callPolygonApi('problem.saveFile', {
+          problemId: problemId,
+          type: 'source',
+          name: diff.checker.name,
+          file: diff.checker.code,
+          checkExisting: 'false'
+        }, apiKey, apiSecret);
+        if (saveFileRes.status !== 'OK') {
+          throw new Error(saveFileRes.comment || 'Failed to upload custom checker source file');
+        }
+        addUploadLog(t.logCustomCheckerSaved, 'success');
+      }
+      addUploadLog(t.logSettingChecker(diff.checker.name), 'info');
+      const checkerRes = await callPolygonApi('problem.setChecker', {
+        problemId: problemId,
+        checker: diff.checker.name
+      }, apiKey, apiSecret);
+      if (checkerRes.status !== 'OK') {
+        throw new Error(checkerRes.comment || 'Failed to configure checker');
+      }
+      addUploadLog(t.logCheckerSet, 'success');
+    } else {
+      addUploadLog(currentLang === 'en' ? 'Checker: unchanged (skipped)' : 'Чекер: без изменений (пропущено)', 'pending');
+    }
+    if (uploadProgressBar) uploadProgressBar.style.width = '75%';
+
+    // 5. Tests: only changed or added tests
+    if (diff.tests.changedOrAdded.length > 0) {
+      addUploadLog(currentLang === 'en'
+        ? `Updating ${diff.tests.changedOrAdded.length} modified/added test(s)...`
+        : `Обновление ${diff.tests.changedOrAdded.length} измененных/новых тест(ов)...`, 'info');
+
+      for (let i = 0; i < diff.tests.changedOrAdded.length; i++) {
+        const testItem = diff.tests.changedOrAdded[i];
+        addUploadLog(t.logUploadingTestFile(testItem.name, testItem.index), 'info');
+        const testRes = await callPolygonApi('problem.saveTest', {
+          problemId: problemId,
+          testset: 'tests',
+          testIndex: testItem.index.toString(),
+          testInput: testItem.testInput,
+          testUseInStatements: testItem.useInStatements ? 'true' : 'false',
+          checkExisting: 'false'
+        }, apiKey, apiSecret);
+        if (testRes.status !== 'OK') {
+          throw new Error(testRes.comment || `Failed to upload test ${testItem.index}`);
+        }
+        addUploadLog(t.logTestFileUploaded(testItem.name, testItem.index), 'success');
+      }
+    } else {
+      addUploadLog(currentLang === 'en' ? 'Tests: unchanged (skipped)' : 'Тесты: без изменений (пропущено)', 'pending');
+    }
+    if (uploadProgressBar) uploadProgressBar.style.width = '85%';
+
+    // 6. Generators: only changed/added
+    if (diff.generators.length > 0) {
+      for (const gen of diff.generators) {
+        addUploadLog(t.logUploadingGenerators(1), 'info');
+        const genRes = await callPolygonApi('problem.saveFile', {
+          problemId: problemId,
+          type: 'source',
+          name: gen.name,
+          file: gen.content || '',
+          checkExisting: 'false'
+        }, apiKey, apiSecret);
+        if (genRes.status !== 'OK') {
+          throw new Error(genRes.comment || `Failed to upload generator ${gen.name}`);
+        }
+        addUploadLog(t.logGeneratorUploaded(gen.name), 'success');
+      }
+    } else {
+      addUploadLog(currentLang === 'en' ? 'Generators: unchanged (skipped)' : 'Генераторы: без изменений (пропущено)', 'pending');
+    }
+
+    // 7. Script: only if changed
+    if (diff.script !== null) {
+      addUploadLog(t.logSavingScript, 'info');
+      const scriptRes = await callPolygonApi('problem.saveScript', {
+        problemId: problemId,
+        testset: 'tests',
+        source: diff.script
+      }, apiKey, apiSecret);
+      if (scriptRes.status !== 'OK') {
+        throw new Error(scriptRes.comment || 'Failed to save tests generation script');
+      }
+      addUploadLog(t.logScriptSaved, 'success');
+    } else {
+      addUploadLog(currentLang === 'en' ? 'Tests script: unchanged (skipped)' : 'Скрипт тестов: без изменений (пропущено)', 'pending');
+    }
+    if (uploadProgressBar) uploadProgressBar.style.width = '90%';
+
+    // 8. Commit changes
+    const changedCatNames = diff.summaryList.filter(s => s.status === 'changed').map(s => s.category);
+    const commitMsg = `Updated via QW Poly: ${changedCatNames.join(', ')}`;
+    addUploadLog(t.logCommitting, 'info');
+    const commitRes = await callPolygonApi('problem.commitChanges', {
+      problemId: problemId,
+      message: commitMsg
+    }, apiKey, apiSecret);
+    if (commitRes.status !== 'OK') {
+      throw new Error(commitRes.comment || 'Failed to commit changes');
+    }
+    addUploadLog(t.logCommitted, 'success');
+    if (uploadProgressBar) uploadProgressBar.style.width = '95%';
+
+    // 9. Build package
+    addUploadLog(t.logBuildingPackage, 'info');
+    try {
+      const buildRes = await callPolygonApi('problem.buildPackage', {
+        problemId: problemId,
+        full: 'true',
+        verify: 'true'
+      }, apiKey, apiSecret);
+      if (buildRes.status === 'OK') {
+        addUploadLog(t.logPackageBuilt, 'success');
+      } else {
+        addUploadLog(currentLang === 'en' ? `Package build note: ${buildRes.comment}` : `Примечание сборки пакета: ${buildRes.comment}`, 'warning');
+      }
+    } catch (buildErr) {
+      console.warn('Package build error:', buildErr);
+      addUploadLog(currentLang === 'en' ? `Package build note: ${buildErr.message}` : `Примечание сборки пакета: ${buildErr.message}`, 'warning');
+    }
+
+    // Update baseline snapshot so subsequent operations know current committed state
+    createBaselineSnapshot(problemId);
+
+    if (uploadProgressBar) uploadProgressBar.style.width = '100%';
+    addUploadLog(t.logUploadFinished, 'success');
+
+    if (progressHeaderTitle) progressHeaderTitle.textContent = t.progressHeaderTitleSuccess;
+    if (progressSpinner) progressSpinner.style.display = 'none';
+
+    confirmUploadBtn.disabled = false;
+    confirmUploadBtn.classList.remove('loading');
+    confirmUploadBtn.innerHTML = `<span>${t.btnBackToDash}</span>`;
+    confirmUploadBtn.onclick = () => location.reload();
+    return;
+  }
+
+  // FULL CREATION PIPELINE FOR NEW PROBLEMS
   if (!problemId) {
     // 1. problem.create
     const sysInputVal = document.getElementById('prob-system-name').value.trim();
@@ -3728,15 +4150,327 @@ const logoContainer = document.querySelector('.logo-container');
 if (logoContainer) {
   logoContainer.addEventListener('click', () => {
     const apiKey = localStorage.getItem('poly_api_key');
-    if (apiKey) {
-      hideAllWizardViewsAndShowDashboard();
+    const apiSecret = localStorage.getItem('poly_api_secret');
+    if (apiKey && apiSecret) {
+      if (authView && authView.style.display !== 'none') {
+        performLogin(apiKey, apiSecret, true);
+      } else {
+        hideAllWizardViewsAndShowDashboard();
+      }
     }
   });
 }
 
-// Global active editing problem ID & statement cache
-let editingProblemId = null;
-let lastFetchedStatement = null;
+// Helper to determine solution filename based on language
+function getSolutionFileName(lang) {
+  if (!lang) return 'solution.cpp';
+  if (lang.startsWith('python') || lang.startsWith('pypy')) return 'solution.py';
+  if (lang.startsWith('java')) return 'Solution.java';
+  if (lang.startsWith('rust')) return 'solution.rs';
+  if (lang.startsWith('go')) return 'solution.go';
+  if (lang.startsWith('kotlin')) return 'solution.kt';
+  if (lang.startsWith('csharp')) return 'solution.cs';
+  return 'solution.cpp';
+}
+
+// Create snapshot of original problem data as loaded from Polygon API
+function createBaselineSnapshot(probId) {
+  saveActiveFormToState();
+  const timeLimitVal = document.getElementById('prob-time-limit')?.value.trim() || '1000';
+  const memoryLimitVal = document.getElementById('prob-memory-limit')?.value.trim() || '256';
+  const solLangVal = solLangSelect?.value || 'cpp.g++20';
+  const solCodeVal = solCodeTextarea?.value || '';
+
+  const checkerVal = checkerSelect?.value || '';
+  const isCustom = checkerVal === 'custom';
+  const checkerNameVal = isCustom ? (customCheckerName?.value.trim() || 'check.cpp') : checkerVal;
+  const checkerCodeVal = isCustom ? (customCheckerCode?.value || '') : '';
+
+  initialProblemSnapshot = {
+    problemId: probId,
+    timeLimit: timeLimitVal,
+    memoryLimit: memoryLimitVal,
+    statements: JSON.parse(JSON.stringify(multiStatements || {})),
+    solution: {
+      lang: solLangVal,
+      code: solCodeVal,
+      fileName: getSolutionFileName(solLangVal)
+    },
+    checker: {
+      type: isCustom ? 'custom' : 'standard',
+      name: checkerNameVal,
+      code: checkerCodeVal
+    },
+    tests: (uploadedTests || []).map(t => ({
+      name: t.name || '',
+      input: t.content || '',
+      useInStatements: !!t.useInStatements
+    })),
+    generators: (problemGenerators || []).map(g => ({
+      name: g.name || '',
+      content: g.content || ''
+    })),
+    script: (testsScriptInput?.value || '').trim()
+  };
+}
+
+// Calculate delta between current form state and initialProblemSnapshot
+function calculateProblemDiff() {
+  if (!initialProblemSnapshot || !editingProblemId) {
+    return null;
+  }
+
+  saveActiveFormToState();
+
+  const currentTime = document.getElementById('prob-time-limit')?.value.trim() || '1000';
+  const currentMem = document.getElementById('prob-memory-limit')?.value.trim() || '256';
+
+  const diff = {
+    hasChanges: false,
+    changedCategoriesCount: 0,
+    info: null,
+    statements: {},
+    solution: null,
+    checker: null,
+    tests: {
+      changedOrAdded: [],
+      totalCount: (uploadedTests || []).length,
+      origCount: initialProblemSnapshot.tests.length
+    },
+    generators: [],
+    script: null,
+    summaryList: []
+  };
+
+  const t = translations[currentLang] || {};
+
+  // 1. Limits
+  const limitsChanged = currentTime !== initialProblemSnapshot.timeLimit || currentMem !== initialProblemSnapshot.memoryLimit;
+  if (limitsChanged) {
+    diff.info = { timeLimit: currentTime, memoryLimit: currentMem };
+    diff.hasChanges = true;
+    diff.changedCategoriesCount++;
+    diff.summaryList.push({
+      category: t.diffCategoryLimits || 'Limits',
+      status: 'changed',
+      details: `${initialProblemSnapshot.timeLimit}ms / ${initialProblemSnapshot.memoryLimit}MB → ${currentTime}ms / ${currentMem}MB`
+    });
+  } else {
+    diff.summaryList.push({
+      category: t.diffCategoryLimits || 'Limits',
+      status: 'unchanged',
+      details: `${currentTime}ms, ${currentMem}MB`
+    });
+  }
+
+  // 2. Statements
+  const allLangs = Array.from(new Set([
+    ...Object.keys(multiStatements || {}),
+    ...Object.keys(initialProblemSnapshot.statements || {})
+  ]));
+  let statementsChangedCount = 0;
+  const changedLangNames = [];
+
+  for (const lang of allLangs) {
+    const cur = multiStatements[lang];
+    const orig = initialProblemSnapshot.statements[lang];
+
+    if (!orig && cur) {
+      diff.statements[lang] = { ...cur };
+      diff.hasChanges = true;
+      statementsChangedCount++;
+      changedLangNames.push(`+${lang}`);
+    } else if (cur && orig) {
+      const fields = ['name', 'legend', 'input', 'output', 'notes', 'tutorial'];
+      const isChanged = fields.some(f => (cur[f] || '').trim() !== (orig[f] || '').trim());
+      if (isChanged) {
+        diff.statements[lang] = { ...cur };
+        diff.hasChanges = true;
+        statementsChangedCount++;
+        changedLangNames.push(lang);
+      }
+    }
+  }
+
+  if (statementsChangedCount > 0) {
+    diff.changedCategoriesCount++;
+    diff.summaryList.push({
+      category: t.diffCategoryStatements || 'Statements',
+      status: 'changed',
+      details: currentLang === 'en'
+        ? `Modified languages: ${changedLangNames.join(', ')}`
+        : `Изменены языки: ${changedLangNames.join(', ')}`
+    });
+  } else {
+    diff.summaryList.push({
+      category: t.diffCategoryStatements || 'Statements',
+      status: 'unchanged',
+      details: currentLang === 'en'
+        ? `${allLangs.length} language(s) unchanged`
+        : `${allLangs.length} яз. без изменений`
+    });
+  }
+
+  // 3. Solution
+  const curSolLang = solLangSelect?.value || 'cpp.g++20';
+  const curSolCode = solCodeTextarea?.value || '';
+  const curSolFileName = getSolutionFileName(curSolLang);
+
+  const solChanged = curSolLang !== initialProblemSnapshot.solution.lang ||
+    curSolCode !== initialProblemSnapshot.solution.code;
+
+  if (solChanged) {
+    diff.solution = { lang: curSolLang, code: curSolCode, fileName: curSolFileName };
+    diff.hasChanges = true;
+    diff.changedCategoriesCount++;
+    diff.summaryList.push({
+      category: t.diffCategorySolution || 'Solution',
+      status: 'changed',
+      details: `${curSolFileName} (${curSolLang})`
+    });
+  } else {
+    diff.summaryList.push({
+      category: t.diffCategorySolution || 'Solution',
+      status: 'unchanged',
+      details: `${curSolFileName} (${curSolLang})`
+    });
+  }
+
+  // 4. Checker
+  const curCheckerVal = checkerSelect?.value || '';
+  const isCustom = curCheckerVal === 'custom';
+  const curCheckerName = isCustom ? (customCheckerName?.value.trim() || 'check.cpp') : curCheckerVal;
+  const curCheckerCode = isCustom ? (customCheckerCode?.value || '') : '';
+
+  const origChecker = initialProblemSnapshot.checker;
+  const checkerChanged = (isCustom !== (origChecker.type === 'custom')) ||
+    (curCheckerName !== origChecker.name) ||
+    (isCustom && curCheckerCode !== origChecker.code);
+
+  if (checkerChanged) {
+    diff.checker = {
+      type: isCustom ? 'custom' : 'standard',
+      name: curCheckerName,
+      code: curCheckerCode
+    };
+    diff.hasChanges = true;
+    diff.changedCategoriesCount++;
+    diff.summaryList.push({
+      category: t.diffCategoryChecker || 'Checker',
+      status: 'changed',
+      details: curCheckerName
+    });
+  } else {
+    diff.summaryList.push({
+      category: t.diffCategoryChecker || 'Checker',
+      status: 'unchanged',
+      details: curCheckerName
+    });
+  }
+
+  // 5. Tests
+  for (let i = 0; i < (uploadedTests || []).length; i++) {
+    const curTest = uploadedTests[i];
+    const origTest = initialProblemSnapshot.tests[i];
+    const testIndex = i + 1;
+
+    if (!origTest) {
+      diff.tests.changedOrAdded.push({
+        index: testIndex,
+        name: curTest.name || `test${testIndex}.txt`,
+        testInput: curTest.content || '',
+        useInStatements: !!curTest.useInStatements,
+        isNew: true
+      });
+      diff.hasChanges = true;
+    } else if (
+      (curTest.content || '') !== (origTest.input || '') ||
+      !!curTest.useInStatements !== !!origTest.useInStatements
+    ) {
+      diff.tests.changedOrAdded.push({
+        index: testIndex,
+        name: curTest.name || `test${testIndex}.txt`,
+        testInput: curTest.content || '',
+        useInStatements: !!curTest.useInStatements,
+        isNew: false
+      });
+      diff.hasChanges = true;
+    }
+  }
+
+  if (diff.tests.changedOrAdded.length > 0) {
+    diff.changedCategoriesCount++;
+    const newCount = diff.tests.changedOrAdded.filter(t => t.isNew).length;
+    const modCount = diff.tests.changedOrAdded.filter(t => !t.isNew).length;
+    const testDetails = [];
+    if (modCount > 0) testDetails.push(currentLang === 'en' ? `${modCount} modified` : `${modCount} изм.`);
+    if (newCount > 0) testDetails.push(currentLang === 'en' ? `${newCount} added` : `${newCount} доб.`);
+
+    diff.summaryList.push({
+      category: t.diffCategoryTests || 'Tests',
+      status: 'changed',
+      details: `${diff.tests.changedOrAdded.length} test(s) (${testDetails.join(', ')})`
+    });
+  } else {
+    diff.summaryList.push({
+      category: t.diffCategoryTests || 'Tests',
+      status: 'unchanged',
+      details: currentLang === 'en'
+        ? `${uploadedTests.length} test(s) unchanged`
+        : `${uploadedTests.length} тест(ов) без изменений`
+    });
+  }
+
+  // 6. Generators
+  for (const gen of (problemGenerators || [])) {
+    const origGen = initialProblemSnapshot.generators.find(g => g.name === gen.name);
+    if (!origGen || (gen.content || '') !== (origGen.content || '')) {
+      diff.generators.push(gen);
+      diff.hasChanges = true;
+    }
+  }
+
+  if (diff.generators.length > 0) {
+    diff.changedCategoriesCount++;
+    diff.summaryList.push({
+      category: t.diffCategoryGenerators || 'Generators',
+      status: 'changed',
+      details: currentLang === 'en'
+        ? `${diff.generators.length} file(s) (${diff.generators.map(g => g.name).join(', ')})`
+        : `${diff.generators.length} файл(ов) (${diff.generators.map(g => g.name).join(', ')})`
+    });
+  } else {
+    diff.summaryList.push({
+      category: t.diffCategoryGenerators || 'Generators',
+      status: 'unchanged',
+      details: currentLang === 'en'
+        ? `${problemGenerators.length} file(s) unchanged`
+        : `${problemGenerators.length} файл(ов) без изменений`
+    });
+  }
+
+  // 7. Tests Generation Script
+  const curScript = (testsScriptInput?.value || '').trim();
+  const scriptChanged = curScript !== (initialProblemSnapshot.script || '').trim();
+  if (scriptChanged) {
+    diff.script = curScript;
+    diff.hasChanges = true;
+    diff.changedCategoriesCount++;
+    diff.summaryList.push({
+      category: t.diffCategoryScript || 'Tests Script',
+      status: 'changed',
+      details: curScript ? (currentLang === 'en' ? 'Script modified' : 'Скрипт изменен') : (currentLang === 'en' ? 'Script cleared' : 'Скрипт очищен')
+    });
+  } else {
+    diff.summaryList.push({
+      category: t.diffCategoryScript || 'Tests Script',
+      status: 'unchanged',
+      details: curScript ? (currentLang === 'en' ? 'Configured' : 'Настроен') : (currentLang === 'en' ? 'Empty' : 'Не задан')
+    });
+  }
+
+  return diff;
+}
 
 // Download plain text files from Polygon (e.g. solutions, tests inputs)
 async function downloadPlainFile(methodName, params, apiKey, apiSecret) {
@@ -4130,6 +4864,7 @@ async function openExistingProblem(probId, btn) {
     renderGeneratorsTable();
     switchTestsTab('manual');
     editingProblemId = probId;
+    createBaselineSnapshot(probId);
 
     dashboardView.style.opacity = '0';
     dashboardView.style.transform = 'translateY(-10px)';
@@ -4234,6 +4969,7 @@ function updateWizardTitleForEdit() {
 // Clear all master data and forms from memory
 function clearWizardData() {
   editingProblemId = null;
+  initialProblemSnapshot = null;
   uploadedTests = [];
   lastFetchedStatement = null;
 
