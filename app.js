@@ -141,6 +141,8 @@ const translations = {
     logoutTitle: "Switch API Keys",
     btnLogoutConfirm: "Log Out",
     btnLogoutCancel: "Cancel",
+    showAllProblems: "Show all problems ({count})",
+    showLessProblems: "Show less",
 
     // Step 1 Create Problem Translations
     stepTitle: "Step 1: Statement and Main Information",
@@ -387,7 +389,13 @@ The generator should output random test cases conforming to the input format and
     ulearnModalTitle: "Ulearn Task Import",
     ulearnModalSubtitle: "Enter a task URL from ulearn.me (e.g. https://ulearn.me/course/python/Griby_147686d0-aa0a-456a-9720-001fcd7f6d6c).",
     lblUlearnUrlInput: "Task URL on ulearn.me",
-    lblUlearnFetchBtn: "Import Task to Wizard"
+    lblUlearnFetchBtn: "Import Task to Wizard",
+    dashImportPtBtn: "Pythontutor Import",
+    ptModalTitle: "Pythontutor Import (Web Archive)",
+    ptModalSubtitle: "Enter a problem URL from pythontutor.ru (web.archive.org) or a problem slug (e.g. series_1 or factorial).",
+    lblPtUrlInput: "Problem Link or Slug (e.g. series_1)",
+    lblPtFetchBtn: "Import Task to Wizard",
+    ptCancelBtn: "Cancel"
   },
   ru: {
     title: "QW Poly",
@@ -431,6 +439,8 @@ The generator should output random test cases conforming to the input format and
     logoutTitle: "Смена API ключей",
     btnLogoutConfirm: "Выйти",
     btnLogoutCancel: "Отмена",
+    showAllProblems: "Показать все задачи ({count})",
+    showLessProblems: "Свернуть",
 
     // Step 1 Create Problem Translations
     stepTitle: "Шаг 1: Условие и основная информация",
@@ -677,13 +687,20 @@ ${output}
     ulearnModalTitle: "Импорт задачи с Ulearn",
     ulearnModalSubtitle: "Введите ссылку на задачу с сайта ulearn.me (например, https://ulearn.me/course/python/Griby_147686d0-aa0a-456a-9720-001fcd7f6d6c).",
     lblUlearnUrlInput: "Ссылка на задачу на ulearn.me",
-    lblUlearnFetchBtn: "Импортировать в мастер"
+    lblUlearnFetchBtn: "Импортировать в мастер",
+    dashImportPtBtn: "Импорт с Pythontutor",
+    ptModalTitle: "Импорт с Pythontutor (Web Archive)",
+    ptModalSubtitle: "Введите ссылку на задачу с pythontutor.ru (web.archive.org) или название задачи (например, series_1 или factorial).",
+    lblPtUrlInput: "Ссылка на задачу или название (например, series_1)",
+    lblPtFetchBtn: "Импортировать в мастер",
+    ptCancelBtn: "Отмена"
   }
 };
 
 // Global Variables
 let currentLang = localStorage.getItem('lang') || 'en';
 let loadedProblems = [];
+let isProblemsListExpanded = false;
 let uploadedTests = [];
 let problemGenerators = [];
 let activeTestsTab = 'manual';
@@ -763,6 +780,9 @@ const uploadSolutionView = document.getElementById('upload-solution-view');
 
 const problemsTableBody = document.getElementById('problems-table-body');
 const tableEmptyState = document.getElementById('table-empty');
+const problemsExpandBar = document.getElementById('problems-expand-bar');
+const btnToggleExpandProblems = document.getElementById('btn-toggle-expand-problems');
+const btnToggleExpandProblemsText = document.getElementById('btn-toggle-expand-problems-text');
 
 const step2Title = document.getElementById('step2-title');
 const step2Subtitle = document.getElementById('step2-subtitle');
@@ -1229,6 +1249,7 @@ applyTheme(getTheme());
 function applyLanguage(lang) {
   currentLang = lang;
   localStorage.setItem('lang', lang);
+  document.documentElement.setAttribute('lang', lang);
 
   const t = translations[lang];
 
@@ -1257,6 +1278,9 @@ function applyLanguage(lang) {
   if (dashSubtitle) dashSubtitle.textContent = t.dashSubtitle;
   if (createProbBtnText) createProbBtnText.textContent = t.newProblemBtn;
   if (dashLogoutBtnText) dashLogoutBtnText.textContent = t.dashLogoutBtn;
+  if (logoutBtn) logoutBtn.title = t.dashLogoutBtn;
+  const dashImportPtBtn = document.getElementById('dash-import-pt-btn');
+  if (dashImportPtBtn && t.dashImportPtBtn) dashImportPtBtn.textContent = t.dashImportPtBtn;
   if (thId) thId.textContent = t.thId;
   if (thName) thName.textContent = t.thName;
   if (thOwner) thOwner.textContent = t.thOwner;
@@ -1470,6 +1494,45 @@ function applyLanguage(lang) {
   const lblUlearnFetchBtn = document.getElementById('lbl-ulearn-fetch-btn');
   if (lblUlearnFetchBtn && t.lblUlearnFetchBtn) lblUlearnFetchBtn.textContent = t.lblUlearnFetchBtn;
 
+  // Pythontutor Import translations
+  const ptModalTitle = document.getElementById('pt-modal-title');
+  if (ptModalTitle && t.ptModalTitle) ptModalTitle.textContent = t.ptModalTitle;
+
+  const ptModalSubtitle = document.getElementById('pt-modal-subtitle');
+  if (ptModalSubtitle && t.ptModalSubtitle) {
+    ptModalSubtitle.innerHTML = t.ptModalSubtitle;
+  }
+
+  const lblPtUrlInput = document.getElementById('lbl-pt-url-input');
+  if (lblPtUrlInput && t.lblPtUrlInput) lblPtUrlInput.textContent = t.lblPtUrlInput;
+
+  const lblPtFetchBtn = document.getElementById('lbl-pt-fetch-btn');
+  if (lblPtFetchBtn && t.lblPtFetchBtn) lblPtFetchBtn.textContent = t.lblPtFetchBtn;
+
+  const ptCancelBtn = document.getElementById('pt-cancel-btn');
+  if (ptCancelBtn && t.ptCancelBtn) ptCancelBtn.textContent = t.ptCancelBtn;
+
+  // Floating Action Buttons tooltips & titles
+  const floatCreateProbBtn = document.getElementById('float-create-prob-btn');
+  const floatNewProblemTooltip = document.getElementById('float-new-problem-tooltip');
+  if (floatCreateProbBtn) floatCreateProbBtn.title = t.newProblemBtn;
+  if (floatNewProblemTooltip) floatNewProblemTooltip.textContent = t.newProblemBtn;
+
+  const floatImportUlearnBtn = document.getElementById('float-import-ulearn-btn');
+  const floatImportUlearnTooltip = document.getElementById('float-import-ulearn-tooltip');
+  if (floatImportUlearnBtn) floatImportUlearnBtn.title = t.dashImportUlearnBtn;
+  if (floatImportUlearnTooltip) floatImportUlearnTooltip.textContent = t.dashImportUlearnBtn;
+
+  const floatImportPtBtn = document.getElementById('float-import-pt-btn');
+  const floatImportPtTooltip = document.getElementById('float-import-pt-tooltip');
+  if (floatImportPtBtn) floatImportPtBtn.title = t.dashImportPtBtn;
+  if (floatImportPtTooltip) floatImportPtTooltip.textContent = t.dashImportPtBtn;
+
+  const floatLogoutBtn = document.getElementById('float-logout-btn');
+  const floatLogoutTooltip = document.getElementById('float-logout-tooltip');
+  if (floatLogoutBtn) floatLogoutBtn.title = t.dashLogoutBtn;
+  if (floatLogoutTooltip) floatLogoutTooltip.textContent = t.dashLogoutBtn;
+
   // Re-generate tests prompt if currently visible
   if (testsPromptOutputContainer && testsPromptOutputContainer.style.display !== 'none') {
     generateTestsPrompt();
@@ -1619,6 +1682,7 @@ function hideAlert() {
 
 function showDashboard(problems) {
   loadedProblems = problems;
+  isProblemsListExpanded = false;
 
   // Transition views with fade animation
   authView.style.opacity = '0';
@@ -1647,14 +1711,31 @@ function renderProblems(problems) {
 
   const t = translations[currentLang];
 
-  if (problems.length === 0) {
+  if (!problems || problems.length === 0) {
     tableEmptyState.style.display = 'flex';
+    if (problemsExpandBar) problemsExpandBar.style.display = 'none';
     return;
   }
 
   tableEmptyState.style.display = 'none';
 
-  problems.forEach(prob => {
+  const PROBLEMS_LIMIT = 10;
+  const hasMore = problems.length > PROBLEMS_LIMIT;
+
+  if (problemsExpandBar) {
+    if (hasMore) {
+      problemsExpandBar.style.display = 'flex';
+      updateExpandButtonState(problems.length);
+    } else {
+      problemsExpandBar.style.display = 'none';
+    }
+  }
+
+  const displayedProblems = (hasMore && !isProblemsListExpanded)
+    ? problems.slice(0, PROBLEMS_LIMIT)
+    : problems;
+
+  displayedProblems.forEach(prob => {
     const tr = document.createElement('tr');
 
     let badgeClass = 'badge-read';
@@ -1703,6 +1784,43 @@ function renderProblems(problems) {
       const payload = gatherWizardTaskData();
       openQwtExportModal(payload.taskData, payload.mainTests);
     });
+  });
+}
+
+function updateExpandButtonState(totalCount) {
+  if (!btnToggleExpandProblemsText) return;
+  const t = translations[currentLang];
+  const count = totalCount !== undefined ? totalCount : (loadedProblems ? loadedProblems.length : 0);
+
+  if (isProblemsListExpanded) {
+    btnToggleExpandProblemsText.textContent = t.showLessProblems || (currentLang === 'ru' ? 'Свернуть' : 'Show less');
+    if (btnToggleExpandProblems) {
+      btnToggleExpandProblems.classList.add('expanded');
+      btnToggleExpandProblems.setAttribute('aria-expanded', 'true');
+    }
+  } else {
+    const template = t.showAllProblems || (currentLang === 'ru' ? 'Показать все задачи ({count})' : 'Show all problems ({count})');
+    btnToggleExpandProblemsText.textContent = template.replace('{count}', count);
+    if (btnToggleExpandProblems) {
+      btnToggleExpandProblems.classList.remove('expanded');
+      btnToggleExpandProblems.setAttribute('aria-expanded', 'false');
+    }
+  }
+}
+
+if (btnToggleExpandProblems) {
+  btnToggleExpandProblems.addEventListener('click', () => {
+    isProblemsListExpanded = !isProblemsListExpanded;
+    renderProblems(loadedProblems);
+    if (!isProblemsListExpanded) {
+      const tableCard = document.querySelector('.table-card');
+      if (tableCard) {
+        tableCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+    if (typeof updateFloatingActionsVisibility === 'function') {
+      updateFloatingActionsVisibility();
+    }
   });
 }
 
@@ -2275,6 +2393,10 @@ if (logoutBtn) {
       if (apiSecretInput) apiSecretInput.value = '';
       hideAlert();
 
+      if (dashboardFloatingActions) {
+        dashboardFloatingActions.classList.remove('visible');
+      }
+
       dashboardView.style.opacity = '0';
       dashboardView.style.transform = 'translateY(15px)';
       dashboardView.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
@@ -2291,6 +2413,57 @@ if (logoutBtn) {
     }
   });
 }
+
+// Floating Action Buttons (Appears on right side when scrolled down on dashboard)
+const dashboardFloatingActions = document.getElementById('dashboard-floating-actions');
+const floatCreateProbBtn = document.getElementById('float-create-prob-btn');
+const floatImportUlearnBtn = document.getElementById('float-import-ulearn-btn');
+const floatImportPtBtn = document.getElementById('float-import-pt-btn');
+const floatLogoutBtn = document.getElementById('float-logout-btn');
+
+if (floatCreateProbBtn) {
+  floatCreateProbBtn.addEventListener('click', () => {
+    if (createProbBtn) createProbBtn.click();
+  });
+}
+
+if (floatImportUlearnBtn) {
+  floatImportUlearnBtn.addEventListener('click', () => {
+    const importUlearnBtn = document.getElementById('import-ulearn-btn');
+    if (importUlearnBtn) importUlearnBtn.click();
+  });
+}
+
+if (floatImportPtBtn) {
+  floatImportPtBtn.addEventListener('click', () => {
+    const importPtBtn = document.getElementById('import-pt-btn');
+    if (importPtBtn) importPtBtn.click();
+  });
+}
+
+if (floatLogoutBtn) {
+  floatLogoutBtn.addEventListener('click', () => {
+    if (logoutBtn) logoutBtn.click();
+  });
+}
+
+function updateFloatingActionsVisibility() {
+  if (!dashboardFloatingActions) return;
+  const isDashboardVisible = dashboardView && dashboardView.style.display !== 'none' && dashboardView.style.opacity !== '0';
+  if (!isDashboardVisible) {
+    dashboardFloatingActions.classList.remove('visible');
+    return;
+  }
+  const dashboardHeader = document.querySelector('.dashboard-header');
+  if (!dashboardHeader) return;
+  const rect = dashboardHeader.getBoundingClientRect();
+  // If the dashboard header buttons have scrolled above the viewport
+  const isScrolledPast = rect.bottom < 40;
+  dashboardFloatingActions.classList.toggle('visible', isScrolledPast);
+}
+
+window.addEventListener('scroll', updateFloatingActionsVisibility, { passive: true });
+window.addEventListener('resize', updateFloatingActionsVisibility, { passive: true });
 
 // ============================================================================
 // Step 2 Upload Solution View Implementation
@@ -4938,6 +5111,7 @@ async function hideAllWizardViewsAndShowDashboard() {
       callPolygonApi('problems.list', {}, apiKey, apiSecret)
         .then(res => {
           if (res.status === 'OK') {
+            loadedProblems = res.result;
             renderProblems(res.result);
           }
         })

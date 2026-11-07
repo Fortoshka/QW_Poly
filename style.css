@@ -1,4 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400;1,700&display=swap');
+
+@font-face {
+  font-family: 'Roboto Black';
+  src: local('Roboto Black'), local('Roboto-Black');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto Bold';
+  src: local('Roboto Bold'), local('Roboto-Bold');
+  font-weight: 700;
+  font-style: normal;
+}
 
 :root {
   --bg-primary: #f8f9fa;
@@ -100,7 +114,7 @@ header {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-size: 20px;
   font-weight: 600;
   letter-spacing: -0.3px;
@@ -159,7 +173,7 @@ header {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-weight: 500;
   font-size: 14px;
   transition: background-color 0.2s, transform 0.2s, color 0.2s;
@@ -248,7 +262,7 @@ main {
 }
 
 .auth-header h1 {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-size: 26px;
   font-weight: 500;
   margin-bottom: 8px;
@@ -340,7 +354,7 @@ main {
   padding: 14px 24px;
   font-size: 16px;
   font-weight: 500;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   color: #ffffff;
   background-color: var(--accent-color);
   border: none;
@@ -506,7 +520,7 @@ footer {
 }
 
 .dashboard-header h2 {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-size: 28px;
   font-weight: 600;
   margin-bottom: 4px;
@@ -522,7 +536,11 @@ footer {
   padding: 10px 20px;
   font-size: 14px;
   border-radius: 24px;
-  /* Pill button styling for Google style */
+  box-shadow: none !important;
+}
+
+.btn-new-problem:hover {
+  box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.2) !important;
 }
 
 .btn-import-pt,
@@ -552,6 +570,7 @@ footer {
   background-color: var(--bg-card) !important;
   color: var(--text-secondary) !important;
   border: 1px solid var(--border-color) !important;
+  box-shadow: none !important;
   transition: all 0.2s ease !important;
 }
 
@@ -559,7 +578,159 @@ footer {
   background-color: var(--bg-primary) !important;
   border-color: var(--google-red) !important;
   color: var(--google-red) !important;
-  box-shadow: 0 1px 3px 0 rgba(234, 67, 53, 0.15) !important;
+  box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.2) !important;
+}
+
+/* Floating Action Buttons Column (Sidebar / Scroll Sticky) */
+.dashboard-floating-actions {
+  position: fixed;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%) translateX(90px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 850;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dashboard-floating-actions.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(-50%) translateX(0);
+}
+
+.float-action-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14), 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  outline: none;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.float-action-btn:focus,
+.float-action-btn:focus-visible {
+  outline: none !important;
+}
+
+.float-action-btn:hover {
+  transform: scale(1.14);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.22);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.float-action-btn:active {
+  transform: scale(0.95);
+}
+
+.float-action-btn.float-primary {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+}
+
+.float-action-btn.float-primary:hover {
+  background-color: var(--accent-hover);
+  border-color: var(--accent-hover);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.float-action-btn.float-ulearn {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .float-action-btn.float-ulearn,
+[data-theme="dark"] .float-action-btn:not(.float-primary):not(.float-logout) {
+  color: #ffffff;
+}
+
+.float-action-btn.float-ulearn .float-ulearn-icon {
+  width: 23px;
+  height: 23px;
+  stroke: currentColor;
+  display: block;
+  transition: transform 0.2s ease, stroke 0.2s ease, color 0.2s ease;
+}
+
+.float-action-btn.float-ulearn:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.float-action-btn.float-ulearn:hover .float-ulearn-icon {
+  stroke: var(--accent-color);
+  color: var(--accent-color);
+  transform: scale(1.08);
+}
+
+.float-action-btn.float-logout {
+  color: var(--text-secondary);
+}
+
+.float-action-btn.float-logout:hover {
+  border-color: var(--google-red);
+  color: var(--google-red);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.float-action-btn svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* Tooltip on hover */
+.float-action-btn .float-tooltip {
+  position: absolute;
+  right: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%) translateX(6px);
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 10;
+}
+
+.float-action-btn:hover .float-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+@media (max-width: 768px) {
+  .dashboard-floating-actions {
+    right: 14px;
+    gap: 10px;
+  }
+  .float-action-btn {
+    width: 40px;
+    height: 40px;
+  }
 }
 
 /* Table Card Layout */
@@ -584,7 +755,7 @@ table {
 }
 
 th {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-weight: 500;
   color: var(--text-secondary);
   padding: 16px 20px;
@@ -671,7 +842,7 @@ tbody tr:last-child td {
   cursor: pointer;
   padding: 6px 12px;
   border-radius: 4px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-weight: 500;
   font-size: 13px;
   color: var(--accent-color);
@@ -723,6 +894,66 @@ tbody tr:last-child td {
   opacity: 0.5;
 }
 
+/* Problems Table Expand / Collapse Bar */
+.problems-expand-bar {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+}
+
+.btn-expand-problems {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  font-family: 'Outfit', 'Roboto', sans-serif;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.btn-expand-problems:focus,
+.btn-expand-problems:focus-visible {
+  outline: none !important;
+}
+
+.btn-expand-problems:hover {
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+  background-color: var(--accent-light);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-expand-problems:active {
+  transform: translateY(0);
+}
+
+.expand-problems-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  stroke: currentColor;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-expand-problems.expanded .expand-problems-icon {
+  transform: rotate(180deg);
+}
+
 /* Create Problem View (Step 1) Styles */
 .create-problem-container {
   width: 100%;
@@ -738,7 +969,7 @@ tbody tr:last-child td {
 }
 
 .create-problem-header h2 {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-size: 28px;
   font-weight: 600;
   margin-bottom: 4px;
@@ -866,7 +1097,7 @@ tbody tr:last-child td {
   border-bottom: none;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
@@ -889,7 +1120,7 @@ tbody tr:last-child td {
 }
 
 .statement-title {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-size: 26px;
   font-weight: 600;
   text-align: center;
@@ -924,7 +1155,7 @@ tbody tr:last-child td {
 }
 
 .section-title {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-size: 15px;
   font-weight: 600;
   margin-bottom: 10px;
@@ -1257,7 +1488,7 @@ tbody tr:last-child td {
 }
 
 .ai-header h3 {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 4px;
@@ -1330,7 +1561,7 @@ tbody tr:last-child td {
 }
 
 .accordion-inner h4 {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-weight: 600;
   margin-bottom: 8px;
   color: var(--text-primary);
@@ -1368,7 +1599,7 @@ tbody tr:last-child td {
   padding: 8px 12px;
   background-color: var(--bg-card);
   border-bottom: 1px solid var(--border-color);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
@@ -1480,7 +1711,7 @@ tbody tr:last-child td {
 }
 
 .summary-sec-title {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-size: 16px;
   font-weight: 600;
   color: var(--accent-color);
@@ -1586,7 +1817,7 @@ tbody tr:last-child td {
 }
 
 .progress-header span {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);
@@ -1747,7 +1978,7 @@ code,
   font-size: 20px;
   font-weight: 600;
   color: var(--text-primary);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
 }
 
 .dialog-body p {
@@ -1823,7 +2054,7 @@ code,
   color: var(--text-primary);
   border-radius: 24px;
   padding: 10px 20px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-size: 14px;
   font-weight: 500;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
@@ -1845,7 +2076,7 @@ code,
   cursor: pointer;
   padding: 6px 12px;
   border-radius: 4px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-weight: 500;
   font-size: 13px;
   color: var(--text-secondary);
@@ -1982,7 +2213,7 @@ code,
   border: 1px solid transparent;
   border-radius: 6px;
   padding: 6px 12px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-size: 13px;
   font-weight: 500;
   color: var(--text-secondary);
@@ -2027,7 +2258,7 @@ code,
   color: var(--accent-color);
   border-radius: 6px;
   padding: 6px 12px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -2162,7 +2393,7 @@ code,
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-size: 13px;
   font-weight: 500;
   border-radius: 8px;
@@ -2191,7 +2422,7 @@ code,
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-size: 13px;
   font-weight: 500;
   border-radius: 8px;
@@ -2228,13 +2459,13 @@ code,
 }
 
 #btn-add-manual-test-text {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-weight: 500;
   letter-spacing: 0.01em;
 }
 
 #btn-add-manual-test-table {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-size: 13px;
   font-weight: 500;
   color: var(--accent-color);
@@ -2277,7 +2508,7 @@ code,
   border: 1px solid transparent;
   border-radius: 6px;
   padding: 8px 14px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-size: 13px;
   font-weight: 500;
   color: var(--text-secondary);
@@ -2328,7 +2559,7 @@ code,
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-size: 13px;
   font-weight: 500;
   border-radius: 8px;
@@ -2504,7 +2735,7 @@ code,
 }
 
 .diff-header-left h3 {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', 'Roboto', sans-serif;
   font-size: 17px;
   font-weight: 600;
   margin: 0;
@@ -2605,4 +2836,82 @@ code,
 .diff-no-changes-alert svg {
   color: var(--google-yellow);
   flex-shrink: 0;
+}
+
+/* ============================================================================
+   Russian Typography: Roboto Black (900) & Roboto Bold (700)
+   ============================================================================ */
+
+:lang(ru),
+html[lang="ru"],
+html[lang="ru"] body {
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+}
+
+/* Russian Headings & Major Titles: Roboto Black (weight 900) */
+html[lang="ru"] h1,
+html[lang="ru"] h2,
+html[lang="ru"] .auth-header h1,
+html[lang="ru"] .dashboard-header h2,
+html[lang="ru"] .create-problem-header h2,
+html[lang="ru"] .statement-title,
+html[lang="ru"] .diff-header-left h3,
+html[lang="ru"] .dialog-header h3,
+html[lang="ru"] .ai-header h3,
+html[lang="ru"] .logo-text,
+html[lang="ru"] #auth-title,
+html[lang="ru"] #dash-title,
+html[lang="ru"] #step-title,
+html[lang="ru"] #step2-title,
+html[lang="ru"] #step3-title,
+html[lang="ru"] #step4-title,
+html[lang="ru"] #diff-card-title,
+html[lang="ru"] #custom-modal-title,
+html[lang="ru"] #pt-modal-title,
+html[lang="ru"] #ulearn-modal-title,
+html[lang="ru"] #qwt-modal-title {
+  font-family: 'Roboto', 'Roboto Black', sans-serif !important;
+  font-weight: 900 !important;
+}
+
+/* Russian Subheadings, Buttons, Tabs, Table Headers, Labels, Badges: Roboto Bold (weight 700) */
+html[lang="ru"] h3,
+html[lang="ru"] h4,
+html[lang="ru"] th,
+html[lang="ru"] strong,
+html[lang="ru"] b,
+html[lang="ru"] .font-medium,
+html[lang="ru"] .section-title,
+html[lang="ru"] .summary-sec-title,
+html[lang="ru"] .progress-header span,
+html[lang="ru"] .accordion-inner h4,
+html[lang="ru"] button,
+html[lang="ru"] .btn-primary,
+html[lang="ru"] .btn-secondary,
+html[lang="ru"] .btn-new-problem,
+html[lang="ru"] .btn-logout,
+html[lang="ru"] .btn-text-action,
+html[lang="ru"] .statement-tab,
+html[lang="ru"] .test-subtab-btn,
+html[lang="ru"] .step-pill,
+html[lang="ru"] .badge,
+html[lang="ru"] .input-group label,
+html[lang="ru"] .diff-badge,
+html[lang="ru"] .preview-label,
+html[lang="ru"] .dialog-footer button,
+html[lang="ru"] .float-tooltip,
+html[lang="ru"] #lang-label,
+html[lang="ru"] .summary-field label,
+html[lang="ru"] #btn-text,
+html[lang="ru"] #dash-new-problem-btn,
+html[lang="ru"] #dash-import-pt-btn,
+html[lang="ru"] #dash-import-ulearn-btn,
+html[lang="ru"] #dash-logout-btn,
+html[lang="ru"] #btn-next-step-text,
+html[lang="ru"] #btn-finish-problem-text,
+html[lang="ru"] #btn-confirm-upload-text,
+html[lang="ru"] #btn-back-to-dash,
+html[lang="ru"] #btn-toggle-expand-problems-text {
+  font-family: 'Roboto', 'Roboto Bold', sans-serif !important;
+  font-weight: 700 !important;
 }

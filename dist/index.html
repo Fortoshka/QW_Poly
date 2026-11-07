@@ -5,9 +5,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>QW Poly</title>
-  <link id="app-favicon" rel="icon" type="image/svg+xml" href="/assets/favicon-BzwkQiKt.svg">
-  <script type="module" crossorigin src="/assets/index-ClmWk4AM.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-DCh_qSQ0.css">
+  <link id="app-favicon" rel="icon" type="image/svg+xml" href="/assets/favicon-BzwkQiKt.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400;1,700&display=swap"
+    rel="stylesheet">
+  <script type="module" crossorigin src="/assets/index-DisOxUHV.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-S_NCtctv.css">
 </head>
 
 <body>
@@ -166,6 +171,16 @@
             </svg>
             <p id="no-problems-text">No problems found on this account.</p>
           </div>
+        </div>
+
+        <div id="problems-expand-bar" class="problems-expand-bar" style="display: none;">
+          <button type="button" id="btn-toggle-expand-problems" class="btn-expand-problems" aria-expanded="false">
+            <span id="btn-toggle-expand-problems-text">Show all problems</span>
+            <svg id="expand-problems-icon" class="expand-problems-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
         </div>
       </div>
     </div>
@@ -774,7 +789,8 @@
           <span id="diff-status-badge" class="badge badge-modified">0 changes</span>
         </div>
         <p id="diff-card-desc" class="dash-subtitle" style="margin: 6px 0 14px 0;">
-          Only modified components will be updated on Polygon. Unchanged parts will be skipped to save time and API calls.
+          Only modified components will be updated on Polygon. Unchanged parts will be skipped to save time and API
+          calls.
         </p>
         <div id="diff-items-list" class="diff-items-list">
           <!-- Dynamically populated in app.js -->
@@ -909,6 +925,50 @@
           </svg>
         </button>
       </div>
+    </div>
+
+    <!-- Floating Action Buttons Column (appears on the right side when scrolled down on dashboard) -->
+    <div id="dashboard-floating-actions" class="dashboard-floating-actions" aria-label="Quick Actions">
+      <button type="button" id="float-create-prob-btn" class="float-action-btn float-primary" title="New Problem"
+        aria-label="New Problem">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span class="float-tooltip" id="float-new-problem-tooltip">New Problem</span>
+      </button>
+
+      <button type="button" id="float-import-ulearn-btn" class="float-action-btn float-ulearn" title="Ulearn Import"
+        aria-label="Ulearn Import">
+        <svg class="float-ulearn-icon" xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M8 7.5v5a4 4 0 0 0 8 0v-5"></path>
+        </svg>
+        <span class="float-tooltip" id="float-import-ulearn-tooltip">Ulearn Import</span>
+      </button>
+
+      <button type="button" id="float-import-pt-btn" class="float-action-btn" title="Pythontutor Import"
+        aria-label="Pythontutor Import">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"></polyline>
+          <polyline points="8 6 2 12 8 18"></polyline>
+        </svg>
+        <span class="float-tooltip" id="float-import-pt-tooltip">Pythontutor Import</span>
+      </button>
+
+      <button type="button" id="float-logout-btn" class="float-action-btn float-logout" title="Switch API Keys"
+        aria-label="Switch API Keys">
+        <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        <span class="float-tooltip" id="float-logout-tooltip">Switch API Keys</span>
+      </button>
     </div>
   </main>
 
